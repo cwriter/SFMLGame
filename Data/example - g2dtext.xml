@@ -1,0 +1,14 @@
+﻿<xml>
+
+	<module name="G2DText">
+		<object name="MAIN_MENU_PLAY">
+			<font>Arial</font>
+			<size>16</size>
+			<position type="fixed" align="center">20.0,20.0</position>
+		
+			<lang name="en">Play</lang>
+			<lang name="de">Spiel starten</lang>
+		</object>
+	</module>
+
+</xml>

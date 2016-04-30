@@ -1,0 +1,44 @@
+This is the "script" language we'll use. It should mostly rely on C standards, however, there might be some extensions / changes.
+
+The general function that is always executed should be called
+"int init()"
+(just like standard C entry point)
+
+Classes don't exist in standard C, so you'll have to make a workaround (that, by the way, doesn't differ much from the C++ Class):
+
+Let's name our class "ClassTest". Then, the syntax will be:
+
+#NATIVE
+struct ClassTest__Data
+{
+	//Insert custom data
+}
+
+void ClassTest__ClassTest(void* ptr)
+{
+	//Constructor
+}
+
+void ClassTest__~ClassTest(void* ptr)
+{
+	//Destructor
+}
+
+void ClassTest__SomeFunc(void* ptr)
+{
+	//Some function
+}
+#!NATIVE
+
+Please note that "void* ptr" needs to be present in every function call. This is a __cdecl or __stdcall replacement for __thiscall.
+(__thiscall defines that the function pointer should be in the ecx (rcx) register on windows and eax (rax) in unix.
+__stdcall and _cdecl don't have this definition, so we just add the function pointer to the stack (that's where the paramenters go.))
+
+Please note you CANNOT override existing elements of the engine. The engine by itself should have a broad enough interface to customize
+them by API calls instead of overrides.
+
+Please note the "#NATIVE" and "#!NATIVE". These tags define where the code is C-compatible and can thus be compiled. Every code that isn't
+inside these tags will be parsed and handled as scripts and not as program code. Thus, the code outside the "#NATIVE"-Tags is strongly
+limited.
+
+Any code that actively interacts with the engine SHOULD NOT be native code. However, the script code CAN call code that is inside the "#NATIVE"-tags.

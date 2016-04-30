@@ -1,0 +1,19 @@
+﻿<xml>
+	<lang name="en">Press me!</lang>
+	<module name="UI">
+		<manager name="Test-Manager">
+			<object name="Test-Window">
+				<title>Test-Window</title>
+				<rect>0.0;0.0;50.0;50.0;</rect>
+				<grid cols="1" rows="2">
+					<element name="label_1" type="label" position="0;0">
+						GLOBAL_STRING_TEST
+					</element>
+					<element name="button_1" type="button" position="0;1">
+						bla
+					</element>
+				</grid>
+			</object>
+		</manager>
+	</module>
+</xml>

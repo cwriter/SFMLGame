@@ -1,0 +1,19 @@
+﻿<xml>
+
+	<module name="Materials">
+		<object name="iron">
+			<density>7.874</density>
+			<MP>1811</MP>
+			<BP>3134</BP>
+			<heat-capacity>449</heat-capacity>
+			<heat-deduction>80</heat-deduction>
+			<symbol>Fe</symbol>
+			
+			<localization>
+				<de>Eisen</de>
+				<lat>Ferrum</lat>
+			</localization>
+		</object>
+	</module>
+
+</xml>

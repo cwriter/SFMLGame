@@ -1,0 +1,36 @@
+<xml>
+	<module name="G2D">
+		<object name="CAR_">
+			<animation name="idle" frame-count="3" type="pingpong">
+				<frame name="0">
+					<duration>20</duration>
+					<image>__file:gfx/CARS/HORNET/default.png</image>
+				</frame>
+			</animation>
+			<blinker>
+				<light position="500,10" direction="left" power="30" type="point"></light>
+				<light position="500,245" direction="right" power="30" type="point"></light>
+				
+				<light position="5,20" direction="left" power="30" type="point"></light>
+				<light position="5,230" direction="right" power="30" type="point"></light>
+			</blinker>
+			<front-light>
+				<light position="500,50" direction="left" power="200" type="spot"></light>
+				<light position="500,210" direction="right" power="200" type="spot"></light>
+			</front-light>
+			<rear-light>
+				<light position="5,40" direction="left" power="100" type="point"></light>
+				<light position="5,210" direction="right" power="100" type="point"></light>
+			</rear-light>
+			<reverse-light>
+				<light position="5,65" direction="left" power="150" type="spot"></light>
+				<light position="5,192" direction="right" power="150" type="spot"></light>
+			</reverse-light>
+			
+			<motor>
+				<power></power>
+				<consumption>8.0</consumption>
+			</motor>
+		</object>
+	</module>
+</xml>

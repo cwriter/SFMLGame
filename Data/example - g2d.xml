@@ -1,0 +1,25 @@
+﻿<xml>
+
+	<module name="G2D">
+		<object name="LIFEFORM_MAIN_CERON">
+			<animation name="idle" frame-count="3" type="pingpong">
+				<frame name="0">
+					<duration>20</duration>
+					<image>__file:gfx/LIFEFORM_MAIN_CERON/idle_0.png</image>
+				</frame>
+				<frame name="1">
+					<duration>30</duration>
+					<image>__file:gfx/LIFEFORM_MAIN_CERON/idle_1.png</image>
+				</frame>
+				<frame name="2">
+					<duration>10</duration>
+					<image>__file:gfx/LIFEFORM_MAIN_CERON/idle_2.png</image>
+				</frame>
+			</animation>
+			
+			
+			
+		</object>
+	</module>
+
+</xml>

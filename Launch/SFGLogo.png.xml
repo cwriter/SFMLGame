@@ -1,0 +1,16 @@
+﻿<animation name="default" frame-count="4" type="no-repeat" width="800" height="600">
+	<effect startAt="-30" endAt="30">fade-in</effect>
+	<effect startAt="-30" endAt="30">fade-out</effect>
+	<frame name="0">
+		<duration>3000</duration>
+	</frame>
+	<frame name="1">
+		<duration>1000</duration>
+	</frame>
+	<frame name="2">
+		<duration>1000</duration>
+	</frame>
+	<frame name="3">
+		<duration>1000</duration>
+	</frame>
+</animation>

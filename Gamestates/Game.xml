@@ -1,0 +1,29 @@
+﻿<xml>
+	<assetlist name="Startup">
+		<module name="moduleG2D">
+			<object name="Engine_Logo">
+				<GObjectBase>
+					<comment>The logo of the game engine.</comment>
+					<file>Launch/SFGLogo.png</file>
+				</GObjectBase>
+			</object>
+			<object name="Additional_Logos">
+				<GObjectBase>
+					<comment>The logo(s) of everything else (Publisher, Developer, w/e).</comment>
+					<file>Launch/Additional.png</file>
+				</GObjectBase>
+			</object>
+			<object name="Game_Logo">
+				<GObjectBase>
+					<comment>The logo of the game itself.</comment>
+					<file>Launch/Game.png</file>
+				</GObjectBase>
+			</object>
+		</module>
+	</assetlist>
+	
+	
+	<gamestate name="Startup" uses="G2D">#included</gamestate>
+	<gamestate name="Menu" uses="G2D">#included</gamestate>
+	<gamestate name="SSG_main_gs" assets="Gamestates/SpaceSimulationGame.xml"></gamestate>
+</xml>
