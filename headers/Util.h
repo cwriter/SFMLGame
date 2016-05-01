@@ -4,6 +4,11 @@
 #ifdef _WIN32
 #include <Windows.h>
 #include <DbgHelp.h>
+#else
+#include <execinfo.h>
+#ifdef __GNUG__
+#include <cxxabi.h>
+#endif
 #endif
 
 namespace SFG

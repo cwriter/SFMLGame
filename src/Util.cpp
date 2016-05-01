@@ -61,7 +61,7 @@ namespace SFG
 		SymSetOptions(newOptions);
 
 					// Quote from Microsoft Documentation:
-					// ## Windows Server 2003 and Windows XP:  
+					// ## Windows Server 2003 and Windows XP:
 					// ## The sum of the FramesToSkip and FramesToCapture parameters must be less than 63.
 		const int kMaxCallers = 62;
 
@@ -89,10 +89,45 @@ namespace SFG
 			//UnDecorateSymbolName(symbol->Name, undecoratedName, MAX_SYM_NAME, UNDNAME_COMPLETE);
 			stream += std::string(symbol->Name, symbol->NameLen) + "\n";
 			//stream += std::string(undecoratedName) + "\n";
-			
+
 		}
 
 		free(symbol);
+		stream += "=======End of Call stack========\n";
+#else
+stream = "===========Call stack===========\n";
+		void *array[10];
+		size_t size = 0;
+
+		size = backtrace(array, 10);
+		char** symbols = backtrace_symbols(array, size);
+
+		if(symbols == nullptr)
+		{
+				printLog(LogMessageType::Error, __FILE__, __LINE__, "Failed to get symbols.");
+				return;
+		}
+
+		for(size_t i = 0; i < size; i++)
+		{
+				size_t dms = 0;
+				int status = 0;
+				//char* name = abi::__cxa_demangle(symbols[i], tmp, &dms, &status);
+				char* name = abi::__cxa_demangle(symbols[i], nullptr, nullptr, &status);
+				if(status != 0)
+				{
+						printf("Getting demangled name failed with code %d\n", status);
+				}
+				if(name == nullptr)
+				{
+						stream += std::string(symbols[i]) + "\n";
+				}
+				else
+				{
+						stream += std::string(name) + "\n";
+				}
+				free(name);
+		}
 		stream += "=======End of Call stack========\n";
 #endif
 	}
