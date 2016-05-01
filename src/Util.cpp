@@ -116,7 +116,7 @@ stream = "===========Call stack===========\n";
 				char* name = abi::__cxa_demangle(symbols[i], nullptr, nullptr, &status);
 				if(status != 0)
 				{
-						printf("Getting demangled name failed with code %d\n", status);
+						printLog(LogMessageType::Error, __FILE__, __LINE__, "Failed to demangle name with code %d", status);
 				}
 				if(name == nullptr)
 				{

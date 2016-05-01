@@ -1,2 +1,6 @@
 obj/*
 Game
+*.kdev4
+CMake*
+cmake*
+!CMakeLists.txt
