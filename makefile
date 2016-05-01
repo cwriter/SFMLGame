@@ -1,5 +1,5 @@
 CC = /usr/bin/g++
-CFlags = -std=c++11 -Iheaders
+CFlags = -g -std=c++11 -Iheaders
 TMPDIR = ./obj/
 LDFlags = -lsfml-system -lsfml-graphics -lsfml-audio -lsfml-network -lsfml-window -pthread -lX11 -ldl
 

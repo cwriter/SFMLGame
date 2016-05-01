@@ -889,11 +889,11 @@ void MenuGameState::generalPan(sf::View* target, double time, bool* done, const 
 	vector.x = to.x - m_view.getCenter().x;
 	vector.y = to.y - m_view.getCenter().y;
 
-	printf("%f|%f\n", vector.x, vector.y);
+	//printf("%f|%f\n", vector.x, vector.y);
 
 	auto tr = vector.trimmed((dist <= vector.length()) ? dist : vector.length());
 
-	printf("tr.length() is %f\n", tr.length());
+	//printf("tr.length() is %f\n", tr.length());
 	if (tr.length() <= 1.f) *done = true;
 
 	target->move(tr);
