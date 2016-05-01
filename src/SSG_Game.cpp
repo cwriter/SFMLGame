@@ -43,21 +43,21 @@ SSG_Game::~SSG_Game()
 	this->m_physicsEngine.removeAllElements();
 }
 
-int SSG_Game::update(double dt) 
+int SSG_Game::update(double dt)
 {
 
 	this->m_physicsEngine.applyMutualForces();
-	
+
 	this->moon->update(float(dt));
-	
+
 	this->planet->update(float(dt));
-	
+
 	this->sun->update(float(dt));
 	//this->planet->update(float(dt));
 	return 0;
 }
 
-int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events) 
+int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 {
 	for (size_t i = 0; i < events.size(); i++)
 	{
@@ -66,8 +66,8 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 		{
 			float ratio = m_cam.getView().getSize().x / m_cam.getView().getSize().y;
 			this->m_cam.setSize(
-				m_cam.getView().getSize().x + ratio*events[i].mouseWheel.delta*10.f,
-				m_cam.getView().getSize().y + 1.f*events[i].mouseWheel.delta*10.f);
+				m_cam.getView().getSize().x + ratio*events[i].mouseWheel.delta*50.f,
+				m_cam.getView().getSize().y + 1.f*events[i].mouseWheel.delta*50.f);
 			//printf("Scrolled %d\n", events[i].mouseWheel.delta);
 			window.getSFMLWindow().setView(m_cam);
 		}
@@ -86,7 +86,7 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 	return 0;
 }
 
-int SSG_Game::load(const sf::String& path) 
+int SSG_Game::load(const sf::String& path)
 {
 	//We got our path, please start loading
 	sf::String out;
@@ -103,12 +103,12 @@ int SSG_Game::load(const sf::String& path)
 		return -1;
 	}
 	//Load actual data
-	
+
 
 	return 0;
 }
 
-void SSG_Game::draw(sf::RenderTarget* t) 
+void SSG_Game::draw(sf::RenderTarget* t)
 {
 	assert(t != nullptr);
 
@@ -121,10 +121,10 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	this->planet->draw(*t);
 	this->moon->draw(*t);
 
-	
+
 }
 
-bool SSG_Game::pause(bool p) 
+bool SSG_Game::pause(bool p)
 {
 	//The code here are just recommendations.
 	//For example, if you want to be able to load data during pause, you should not stop the system
