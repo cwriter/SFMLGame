@@ -113,10 +113,15 @@ stream = "===========Call stack===========\n";
 				size_t dms = 0;
 				int status = 0;
 				//char* name = abi::__cxa_demangle(symbols[i], tmp, &dms, &status);
-				char* name = abi::__cxa_demangle(symbols[i], nullptr, nullptr, &status);
+
+				//We have to create the subsequence first
+				std::string tmp(symbols[i]);
+				std::string symbol(tmp.begin() + tmp.find_first_of('(') + 1, tmp.begin() + tmp.find_first_of('+'));
+
+				char* name = abi::__cxa_demangle(symbol.c_str(), nullptr, nullptr, &status);
 				if(status != 0)
 				{
-						printLog(LogMessageType::Error, __FILE__, __LINE__, "Failed to demangle name with code %d", status);
+						//printLog(LogMessageType::Error, __FILE__, __LINE__, "Failed to demangle name \"%s\" with code %d", symbol.c_str(), status);
 				}
 				if(name == nullptr)
 				{
@@ -125,8 +130,8 @@ stream = "===========Call stack===========\n";
 				else
 				{
 						stream += std::string(name) + "\n";
+						free(name);
 				}
-				free(name);
 		}
 		stream += "=======End of Call stack========\n";
 #endif
