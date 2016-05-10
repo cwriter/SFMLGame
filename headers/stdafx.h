@@ -28,6 +28,7 @@
 #include <iterator>
 #include <functional>
 #include <memory>
+#include <cmath>
 #include <locale>
 //#include <codecvt>
 #include <string>
