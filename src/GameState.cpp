@@ -728,6 +728,14 @@ MenuGameState::MenuGameState()
 
 }
 
+int MenuGameState::init(SFG::Window& win)
+{
+	this->m_view.setSize(win.getSFMLWindow().getSize().x, win.getSFMLWindow().getSize().y);
+	this->m_view.setCenter(0.f, 0.f);
+	win.getSFMLWindow().setView(m_view);
+	return 0;
+}
+
 int MenuGameState::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 {
 	for (size_t i = 0; i < events.size(); i++)
@@ -823,7 +831,21 @@ int MenuGameState::processEvents(SFG::Window& window, std::vector<sf::Event>& ev
 			}
 
 		}
+		else if(events[i].type == sf::Event::Resized)
+		{
+			float oldw = m_view.getSize().x;
+			float oldh = m_view.getSize().y;
+			
+			
+			m_view.setCenter(0.f, 0.f);
+			
+			m_view.setSize(events[i].size.width, events[i].size.height);
+			
+			window.getSFMLWindow().setView(m_view);
+			//SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "In MGS resized: resized (%f|%f) changed center to (%f|%f)", events[i].size.width, events[i].size.height, m_view.getCenter().x, m_view.getCenter().y);
+		}
 	}
+	window.getSFMLWindow().setView(m_view);
 	return 0;
 }
 

@@ -594,6 +594,8 @@ public:
 
 	}
 
+	virtual int init(SFG::Window& win) override;
+	
 	virtual int update(double dt) override;
 
 	virtual int processEvents(SFG::Window& window, std::vector<sf::Event>& events) override;
