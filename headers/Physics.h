@@ -261,6 +261,17 @@ namespace PE
 		}
 
 		inline double getScalar() const { return this->m_scalar; }
+		
+		inline Mass operator+(const Mass& m) const
+		{
+			return Mass(m.getScalar());
+		}
+		
+		inline Mass operator+=(const Mass& m)
+		{
+			this->m_scalar = m.getScalar();
+			return *this;
+		}
 	private:
 		double m_scalar;
 	};
@@ -532,6 +543,13 @@ namespace PE
 		///Add an object to the engine.
 		///</summary>
 		void addObject(const SFG::Pointer<PhysicObject>& ptr);
+		
+		///<summary>
+		///Removes an object from the engine.
+		///</summary>
+		void removeObject(const SFG::Pointer<PhysicObject>& ptr);
+		
+		
 
 		int notify(int msg) override
 		{

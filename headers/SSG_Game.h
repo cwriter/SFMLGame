@@ -73,7 +73,9 @@ private:
 	PE::PhysicsEngine m_physicsEngine;		//The physics engine used
 	SFG::Camera m_cam;						//The standard game camera
 	
-
+	//The universe the game shall handle
+	SSG_Universe m_universe;
+	
 	//Testing/Loading
 	SFG::Pointer<SSG_Planet> sun;
 	SFG::Pointer<SSG_Planet> planet;

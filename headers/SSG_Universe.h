@@ -12,8 +12,21 @@ public:
 	SSG_Universe();
 	virtual ~SSG_Universe();
 
+	
+	///<summary>
+	///Hands a ship to the physics engine of this universe
+	///</summary>
+	///<param name="ptr">
+	///The pointer to the ship that should be added.
+	///</param>
 	void addShip(SFG::Pointer<SSG_Ship>& ptr);
 
+	///<summary>
+	///Hands a Galaxy to the physics engine of this universe
+	///</summary>
+	///<param name="ptr">
+	///The pointer to the ship that should be added.
+	///</param>
 	void addGalaxy(SFG::Pointer<SSG_Galaxy>& ptr); 
 
 	int object_message_handler_ships(int msg, const SFG::Pointer<MsgPackage>& pkg);
@@ -21,6 +34,7 @@ public:
 	int object_message_handler_galaxies(int msg, const SFG::Pointer<MsgPackage>& pkg);
 
 private:
+	//The physics engine used
 	PE::PhysicsEngine m_physics_engine;
 
 	//Map that contains galaxies

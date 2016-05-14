@@ -48,6 +48,12 @@ namespace PE
 		this->m_objects[ptr.getElement()] = ptr;
 	}
 
+	void PhysicsEngine::removeObject(const SFG::Pointer<PhysicObject>& ptr)
+	{
+		this->removeListener(ptr.getElement());
+	  
+	}
+	
 	int PhysicsEngine::object_message_handler(int msg, const SFG::Pointer<MsgPackage>& pkg)
 	{
 		if (msg == PE::PhysicObject::PhysicObjectMessages::Destroyed)

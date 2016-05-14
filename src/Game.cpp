@@ -302,24 +302,37 @@ int Game::parseArgs(int argc, char* argv[])
 
 int Game::gameLoop()
 {
-
-	//game.window.processEvents(events);
-	//uim.processEvents(events);
+	//With 30 fps, we are limited to 33.3ms that this function can take.
+	//As 60 fps should be targetted, we are aiming for 16.6ms.
+	
+	sf::Clock clk;
+  
+	//Processing events should not take more than 2 ms
 	this->processEvents();
-
-
-
+	
+	this->m_timing.processingTime = clk.restart().asMicroseconds() / 1000.f;
+	
+	//Updating the game logic should not take more than 10ms
 	this->update();
+	
+	this->m_timing.updatingTime = clk.restart().asMicroseconds() / 1000.f;
+	
+	//This leaves us with 4ms for drawing
 	this->window.startDraw();
 
 	this->draw();
 
-
-	//uim.update((float)game.elapsedTime.getElapsedTime().asMilliseconds());
-	//uim.draw(game.window);
-
 	this->window.endDraw();
+	
+	this->m_timing.drawingTime = clk.restart().asMicroseconds() / 1000.f;
 
+	
+	/*SFG::Util::printLog(SFG::Util::LogMessageType::Development, __FILE__, __LINE__, "(%f|%f|%f)",
+	      m_timing.processingTime,
+	      m_timing.updatingTime,
+	      m_timing.drawingTime
+	);*/
+	
 	if (!this->window.getSFMLWindow().isOpen()) {
 		//Window has been closed, generally, we should save everything (if not yet done)
 		//And then end the program

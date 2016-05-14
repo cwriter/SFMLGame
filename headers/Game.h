@@ -16,6 +16,27 @@
 #define GAMESTATE_PAUSED 3
 //Others are userdefined
 
+
+namespace SFG 
+{
+
+      ///<summary>
+      ///Contains the time in ms spent in the game loop
+      ///</summary>
+      class GameLoopTiming
+      {
+      public:
+	    
+	
+	    float processingTime;	//The time spent processing events
+	    float updatingTime;		//The time spent updating the game Logic
+	    float drawingTime;		//The time spent drawing
+      private:
+	    
+      };
+
+};
+
 ///<summary>
 ///The general game
 ///</summary>
@@ -98,6 +119,9 @@ public:
 private:
 	SFG::System m_system;
 	SFG::Network m_network;
+	
+	SFG::GameLoopTiming m_timing;
+	
 	std::vector<sf::Event> m_unhandled_events;
 	std::map<sf::Keyboard::Key, sf::Keyboard::Key> m_keyMap;
 	std::vector<SFG::Pointer<GameState>> g_gamestates;

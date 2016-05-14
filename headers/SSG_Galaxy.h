@@ -11,6 +11,18 @@ class SSG_Galaxy : public PE::PhysicObject
 public:
 	SSG_Galaxy();
 	virtual ~SSG_Galaxy();
+	
+	void addSolarSystem(SFG::Pointer<SSG_SolarSystem> slrsys);
+	
+	virtual double x() const override 
+	{
+	      
+	}
+	virtual double y() const override
+	{
+	      
+	  
+	}
 
 private:
 	PE::PhysicsEngine m_physics_engine;
