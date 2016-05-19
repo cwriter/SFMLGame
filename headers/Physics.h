@@ -269,7 +269,12 @@ namespace PE
 		
 		inline Mass operator+=(const Mass& m)
 		{
-			this->m_scalar = m.getScalar();
+			this->m_scalar += m.getScalar();
+			return *this;
+		}
+		inline Mass operator-=(const Mass& m)
+		{
+			this->m_scalar -= m.getScalar();
 			return *this;
 		}
 	private:
