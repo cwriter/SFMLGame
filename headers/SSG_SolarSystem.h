@@ -19,54 +19,16 @@ public:
 		return 0;
 	}
 
-	inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-	{
-		m_totalmass += ptr->getMass();
-		m_physicsEngine.addObject(ptr);
-		//We now need to add the object's mass to totalmass and
-		//add the specific weights to the balanced position
-		m_x += ptr->getMass().getScalar() * ptr->x();
-		m_y += ptr->getMass().getScalar() * ptr->y();
-	}
+	inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
 	
-	inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-	{
-		m_physicsEngine.removeObject(ptr);
-		//Remove from the mass center
-		m_x -= ptr->getMass().getScalar() * ptr->x();
-		m_y -= ptr->getMass().getScalar() * ptr->y();
-		
-		m_totalmass -= ptr->getMass();
-	}
+	inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
 	
-	inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr)
-	{
-		m_planets[ptr.getElement()] = ptr;
-		addObjectToSystem(ptr.cast<PE::PhysicObject>());
-	}
+	inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr);
 	
 	///<summary>
 	///Gets the center of all masses combined in the system
 	///</summary>
-	SFG::Vector2f getBalancePoint() 
-	{
-		SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "This function should not be called in Release Mode!");
-		SFG::Vector2f center(0.f, 0.f);
-		
-		double mass_sum = this->m_totalmass.getScalar();
-		
-		//Sum up all specific weights
-		for(auto p : m_planets)
-		{	
-			//Add to sum up by weight
-			center.x += p.first->x()*p.first->getMass().getScalar();
-			center.y += p.first->y()*p.first->getMass().getScalar();
-		}
-		
-		
-		
-		return center / mass_sum;
-	}
+	SFG::Vector2f getBalancePoint();
 	
 	double x() const override {
 		return m_x / m_totalmass.getScalar(); //Return the actual position

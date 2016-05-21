@@ -70,53 +70,23 @@ namespace SFG
 			Aborted
 		};
 
-		Download()
-		{
-			this->state = State::notStarted;
-			filesize = 0;
-			current_index = 0;
-			filesystem = nullptr;
-		}
+		Download();
 
-		bool isComplete()
-		{
-			size_t fs = 0;
-			for (auto fc : chunks)
-			{
-				if (fc.second.getElement() != nullptr)
-				{
-					fs += fc.second->size();
-				}
-			}
+		///<summary>
+		///Checks whether the download is completed.
+		///</summary>
+		///<returns>
+		///True if the download is complete, false otherwise
+		///</returns>
+		bool isComplete();
 
-			if (fs >= filesize)
-			{
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		}
-
-		std::list<int> getIncompleteChunks()
-		{
-			std::list<int> ret;
-
-			size_t index = 0;
-			for (auto it = chunks.begin(); it != chunks.end(); it++)
-			{
-				while (it->first != index)
-				{
-					//Try to match up again by increasing index accordingly
-					assert(index <= INT_MAX);
-					ret.push_back(int(index));
-					index++;
-				}
-				index++;
-			}
-			return ret;
-		}
+		///<summary
+		///Returns a list of all incomplete chunks
+		///</summary>
+		///<returns>
+		///A list of elements containing the indices of the missing chunks
+		///</returns>
+		std::list<int> getIncompleteChunks();
 
 		void addChunk(size_t pos, SFG::Pointer<SFG::FileChunk>& fc)
 		{

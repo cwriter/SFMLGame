@@ -37,6 +37,54 @@ namespace SFG
 		return true;
 	}
 
+	Download::Download()
+	{
+		this->state = State::notStarted;
+		filesize = 0;
+		current_index = 0;
+		filesystem = nullptr;
+	}
+	
+	bool Download::isComplete()
+	{
+		size_t fs = 0;
+		for (auto fc : chunks)
+		{
+			if (fc.second.getElement() != nullptr)
+			{
+				fs += fc.second->size();
+			}
+		}
+
+		if (fs >= filesize)
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	
+	std::list<int> Download::getIncompleteChunks()
+	{
+		std::list<int> ret;
+
+		size_t index = 0;
+		for (auto it = chunks.begin(); it != chunks.end(); it++)
+		{
+			while (it->first != index)
+			{
+				//Try to match up again by increasing index accordingly
+				assert(index <= INT_MAX);
+				ret.push_back(int(index));
+				index++;
+			}
+			index++;
+		}
+		return ret;
+	}
+	
 	int Network::init(int port_tcp, int port_udp)
 	{
 		//Set the port numbers
