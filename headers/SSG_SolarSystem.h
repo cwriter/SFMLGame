@@ -25,6 +25,12 @@ public:
 	
 	inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr);
 	
+	inline void addShipToSystem(SFG::Pointer<SSG_Ship>& ptr)
+	{
+	    this->m_ships[ptr.getElement()] = ptr;
+	    this->m_physicsEngine.addObject(ptr);
+	}
+	
 	///<summary>
 	///Gets the center of all masses combined in the system
 	///</summary>
@@ -44,7 +50,7 @@ private:
 	
 	PE::Mass m_totalmass;
 	
-	PE::PhysicsEngine m_physicsEngine;	//The local physiscs engine
+	PE::PhysicsEngine m_physicsEngine;	//The local physics engine
 	std::map<SSG_Planet*, SFG::Pointer<SSG_Planet>> m_planets;
 	std::map<SSG_Ship*, SFG::Pointer<SSG_Ship>> m_ships;
 

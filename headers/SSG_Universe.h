@@ -6,7 +6,7 @@
 ///<summary>
 ///Class that contains all galaxies
 ///</summary>
-class SSG_Universe : public MsgObject
+class SSG_Universe : public PE::PhysicObject
 {
 public:
 	SSG_Universe();
@@ -29,6 +29,18 @@ public:
 	///</param>
 	void addGalaxy(SFG::Pointer<SSG_Galaxy>& ptr); 
 
+	double x() const override
+	{
+	    return m_x / m_totalmass.getScalar();
+	}
+	
+	double y() const override
+	{
+	    return m_y / m_totalmass.getScalar();
+	}
+	
+	
+	
 	int object_message_handler_ships(int msg, const SFG::Pointer<MsgPackage>& pkg);
 
 	int object_message_handler_galaxies(int msg, const SFG::Pointer<MsgPackage>& pkg);
@@ -36,6 +48,11 @@ public:
 private:
 	//The physics engine used
 	PE::PhysicsEngine m_physics_engine;
+	
+	PE::Mass m_totalmass;
+	
+	double m_x;
+	double m_y;
 
 	//Map that contains galaxies
 	std::map<SSG_Galaxy*, SFG::Pointer<SSG_Galaxy>> m_galaxies;
