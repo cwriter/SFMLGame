@@ -4,8 +4,8 @@
 class SSG_main
 {
 public:
-	SSG_main();
-	~SSG_main();
+    SSG_main();
+    ~SSG_main();
 
 
 private:

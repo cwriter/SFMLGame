@@ -1,0 +1,70 @@
+<xml>
+	<universe>
+		<comment>We only have 1 universe (everything else doesn't make too much sense as far as our science is concerned</comment>
+
+		<Galaxy name="Milkyway">
+			<comment>Let's start with 1 galaxy</comment>
+			<SolarSystem name="Sol">
+				<comment>"Our" solar system</comment>
+				<Planet name="Sol">
+					<comment>This actually is the sun</comment>
+					<type>SUN</type>
+					<mass>1.9884e30</mass>
+					<PosAndVel>0,0,0,0</PosAndVel>
+					<radius>695000000</radius>
+					<lightEmission></lightEmission>
+					<comment>Other emissions?</comment>
+				</Planet>
+				<Planet name="Mercury">
+					<comment>We need to save mass, and current position and velocity, the rest should be managed by the engine</comment>
+					<mass>3.301e23</mass>
+					<PosAndVel>5.7909e13,0,0,4.736e4</PosAndVel>
+					<radius>2489700</radius>
+				</Planet>
+				<Planet name="Venus">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Terra">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Mars">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Jupiter">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Saturn">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Uranus">                   
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Neptun">
+					<mass></mass>
+                    <PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+				<Planet name="Pluto">
+					<mass></mass>
+					<PosAndVel>x,y,vx,vy</PosAndVel>
+					<radius></radius>
+                </Planet>
+
+
+			</SolarSystem>
+		</Galaxy>
+	</universe>
+	
+</xml>

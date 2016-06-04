@@ -19,39 +19,39 @@
 #endif
 namespace SFG
 {
-	///<summary>
-	///Class that provides profiling options. Just for debugging.
-	///</summary>
-	class Profiler
-	{
-	public:
+///<summary>
+///Class that provides profiling options. Just for debugging.
+///</summary>
+class Profiler
+{
+public:
 
-		void profile_start()
-		{
-		#ifdef _WIN32
-			fopen_s(&f, "SFGProfile.txt", "ab");
-        #else
-            f = fopen("SFGProfile.txt", "ab");
-        #endif // _WIN32
-			assert(f != NULL);
-			m_clock.restart();
-		}
+    void profile_start()
+    {
+#ifdef _WIN32
+        fopen_s(&f, "SFGProfile.txt", "ab");
+#else
+        f = fopen("SFGProfile.txt", "ab");
+#endif // _WIN32
+        assert(f != NULL);
+        m_clock.restart();
+    }
 
-		void profile_mid(const char* dat)
-		{
-			fprintf(f,"[PROFILER] Inside %s: %" PRId64 " microseconds elapsed.\n", dat, m_clock.getElapsedTime().asMicroseconds());
-		}
+    void profile_mid(const char* dat)
+    {
+        fprintf(f,"[PROFILER] Inside %s: %" PRId64 " microseconds elapsed.\n", dat, m_clock.getElapsedTime().asMicroseconds());
+    }
 
-		void profile_end(const char* dat)
-		{
-			fprintf(f,"[PROFILER] Calling %s took %" PRId64 " microseconds.\n", dat, m_clock.getElapsedTime().asMicroseconds());
-			fclose(f);
-		}
+    void profile_end(const char* dat)
+    {
+        fprintf(f,"[PROFILER] Calling %s took %" PRId64 " microseconds.\n", dat, m_clock.getElapsedTime().asMicroseconds());
+        fclose(f);
+    }
 
 
-	private:
-		FILE* f;
-		sf::Clock m_clock;
-	};
+private:
+    FILE* f;
+    sf::Clock m_clock;
+};
 
 };

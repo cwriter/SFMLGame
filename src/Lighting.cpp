@@ -14,10 +14,10 @@ LightSource::~LightSource()
 
 int LightMapper::startMapping(float precision)
 {
-	//Lock thread
-	std::lock_guard<std::mutex> guard(m_mutex);
-	std::async(&LightMapper::Thread, this);
+    //Lock thread
+    std::lock_guard<std::mutex> guard(m_mutex);
+    std::async(&LightMapper::Thread, this);
 
 
-	return 0;
+    return 0;
 }

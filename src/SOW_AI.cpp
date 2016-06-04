@@ -5,7 +5,7 @@
 
 SOW_AI_Engine::SOW_AI_Engine()
 {
-	this->last_update_index = 0;
+    this->last_update_index = 0;
 }
 
 

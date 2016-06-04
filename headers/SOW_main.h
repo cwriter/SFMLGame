@@ -6,20 +6,20 @@
 class SOW_main
 {
 public:
-	SOW_main();
-	~SOW_main();
+    SOW_main();
+    ~SOW_main();
 
-	int load() {
-		sf::String str;
-		basicLoadFile("Gamestates/game.xml", str);
-		m_reader.setSource(str);
-		m_reader.parse(); //Parse. Consider moving it to a separate thread
-		
-		
+    int load() {
+        sf::String str;
+        basicLoadFile("Gamestates/game.xml", str);
+        m_reader.setSource(str);
+        m_reader.parse(); //Parse. Consider moving it to a separate thread
 
-		return 0;
-	}
+
+
+        return 0;
+    }
 private:
-	XMLReader m_reader;
+    XMLReader m_reader;
 };
 

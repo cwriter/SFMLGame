@@ -5,7 +5,7 @@
 
 SOW_Game::SOW_Game()
 {
-	this->name = "maingamestate";
+    this->name = "maingamestate";
 }
 
 

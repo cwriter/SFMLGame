@@ -8,45 +8,45 @@
 class ContextOption
 {
 public:
-	ContextOption()
-	{
+    ContextOption()
+    {
 
-	}
-	~ContextOption()
-	{
-	}
+    }
+    ~ContextOption()
+    {
+    }
 
-	///<summary>
-	///Trigger this option
-	///</summary>
-	int trigger()
-	{
+    ///<summary>
+    ///Trigger this option
+    ///</summary>
+    int trigger()
+    {
 
-		return 0;
-	}
+        return 0;
+    }
 
 private:
-	std::string m_name;
+    std::string m_name;
 };
 
 class ContextOptionList
 {
 public:
-	ContextOptionList()
-	{
+    ContextOptionList()
+    {
 
-	}
-	~ContextOptionList()
-	{
+    }
+    ~ContextOptionList()
+    {
 
-	}
+    }
 
-	void addOption(SFG::Pointer<ContextOption> opt)
-	{
-		this->m_option_list.push_back(opt);
-	}
+    void addOption(SFG::Pointer<ContextOption> opt)
+    {
+        this->m_option_list.push_back(opt);
+    }
 
 
 private:
-	std::vector<SFG::Pointer<ContextOption>> m_option_list;
+    std::vector<SFG::Pointer<ContextOption>> m_option_list;
 };

@@ -3,13 +3,13 @@
 
 namespace SFG
 {
-        template<typename T>
-        Rect<T>* Rect<T>::fromDiagonal(const SFG::Vector2<T>& diag)
-		{
+template<typename T>
+Rect<T>* Rect<T>::fromDiagonal(const SFG::Vector2<T>& diag)
+{
 
-			STILL_TO_DO(__FILE__, __LINE__);
+    STILL_TO_DO(__FILE__, __LINE__);
 
-			return this;
-		}
+    return this;
+}
 
 }
