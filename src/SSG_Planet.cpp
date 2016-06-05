@@ -22,8 +22,9 @@ SSG_Planet::~SSG_Planet()
 
 int SSG_Planet::load(const XMLReader& reader)
 {
-	SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "Still to do");
+	//SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "Still to do");
 	//Load values accordingly	
+	this->m_name = reader.getValue("name.");
 	bool real = false;
 	this->setMass(PE::Mass(reader.asDouble("mass/", real)));
 	if(!real)
@@ -39,6 +40,20 @@ int SSG_Planet::load(const XMLReader& reader)
 	}
 	this->setPosition(r.left, r.top);
 	this->setVelocity(PE::Velocity(r.width, r.height));
+	
+	this->getShape().setRadius(reader.asDouble("radius/", real));
+	if(!real)
+	{
+		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+							"Failed to get radius for planet %s", this->m_name.toAnsiString().c_str());
+	}
+	
+	SFG::FloatRect rect(this->getShape().getLocalBounds());
+	this->getShape().setOrigin(rect.center());
+	
+	//TESTING
+	this->getShape().setFillColor(sf::Color(255, 255, 255));
+	//!TESTING
 	return 0;
 }
 

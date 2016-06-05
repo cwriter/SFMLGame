@@ -266,7 +266,12 @@ public:
 
     inline Mass operator+(const Mass& m) const
     {
-        return Mass(m.getScalar());
+        return Mass(getScalar() + m.getScalar());
+    }
+    
+    inline Mass operator-(const Mass& m)
+    {
+		return Mass(getScalar() - m.getScalar());
     }
 
     inline Mass operator+=(const Mass& m)

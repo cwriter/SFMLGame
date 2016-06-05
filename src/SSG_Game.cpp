@@ -38,7 +38,6 @@ SSG_Game::SSG_Game()
     this->m_physicsEngine.addObject(SFG::Pointer<PE::PhysicObject>(planet));
     this->m_physicsEngine.addObject(SFG::Pointer<PE::PhysicObject>(sun));
     //======================================END OF TESTING====================================
-
 }
 
 SSG_Game::~SSG_Game()
@@ -49,14 +48,32 @@ SSG_Game::~SSG_Game()
 
 int SSG_Game::update(double dt)
 {
+	//TESTING
+	m_cam_counter++;
+	if(m_cam_counter % 20 == 0)
+			printf("%d\n", m_cam_counter);
+	m_cam.update(dt);
+	if(m_cam_counter >= 250)
+	{
+		m_cam_counter = 0;
+		printf("Switching target=(%f->", m_cam_index);
+		m_cam_index = ++m_cam_index % m_next_planets.size();
+		printf("%f)================================.\n", m_cam_index);
+		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
+		m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*400.f,
+					  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*400.f);
+	}
+	//!TESTING
 
     this->m_physicsEngine.applyMutualForces();
+	
+	this->m_universe.update(dt);
 
-    this->moon->update(float(dt));
+    /*this->moon->update(float(dt));
 
     this->planet->update(float(dt));
 
-    this->sun->update(float(dt));
+    this->sun->update(float(dt));*/
     //this->planet->update(float(dt));
     return 0;
 }
@@ -118,7 +135,8 @@ int SSG_Game::load(const sf::String& path)
     if(ret != 0)
     {
         SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
-                            "Loading the universe at path \"%s\" failed with code %d", universepath.toAnsiString().c_str(), ret);
+                            "Loading the universe at path \"%s\" failed with code %d",
+							universepath.toAnsiString().c_str(), ret);
     }
     else
 	{
@@ -127,6 +145,76 @@ int SSG_Game::load(const sf::String& path)
 							universepath.toAnsiString().c_str());
 	}
 
+	
+	//TESTING
+	//Find planet by name
+	const auto ptr = m_universe.findPlanet("Sol");
+	if(!ptr.isValid())
+	{
+		SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__,
+							"Failed to get planet position");
+	}
+	else
+		this->m_lock_on.reset(ptr.cast<PE::PhysicObject>());
+	
+	
+	m_cam_counter = 0;
+	m_cam_index = 0;
+	
+	
+	this->m_next_planets.push_back(m_universe.findPlanet("Sol"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Mercury"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Venus"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Terra"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Mars"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Jupiter"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Saturn"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Uranus"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Neptune"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Pluto"));
+	
+	size_t index = 0;
+	for(auto p : m_next_planets)
+	{
+		switch(index)
+		{
+			case 0:
+				p->getShape().setFillColor(sf::Color::White
+				);
+				break;
+			case 1:
+				p->getShape().setFillColor(sf::Color::Cyan);
+				break;
+			case 2:
+				p->getShape().setFillColor(sf::Color::Yellow);
+				break;
+			case 3:
+				p->getShape().setFillColor(sf::Color::Blue);
+				break;
+			case 4:
+				p->getShape().setFillColor(sf::Color::Green);
+				break;
+			case 5:
+				p->getShape().setFillColor(sf::Color::Magenta);
+				break;
+			case 6:
+				p->getShape().setFillColor(sf::Color::Blue);
+				break;
+			case 7:
+				p->getShape().setFillColor(sf::Color::Blue);
+				break;
+			case 8:
+				p->getShape().setFillColor(sf::Color::Blue);
+				break;
+			case 9:
+				p->getShape().setFillColor(sf::Color::Blue);
+				break;
+		}
+		printf("Planet \"%s\" is at %f|%f\n", p->getName().toAnsiString().c_str(), p->x(), p->y());
+		index++;
+	}
+	//!TESTING
+	
     return 0;
 }
 
@@ -134,7 +222,7 @@ void SSG_Game::draw(sf::RenderTarget* t)
 {
     assert(t != nullptr);
 
-    //Set the camera
+    /*//Set the camera
     this->m_cam.setCenter(moon->getSprite().getPosition().x, moon->getSprite().getPosition().y);
     t->setView(m_cam);
 
@@ -142,7 +230,17 @@ void SSG_Game::draw(sf::RenderTarget* t)
     this->sun->draw(*t);
     this->planet->draw(*t);
     this->moon->draw(*t);
-
+	*/
+	
+	//TESTING
+	//this->m_cam.setCenter((float)m_lock_on->x(), (float)m_lock_on->y());
+	printf("Dist is %f|%f\n", 
+		   m_lock_on->x() - m_cam.getView().getCenter().x,
+		   m_lock_on->y() - m_cam.getView().getCenter().y);
+	m_cam.animatedPanTo((float)m_lock_on->x(), (float)m_lock_on->y());
+	t->setView(m_cam);
+	//!TESTING
+	this->m_universe.draw(t);
 
 }
 

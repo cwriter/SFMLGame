@@ -22,6 +22,11 @@ public:
 	
     void draw(sf::RenderTarget& t) override;
 
+	inline const sf::String& getName() const
+	{
+		return this->m_name;
+	}
+	
     int update(float dt) override;
 
     double x() const override {

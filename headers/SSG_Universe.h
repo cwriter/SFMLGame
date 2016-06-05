@@ -16,7 +16,39 @@ public:
     int load(const XMLReader& reader);
 
 
+	
+	int update(float dt)
+	{
+		this->m_physics_engine.applyMutualForces();
+ 		this->finishPhysicsCycle(dt);
+		for(auto g : m_galaxies)
+		{
+			g.first->update(dt);
+		}
+		
+	}
 
+	void draw(sf::RenderTarget* t)
+	{
+		for(auto g : m_galaxies) 
+		{
+			g.first->draw(t);
+		}
+	}
+	
+	
+	SFG::Pointer<SSG_Planet> findPlanet(const sf::String& identifier) const
+	{
+		SFG::Pointer<SSG_Planet> ptr;
+		for(auto g : m_galaxies)
+		{
+			ptr.reset(g.first->find(identifier));
+			if(ptr.isValid())
+				return ptr;
+		}
+		return ptr;
+	}
+	
     ///<summary>
     ///Hands a ship to the physics engine of this universe
     ///</summary>
@@ -35,12 +67,12 @@ public:
 
     double x() const override
     {
-        return m_x / m_totalmass.getScalar();
+        return m_x / getMass().getScalar();
     }
 
     double y() const override
     {
-        return m_y / m_totalmass.getScalar();
+        return m_y / getMass().getScalar();
     }
 
 
@@ -56,7 +88,7 @@ private:
     //The physics engine used
     PE::PhysicsEngine m_physics_engine;
 
-    PE::Mass m_totalmass;
+    //PE::Mass m_totalmass;
 
     double m_x;
     double m_y;

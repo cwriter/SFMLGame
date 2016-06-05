@@ -14,28 +14,42 @@ public:
     SSG_SolarSystem();
     virtual ~SSG_SolarSystem();
 
-    int load(const XMLReader& reader)
-    {
+    int load(const XMLReader& reader);
 
-        reader.for_all("Planet", [=](const XMLGroup* g) {
-            SFG::Pointer<SSG_Planet> ptr(new SSG_Planet());
-            int ret = ptr->load(XMLReader(*g));
-            if(ret == 0)
-                this->m_planets[ptr.getElement()] = ptr;
-            else
-            {
-                SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to load planet.");
-            }
-        });
+
+    int update(float dt)
+    {
+        this->m_physicsEngine.applyMutualForces();
+        this->finishPhysicsCycle(dt);
+        for(auto p : m_planets)
+        {
+            p.first->update(dt);
+        }
         return 0;
     }
 
-
-    int update()
+    void draw(sf::RenderTarget* t)
     {
-
-        return 0;
+        for(auto p : m_planets)
+        {
+            p.first->draw(*t);
+        }
     }
+    
+    SFG::Pointer<SSG_Planet> find(const sf::String& identifier) const
+	{
+		SFG::Pointer<SSG_Planet> ptr(nullptr);
+		for(auto p : m_planets)
+		{
+			if(p.first->getName() == identifier)
+			{
+				ptr.reset(p.second);
+				return ptr;
+			}
+		}
+		
+		return ptr;
+	}
 
     inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
 
@@ -55,18 +69,18 @@ public:
     SFG::Vector2f getBalancePoint();
 
     double x() const override {
-        return m_x / m_totalmass.getScalar(); //Return the actual position
+        return m_x / getMass().getScalar(); //Return the actual position
     }
 
     double y() const override {
-        return m_y / m_totalmass.getScalar(); //Return the actual position
+        return m_y / getMass().getScalar(); //Return the actual position
     }
 private:
     //The balanced center (as specific weight, units m*kg)
     double m_x;
     double m_y;
 
-    PE::Mass m_totalmass;
+    //PE::Mass m_totalmass;
 
     PE::PhysicsEngine m_physicsEngine;	//The local physics engine
     std::map<SSG_Planet*, SFG::Pointer<SSG_Planet>> m_planets;

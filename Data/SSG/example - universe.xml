@@ -11,55 +11,55 @@
 					<type>SUN</type>
 					<mass>1.9884e30</mass>
 					<PosAndVel>0,0,0,0</PosAndVel>
-					<radius>695000000</radius>
+					<radius>6.95e8</radius>
 					<lightEmission></lightEmission>
 					<comment>Other emissions?</comment>
 				</Planet>
 				<Planet name="Mercury">
 					<comment>We need to save mass, and current position and velocity, the rest should be managed by the engine</comment>
 					<mass>3.301e23</mass>
-					<PosAndVel>5.7909e13,0,0,4.736e4</PosAndVel>
-					<radius>2489700</radius>
+					<PosAndVel>5.7909e10,0,0,4.736e4</PosAndVel>
+					<radius>2.4897e6</radius>
 				</Planet>
 				<Planet name="Venus">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>4.869e24</mass>
+                    <PosAndVel>1.0816e11,0,0,3.502e4</PosAndVel>
+					<radius>6.0518e6</radius>
                 </Planet>
 				<Planet name="Terra">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>5.974e24</mass>
+                    <PosAndVel>1.496e11,0,0,2.968e4</PosAndVel>
+					<radius>6.37816e6</radius>
                 </Planet>
 				<Planet name="Mars">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>6.419e23</mass>
+                    <PosAndVel>2.2799e11,0,0,2.413e4</PosAndVel>
+					<radius>3.3962e6</radius>
                 </Planet>
 				<Planet name="Jupiter">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>1.899e27</mass>
+                    <PosAndVel>7.7836e11,0,0,1.307e4</PosAndVel>
+					<radius>7.0e8</radius>
                 </Planet>
 				<Planet name="Saturn">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>5.685e26</mass>
+                    <PosAndVel>1.4335e12,0,0,9.69e3</PosAndVel>
+					<radius>6.0268e7</radius>
                 </Planet>
 				<Planet name="Uranus">                   
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>8.683e25</mass>
+                    <PosAndVel>2.8724e12,0,0,6.81e3</PosAndVel>
+					<radius>2.5559e7</radius>
                 </Planet>
-				<Planet name="Neptun">
-					<mass></mass>
-                    <PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+				<Planet name="Neptune">
+					<mass>1.0243e26</mass>
+                    <PosAndVel>4.495e12,0,0,5.43e3</PosAndVel>
+					<radius>2.4764e7</radius>
                 </Planet>
 				<Planet name="Pluto">
-					<mass></mass>
-					<PosAndVel>x,y,vx,vy</PosAndVel>
-					<radius></radius>
+					<mass>1.303e22</mass>
+					<PosAndVel>5.9064e12,0,0,4.67e3</PosAndVel>
+					<radius>1.187e6</radius>
                 </Planet>
 
 

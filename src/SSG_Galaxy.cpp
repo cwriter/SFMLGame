@@ -23,7 +23,7 @@ int SSG_Galaxy::load(const XMLReader& reader)
         int ret = ptr->load(XMLReader(*g));
 
         if(ret == 0)
-            this->m_systems[ptr.getElement()] = ptr;
+            this->addSolarSystem(ptr);
         else
             SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to load solar systems.");
 
@@ -36,7 +36,7 @@ int SSG_Galaxy::load(const XMLReader& reader)
 
 void SSG_Galaxy::addObjectToGalaxy(const SFG::Pointer<PE::PhysicObject>& ptr)
 {
-    m_totalmass += ptr->getMass();
+    this->setMass(getMass() + ptr->getMass());
     m_physicsEngine.addObject(ptr);
     //We now need to add the object's mass to totalmass and
     //add the specific weights to the balanced position
@@ -57,7 +57,7 @@ void SSG_Galaxy::removeObjectFromGalaxy(const SFG::Pointer<PE::PhysicObject>& pt
     m_x -= ptr->getMass().getScalar() * ptr->x();
     m_y -= ptr->getMass().getScalar() * ptr->y();
 
-    m_totalmass -= ptr->getMass();
+        this->setMass(getMass() - ptr->getMass());
 }
 
 void SSG_Galaxy::addShipToGalaxy(const SFG::Pointer<SSG_Ship>& ptr)

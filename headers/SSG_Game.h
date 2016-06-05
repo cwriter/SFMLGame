@@ -66,12 +66,19 @@ public:
     int init(SFG::Window& win) override
     {
         this->m_cam.setSize(float(win.getSFMLWindow().getSize().x), float(win.getSFMLWindow().getSize().y));
+		//TESTING
+		this->m_cam.setSize(1.0e10, 1.0e10);
+		//!TESTING
         return 0;
     }
 
 private:
     PE::PhysicsEngine m_physicsEngine;		//The physics engine used
     SFG::Camera m_cam;						//The standard game camera
+    SFG::Pointer<PE::PhysicObject> m_lock_on;	//Center of the Camera
+    std::vector<SFG::Pointer<SSG_Planet>> m_next_planets;	//TESTING
+    size_t m_cam_counter;
+	size_t m_cam_index;
 
     //The universe the game shall handle
     SSG_Universe m_universe;

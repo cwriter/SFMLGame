@@ -29,8 +29,22 @@ public:
     sf::View& getView() {
         return this->view;
     }
+    
+    void update(float dt);
+    
+    void animatedPanTo(float x, float y);
+    
 private:
     sf::View view;
+	
+	bool m_animated;
+	
+	float m_targetx;
+	float m_targety;
+	
+	float m_stepx;
+	float m_stepy;
+	
 };
 
 }

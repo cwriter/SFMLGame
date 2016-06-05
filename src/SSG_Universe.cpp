@@ -19,7 +19,7 @@ int SSG_Universe::load(const XMLReader& reader)
         SFG::Pointer<SSG_Galaxy> ptr(new SSG_Galaxy());
         int ret = ptr->load(XMLReader(*g));
         if(ret == 0)
-            m_galaxies[ptr.getElement()] = ptr;
+            this->addGalaxy(ptr);
         else
             SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to load galaxy. Code %d", ret);
     });
@@ -39,7 +39,7 @@ void SSG_Universe::addShip(SFG::Pointer<SSG_Ship>& ptr)
     m_x += ptr->getMass().getScalar() * ptr->x();
     m_y += ptr->getMass().getScalar() * ptr->y();
 
-    m_totalmass += ptr->getMass();
+    setMass(getMass() + ptr->getMass());
 
     //ptr.cast<GObjectBase>()->addListener(this,
     ptr->addListener(this,
@@ -56,7 +56,7 @@ void SSG_Universe::addGalaxy(SFG::Pointer<SSG_Galaxy>& ptr)
     m_x += ptr->getMass().getScalar() * ptr->x();
     m_y += ptr->getMass().getScalar() * ptr->y();
 
-    m_totalmass += ptr->getMass();
+    setMass(getMass() + ptr->getMass());
 
     //ptr.cast<GObjectBase>()->addListener(this,
     ptr->addListener(this,
@@ -76,7 +76,7 @@ int SSG_Universe::object_message_handler_ships(int msg, const SFG::Pointer<MsgPa
         this->m_x -= sender->getMass().getScalar() * sender->x();
         this->m_y -= sender->getMass().getScalar() * sender->y();
 
-        this->m_totalmass -= sender->getMass();
+        setMass(getMass() - sender->getMass());
     }
     else
     {
@@ -97,7 +97,7 @@ int SSG_Universe::object_message_handler_galaxies(int msg, const SFG::Pointer<Ms
         this->m_x -= sender->getMass().getScalar() * sender->x();
         this->m_y -= sender->getMass().getScalar() * sender->y();
 
-        this->m_totalmass -= sender->getMass();
+        setMass(getMass() - sender->getMass());
     }
     else
     {

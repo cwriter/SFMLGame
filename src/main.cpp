@@ -128,7 +128,8 @@ int main(int argc, char* argv[])
 							"Failed to load SSG with code %d", SSG_load_ret);
 	}
     game.addGamestate(SSG_gs);
-    game.window.create(1024, 720, "Game");
+    //game.window.create(1024, 720, "Game");
+	game.window.create(1920, 1080, "Game");
     game.window.setScale(1.f);
 
     game.window.getSFMLWindow().setFramerateLimit(60);
