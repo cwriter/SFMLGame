@@ -8,6 +8,64 @@
 #define SSG_PLANET_DEFAULT_MASS 4.f/3.f*PI*10e10
 
 ///<summary>
+///Class that contains elements
+///</summary>
+template <class T>
+class SSG_CelestialObjectContainer : public PE::PhysicObject
+{
+	static_assert(std::is_base_of<PE::PhysicObject, T>::value, "T must derive from PE::PhysicObject");
+
+public:
+	SSG_ObjectContainer<T>()
+	{
+		m_x = 0.;
+		m_y = 0.;
+	}
+	
+	inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
+	{
+		this->setMass(getMass() + ptr->getMass());
+		m_physicsEngine.addObject(ptr);
+		//We now need to add the object's mass to totalmass and
+		//add the specific weights to the balanced position
+		m_x += ptr->getMass().getScalar() * ptr->x();
+		m_y += ptr->getMass().getScalar() * ptr->y();
+	}
+	
+	inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
+	{
+		m_physicsEngine.removeObject(ptr);
+		//Remove from the mass center
+		m_x -= ptr->getMass().getScalar() * ptr->x();
+		m_y -= ptr->getMass().getScalar() * ptr->y();
+
+		this->setMass(getMass() - ptr->getMass());
+	}
+
+    inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr)
+	{
+		m_CelestialObjects[ptr.getElement()] = ptr;
+		addObjectToSystem(ptr);
+	}
+	
+	double x() const override {
+        return m_x / getMass().getScalar(); //Return the actual position
+    }
+
+    double y() const override {
+        return m_y / getMass().getScalar(); //Return the actual position
+    }
+	
+protected:
+	PE::PhysicsEngine m_physicsEngine;
+	std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
+	
+	double m_x;
+    double m_y;
+	
+};
+
+///<summary>
 ///Represents a planet in a solar system (But suns, too. We aren't that strict)
 ///</summary>
 class SSG_Planet :

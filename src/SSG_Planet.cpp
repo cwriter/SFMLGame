@@ -41,7 +41,9 @@ int SSG_Planet::load(const XMLReader& reader)
 	this->setPosition(r.left, r.top);
 	this->setVelocity(PE::Velocity(r.width, r.height));
 	
-	this->getShape().setRadius(reader.asDouble("radius/", real));
+	//this->getShape().setRadius(reader.asDouble("radius/", real));
+	//#TODO: REMOVE TO HAVE CORRECT SIZES!!!! #important!
+	this->getShape().setRadius(reader.asDouble("radius/", real) * 100.f);
 	if(!real)
 	{
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
@@ -50,6 +52,13 @@ int SSG_Planet::load(const XMLReader& reader)
 	
 	SFG::FloatRect rect(this->getShape().getLocalBounds());
 	this->getShape().setOrigin(rect.center());
+	
+	//Get Moons
+	reader.for_all("Moon", [=](const XMLGroup* g){
+		SFG::Pointer<SSG_Planet> ptr(new SSG_Planet());
+		
+		
+	});
 	
 	//TESTING
 	this->getShape().setFillColor(sf::Color(255, 255, 255));

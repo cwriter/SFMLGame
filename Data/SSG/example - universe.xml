@@ -30,6 +30,12 @@
 					<mass>5.974e24</mass>
                     <PosAndVel>1.496e11,0,0,2.968e4</PosAndVel>
 					<radius>6.37816e6</radius>
+					<Moon name="Luna">
+						<mass>7.349e22</mass>
+						<comment>PosAndVel begin relative to the planet here</comment>
+						<PosAndVel>0,3.84400e5,1.023e3,0</PosAndVel>
+						<radius>1.738000e6</radius>
+					</Moon>
                 </Planet>
 				<Planet name="Mars">
 					<mass>6.419e23</mass>
