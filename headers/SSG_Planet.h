@@ -7,62 +7,82 @@
 #define SSG_PLANET_DEFAULT_RADIUS 1000.f
 #define SSG_PLANET_DEFAULT_MASS 4.f/3.f*PI*10e10
 
+class SSG_SolarSystem;
 ///<summary>
 ///Class that contains elements
 ///</summary>
 template <class T>
 class SSG_CelestialObjectContainer : public PE::PhysicObject
 {
-	static_assert(std::is_base_of<PE::PhysicObject, T>::value, "T must derive from PE::PhysicObject");
+    static_assert(std::is_base_of<PE::PhysicObject, T>::value, "T must derive from PE::PhysicObject");
 
 public:
-	SSG_ObjectContainer<T>()
-	{
-		m_x = 0.;
-		m_y = 0.;
-	}
-	
-	inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-	{
-		this->setMass(getMass() + ptr->getMass());
-		m_physicsEngine.addObject(ptr);
-		//We now need to add the object's mass to totalmass and
-		//add the specific weights to the balanced position
-		m_x += ptr->getMass().getScalar() * ptr->x();
-		m_y += ptr->getMass().getScalar() * ptr->y();
-	}
-	
-	inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-	{
-		m_physicsEngine.removeObject(ptr);
-		//Remove from the mass center
-		m_x -= ptr->getMass().getScalar() * ptr->x();
-		m_y -= ptr->getMass().getScalar() * ptr->y();
+    SSG_CelestialObjectContainer()
+    {
+        m_x = 0.;
+        m_y = 0.;
+    }
 
-		this->setMass(getMass() - ptr->getMass());
-	}
-
-    inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr)
+    int update(float dt)
 	{
-		m_CelestialObjects[ptr.getElement()] = ptr;
-		addObjectToSystem(ptr);
+		this->m_physicsEngine.applyMutualForces();
+ 		this->finishPhysicsCycle(dt);
+		for(auto g : m_CelestialObjects)
+		{
+			g.first->update(dt);
+		}
+		
 	}
 	
-	double x() const override {
+	void draw(sf::RenderTarget* t)
+	{
+		for(auto g : m_CelestialObjects) 
+		{
+			g.first->draw(t);
+		}
+	}
+
+    inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
+    {
+        m_physicsEngine.removeObject(ptr);
+        //Remove from the mass center
+        m_x -= ptr->getMass().getScalar() * ptr->x();
+        m_y -= ptr->getMass().getScalar() * ptr->y();
+
+        this->setMass(getMass() - ptr->getMass());
+    }
+
+    inline void addSpecificToSystem(SFG::Pointer<T>& ptr)
+    {
+        m_CelestialObjects[ptr.getElement()] = ptr;
+        addObjectToSystem(ptr);
+    }
+
+    double x() const override {
         return m_x / getMass().getScalar(); //Return the actual position
     }
 
     double y() const override {
         return m_y / getMass().getScalar(); //Return the actual position
     }
-	
+
 protected:
-	PE::PhysicsEngine m_physicsEngine;
-	std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
-	
-	double m_x;
+    inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
+    {
+        this->setMass(getMass() + ptr->getMass());
+        m_physicsEngine.addObject(ptr);
+        //We now need to add the object's mass to totalmass and
+        //add the specific weights to the balanced position
+        m_x += ptr->getMass().getScalar() * ptr->x();
+        m_y += ptr->getMass().getScalar() * ptr->y();
+    }
+
+    PE::PhysicsEngine m_physicsEngine;
+    std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
+
+    double m_x;
     double m_y;
-	
+
 };
 
 ///<summary>
@@ -77,14 +97,14 @@ public:
 
 
     int load(const XMLReader& reader);
-	
+
     void draw(sf::RenderTarget& t) override;
 
-	inline const sf::String& getName() const
-	{
-		return this->m_name;
-	}
-	
+    inline const sf::String& getName() const
+    {
+        return this->m_name;
+    }
+
     int update(float dt) override;
 
     double x() const override {
@@ -132,8 +152,13 @@ public:
         this->m_circle.setRotation(angle);
         GObjectBase::setRotation(angle);
     }
+    
+    SSG_SolarSystem* m_parentSys;	//The parent system
+	
+	SFG::Pointer<SSG_Planet> m_parentPlanet;	//Only if available; The planet this moon is orbiting
 
 private:
     sf::CircleShape m_circle;
+	
 };
 

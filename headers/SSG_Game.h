@@ -83,9 +83,5 @@ private:
     //The universe the game shall handle
     SSG_Universe m_universe;
 
-    //Testing/Loading
-    SFG::Pointer<SSG_Planet> sun;
-    SFG::Pointer<SSG_Planet> planet;
-    SFG::Pointer<SSG_Planet> moon;
 };
 

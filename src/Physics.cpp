@@ -81,7 +81,7 @@ void PhysicsEngine::removeAllElements() {
     m_objects.clear();
 }
 
-void PhysicsEngine::applyMutualForces(Mass threshhold)
+void PhysicsEngine::applyMutualForces(const Mass& threshhold)
 {
     for (auto obj1 = m_objects.begin(); obj1 != m_objects.end(); ++obj1)
     {

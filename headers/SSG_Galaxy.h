@@ -7,7 +7,8 @@
 ///<summary>
 ///Class for a galaxy
 ///</summary>
-class SSG_Galaxy : public PE::PhysicObject
+class SSG_Galaxy : 
+	public SSG_CelestialObjectContainer<SSG_SolarSystem>
 {
 public:
     SSG_Galaxy();
@@ -19,7 +20,7 @@ public:
 	{
 		this->m_physicsEngine.applyMutualForces();
 		this->finishPhysicsCycle(dt);
-		for(auto ss : m_systems)
+		for(auto ss : m_CelestialObjects)
 		{
 			ss.first->update(dt);
 		}
@@ -28,7 +29,7 @@ public:
 	
 	void draw(sf::RenderTarget* t)
 	{
-			for(auto ss : m_systems)
+			for(auto ss : m_CelestialObjects)
 			{
 				ss.first->draw(t);
 			}
@@ -38,7 +39,7 @@ public:
 	{
 		SFG::Pointer<SSG_Planet> ptr;
 		
-		for(auto ss : m_systems)
+		for(auto ss : m_CelestialObjects)
 		{
 			ptr.reset(ss.first->find(identifier));
 			if(ptr.isValid())
@@ -47,12 +48,6 @@ public:
 		
 		return ptr;
 	}
-
-    inline void addObjectToGalaxy(const SFG::Pointer<PE::PhysicObject>& ptr);
-
-    inline void removeObjectFromGalaxy(const SFG::Pointer<PE::PhysicObject>& ptr);
-
-    inline void addSolarSystem(SFG::Pointer<SSG_SolarSystem> slrsys);
 
     inline void addShipToGalaxy(const SFG::Pointer<SSG_Ship>& ptr);
 
@@ -66,15 +61,8 @@ public:
     }
 
 private:
-    PE::PhysicsEngine m_physicsEngine;
-    //PE::Mass m_totalmass;
-
     sf::String m_galaxy_name;
 
-    double m_x;
-    double m_y;
-    //The Solar Systems in the Galaxy
-    std::map<SSG_SolarSystem*, SFG::Pointer<SSG_SolarSystem>> m_systems;
     //The ships that aren't inside a Solar system, but still inside a galaxy
     std::map<SSG_Ship*, SFG::Pointer<SSG_Ship>> m_ships;
 };

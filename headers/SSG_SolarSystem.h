@@ -4,11 +4,13 @@
 #include "SSG_Ship.h"
 #include "XML.h"
 
+class SSG_Planet;
 ///<summary>
 ///Abstracts a solar system containing a random amount of suns, planets, asteroids
 ///and ships.
 ///</summary>
-class SSG_SolarSystem : public PE::PhysicObject
+class SSG_SolarSystem : 
+	public SSG_CelestialObjectContainer<SSG_Planet>
 {
 public:
     SSG_SolarSystem();
@@ -21,7 +23,7 @@ public:
     {
         this->m_physicsEngine.applyMutualForces();
         this->finishPhysicsCycle(dt);
-        for(auto p : m_planets)
+        for(auto p : m_CelestialObjects)
         {
             p.first->update(dt);
         }
@@ -30,7 +32,7 @@ public:
 
     void draw(sf::RenderTarget* t)
     {
-        for(auto p : m_planets)
+        for(auto p : m_CelestialObjects)
         {
             p.first->draw(*t);
         }
@@ -39,7 +41,7 @@ public:
     SFG::Pointer<SSG_Planet> find(const sf::String& identifier) const
 	{
 		SFG::Pointer<SSG_Planet> ptr(nullptr);
-		for(auto p : m_planets)
+		for(auto p : m_CelestialObjects)
 		{
 			if(p.first->getName() == identifier)
 			{
@@ -51,11 +53,6 @@ public:
 		return ptr;
 	}
 
-    inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
-
-    inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
-
-    inline void addPlanetToSystem(SFG::Pointer<SSG_Planet>& ptr);
 
     inline void addShipToSystem(SFG::Pointer<SSG_Ship>& ptr)
     {
@@ -68,22 +65,8 @@ public:
     ///</summary>
     SFG::Vector2f getBalancePoint();
 
-    double x() const override {
-        return m_x / getMass().getScalar(); //Return the actual position
-    }
-
-    double y() const override {
-        return m_y / getMass().getScalar(); //Return the actual position
-    }
 private:
-    //The balanced center (as specific weight, units m*kg)
-    double m_x;
-    double m_y;
 
-    //PE::Mass m_totalmass;
-
-    PE::PhysicsEngine m_physicsEngine;	//The local physics engine
-    std::map<SSG_Planet*, SFG::Pointer<SSG_Planet>> m_planets;
     std::map<SSG_Ship*, SFG::Pointer<SSG_Ship>> m_ships;
 
 };

@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "SSG_Planet.h"
+#include <SSG_SolarSystem.h>
 
 
 
@@ -41,9 +42,9 @@ int SSG_Planet::load(const XMLReader& reader)
 	this->setPosition(r.left, r.top);
 	this->setVelocity(PE::Velocity(r.width, r.height));
 	
-	//this->getShape().setRadius(reader.asDouble("radius/", real));
+	this->getShape().setRadius(reader.asDouble("radius/", real));
 	//#TODO: REMOVE TO HAVE CORRECT SIZES!!!! #important!
-	this->getShape().setRadius(reader.asDouble("radius/", real) * 100.f);
+	//this->getShape().setRadius(reader.asDouble("radius/", real) * 10.f);
 	if(!real)
 	{
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
@@ -56,7 +57,26 @@ int SSG_Planet::load(const XMLReader& reader)
 	//Get Moons
 	reader.for_all("Moon", [=](const XMLGroup* g){
 		SFG::Pointer<SSG_Planet> ptr(new SSG_Planet());
+		ptr->m_parentSys = this->m_parentSys;
+		int ret = ptr->load(XMLReader(*g));
+		if(ret != 0)
+		{
+			SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+								"Failed to load moon");
+			return;
+		}
+		printf("Position: %f + %f | %f + %f\n", getShape().getPosition().x , ptr->getShape().getPosition().x,
+			    getShape().getPosition().y, ptr->getShape().getPosition().y);
+		//Correct relative values
+		ptr->setPosition(getShape().getPosition().x + ptr->getShape().getPosition().x, 
+						 getShape().getPosition().y + ptr->getShape().getPosition().y);
+		ptr->setVelocity(getVelocity() + ptr->getVelocity());
 		
+		
+		//Add to system
+		this->m_parentSys->addSpecificToSystem(ptr);
+		
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,	"Moon \"%s\" has been added", ptr->getName().toAnsiString().c_str());
 		
 	});
 	
@@ -78,6 +98,8 @@ int SSG_Planet::update(float dt)
     this->finishPhysicsCycle(dt);
     assert(!isnan(x()));
     assert(!isnan(y()));
+	
+	printf("Velocity is %f|%f\n", this->getVelocity().getVector().x, this->getVelocity().getVector().y);
 
     float test1 = float(this->x() + this->getVelocity().getVector().x * time);
     float test2 = float(this->y() + this->getVelocity().getVector().y * time);

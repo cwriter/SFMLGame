@@ -561,7 +561,7 @@ public:
     ///does not exceed the threshhold to compensate for forces too small to have reasonable impact.
     ///Default is 1.0*10^9kg or 1000 tons.
     ///</param>
-    void applyMutualForces(Mass threshhold = Mass(1.0e9));
+    void applyMutualForces(const Mass& threshhold = Mass(1.0e9));
 
     ///<summary>
     ///Add an object to the engine.
