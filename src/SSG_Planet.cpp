@@ -9,6 +9,8 @@ SSG_Planet::SSG_Planet()
     //We are a planet, so we should probably be all round and stuff
     this->m_circle.setFillColor(sf::Color(128, 64, 0));
     this->m_circle.setPosition(0.f, 0.f);
+	m_x = 0.;
+	m_y = 0.;
 
     //Set the default radius
     this->m_circle.setRadius(SSG_PLANET_DEFAULT_RADIUS);
@@ -44,7 +46,7 @@ int SSG_Planet::load(const XMLReader& reader)
 	
 	this->getShape().setRadius(reader.asDouble("radius/", real));
 	//#TODO: REMOVE TO HAVE CORRECT SIZES!!!! #important!
-	//this->getShape().setRadius(reader.asDouble("radius/", real) * 10.f);
+	//this->getShape().setRadius(reader.asDouble("radius/", real) * 50.f);
 	if(!real)
 	{
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
@@ -68,8 +70,10 @@ int SSG_Planet::load(const XMLReader& reader)
 		printf("Position: %f + %f | %f + %f\n", getShape().getPosition().x , ptr->getShape().getPosition().x,
 			    getShape().getPosition().y, ptr->getShape().getPosition().y);
 		//Correct relative values
-		ptr->setPosition(getShape().getPosition().x + ptr->getShape().getPosition().x, 
-						 getShape().getPosition().y + ptr->getShape().getPosition().y);
+		//ptr->setPosition(getShape().getPosition().x + ptr->getShape().getPosition().x, 
+		//				 getShape().getPosition().y + ptr->getShape().getPosition().y);
+		ptr->setPosition(x() + ptr->x(), 
+						 y() + ptr->y());
 		ptr->setVelocity(getVelocity() + ptr->getVelocity());
 		
 		
@@ -96,20 +100,23 @@ int SSG_Planet::update(float dt)
 {
     double time = dt / 1000.f;
     this->finishPhysicsCycle(dt);
-    assert(!isnan(x()));
-    assert(!isnan(y()));
+    assert(!isnan(x().get_d()));
+    assert(!isnan(y().get_d()));
 	
-	printf("Velocity is %f|%f\n", this->getVelocity().getVector().x, this->getVelocity().getVector().y);
+	printf("Velocity is %f|%f\n", this->getVelocity().getVector().x.get_d(), this->getVelocity().getVector().y.get_d());
 
-    float test1 = float(this->x() + this->getVelocity().getVector().x * time);
-    float test2 = float(this->y() + this->getVelocity().getVector().y * time);
+	mpf_class ex1 = this->x().get_d() + this->getVelocity().getVector().x.get_d() * time;
+	mpf_class ex2 = this->y().get_d() + this->getVelocity().getVector().y.get_d() * time;
+	
+    float test1 = float(ex1.get_d());
+    float test2 = float(ex2.get_d());
 
     //We can lose precision, so if the precision is too small, just ignore everything
     if (!(isnan(test1) || std::isinf(test1)) && !(isnan(test2) || std::isinf(test2)))
     {
-        this->setPosition(test1, test2);
-        assert(!isnan(x()));
-        assert(!isnan(y()));
+        this->setPosition(ex1, ex2);
+        assert(!isnan(x().get_d()));
+        assert(!isnan(y().get_d()));
     }
     //std::cout << "Vel (" << this->getVelocity().getVector().x << "|" << this->getVelocity().getVector().y << ")" << std::endl;
     //std::cout << "Loc (" << this->x() << "|" << this->y() << ")" << std::endl;

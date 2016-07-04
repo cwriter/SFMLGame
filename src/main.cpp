@@ -6,6 +6,7 @@
 #include "ExtensionInterface.h"
 #include "DebugWindow.h"
 #include "SSG_Game.h"
+#include <gmpxx.h>
 
 
 #ifndef _WIN32
@@ -110,6 +111,8 @@ int main(int argc, char* argv[])
 #ifndef _WIN32
     XInitThreads();
 #endif // _WIN32
+	//Set the precision we need (we'll stick with 128 bits for the moment)
+	mpf_set_default_prec(128);
     testingStuff(argc, argv);
 
     Game game;

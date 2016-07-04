@@ -17,7 +17,7 @@ SET(CCFLAGS "-g -rdynamic -std=c++11 -march=native")
 
 add_executable(Game ${Game_sources})
 
-target_link_libraries(Game sfml-system sfml-window sfml-graphics sfml-audio sfml-network pthread dl X11)
+target_link_libraries(Game sfml-system sfml-window sfml-graphics sfml-audio sfml-network pthread dl X11 gmpxx gmp)
 
 
 add_definitions(${CCFLAGS})

@@ -116,7 +116,9 @@ void Util::getStackTrace(std::string& stream)
 
         //We have to create the subsequence first
         std::string tmp(symbols[i]);
-        std::string symbol(tmp.begin() + tmp.find_first_of('(') + 1, tmp.begin() + tmp.find_first_of('+'));
+		size_t tmp_i = tmp.find_first_of('+');
+		size_t end_index = tmp_i != std::string::npos ? tmp_i : tmp.length() - 1;
+        std::string symbol(tmp.begin() + tmp.find_first_of('(') + 1, tmp.begin() + end_index);
 
         char* name = abi::__cxa_demangle(symbol.c_str(), nullptr, nullptr, &status);
         if(status != 0)

@@ -16,12 +16,12 @@ public:
         return 0;
     }
 
-    double x() const override
+    virtual mpf_class x() const override
     {
         return double(GObjectBase::getSprite().getPosition().x);
     }
 
-    double y() const override
+    virtual mpf_class y() const override
     {
         return double(GObjectBase::getSprite().getPosition().y);
     }

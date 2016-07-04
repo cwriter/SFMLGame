@@ -7,6 +7,7 @@
 #include "Message.h"
 #include "Pointer.h"
 #include "Object.h"
+#include <gmpxx.h>
 
 
 #ifndef GRAVITY_CONSTANT
@@ -150,7 +151,9 @@ public:
     }
     T absLength() const
     {
-        return sqrt(pow(x, T(2)) + pow(y, T(2)));
+        //return sqrt(pow(x, T(2)) + pow(y, T(2)));
+		return sqrt(pow(x.get_d(), 2.0) + pow(y.get_d(), 2.0));
+	
     }
 
     Vector<dim + 1, T> addRow(T val = T(0)) {
@@ -198,6 +201,16 @@ public:
         }
         return ret;
     }
+    Vector<dim, T> operator*(const mpf_class s) const
+    {
+        Vector<dim, T> ret;
+        for (size_t i = 0; i < dim; i++)
+        {
+            ret.m_vec[i] = this->m_vec[i] * s;
+        }
+        return ret;
+    }
+    
     Vector<dim, T> operator/(const double s) const
     {
         Vector<dim, T> ret;
@@ -248,19 +261,24 @@ public:
 
 };
 
-typedef Vector<2, double> Vector2df;
+//typedef Vector<2, double> Vector2df;
+typedef Vector<2, mpf_class> Vector2df;
 
 class Mass
 {
 public:
+	Mass(mpf_class s) {
+        this->m_scalar = s;
+    }
+    
     Mass(double s) {
         this->m_scalar = s;
     }
     Mass() {
-        m_scalar = 0;
+        m_scalar = 0.;
     }
 
-    inline double getScalar() const {
+    inline mpf_class getScalar() const {
         return this->m_scalar;
     }
 
@@ -285,7 +303,7 @@ public:
         return *this;
     }
 private:
-    double m_scalar;
+    mpf_class m_scalar;
 };
 
 class Time
@@ -348,7 +366,8 @@ public:
     }
 
     double abs() const {
-        return m_vec.absLength();
+        //return m_vec.absLength();
+		return m_vec.absLength().get_d();
     }
 
     inline Vector2df getVector() const {
@@ -458,7 +477,7 @@ public:
     }
 
     Mass getRelativeMass() const {
-        return Mass(m_mass.getScalar() / sqrt(1 - (std::pow(getVelocity().abs(), 2.0) / std::pow(LIGHTSPEED_CONSTANT, 2.0))));
+        return Mass(m_mass.getScalar().get_d() / sqrt(1 - (std::pow(getVelocity().abs(), 2.0) / std::pow(LIGHTSPEED_CONSTANT, 2.0))));
     }
 
     void setMass(const Mass& m) {
@@ -494,8 +513,8 @@ public:
         m_force = m_force + f;
     }
 
-    virtual double x() const = 0;
-    virtual double y() const = 0;
+    virtual mpf_class x() const = 0;
+    virtual mpf_class y() const = 0;
 
     ///<summary>
     ///Applies forces to the relative mass a = F/(y*m)

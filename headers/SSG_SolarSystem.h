@@ -63,7 +63,7 @@ public:
     ///<summary>
     ///Gets the center of all masses combined in the system
     ///</summary>
-    SFG::Vector2f getBalancePoint();
+    SFG::Vector2<mpf_class> getBalancePoint();
 
 private:
 

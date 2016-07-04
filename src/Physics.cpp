@@ -101,7 +101,7 @@ void PhysicsEngine::applyMutualForces(const Mass& threshhold)
                 }
                 //Calculate force
                 PE::Vector2df dist( { obj2->first->x() - obj1->first->x(), obj2->first->y() - obj1->first->y() });
-                Force f = dist*(GRAVITY_CONSTANT * obj1->first->getMass().getScalar() * obj2->first->getMass().getScalar()) / pow(dist.absLength(), 3.0);
+                Force f = dist*(GRAVITY_CONSTANT * obj1->first->getMass().getScalar() * obj2->first->getMass().getScalar()) / pow(dist.absLength().get_d(), 3.0);
                 //Add the force
                 obj1->first->addForceToCycle(f);
 

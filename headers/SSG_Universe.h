@@ -36,12 +36,12 @@ public:
     void addShip(SFG::Pointer<SSG_Ship>& ptr);
 
 
-    double x() const override
+    mpf_class x() const override
     {
         return m_x / getMass().getScalar();
     }
 
-    double y() const override
+    mpf_class y() const override
     {
         return m_y / getMass().getScalar();
     }

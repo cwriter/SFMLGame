@@ -28,7 +28,7 @@ public:
         //Add third dimension for the wheel (will just be 0)
         auto more_dims = m_rear_wheel_orientation.addRow(0.0);
         //Get the force vector from the cross product from wheel direction and the point where the wheel hits the ground, then remove the third dimension
-        auto less_dims = more_dims.crossProduct(PE::Vector<3, double>( { 0.,0.,-m_wheel_radius })).removeRow();
+        auto less_dims = more_dims.crossProduct(PE::Vector<3, mpf_class>( { 0.,0.,-m_wheel_radius })).removeRow();
         //Return the calulated force
         return PE::Force(less_dims *
                          getMotorTorque() *

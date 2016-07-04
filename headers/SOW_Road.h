@@ -15,9 +15,10 @@ public:
         this->m_r_vector = vec;
         //REQUIRES REPEATED TEXTURES
         assert(this->getSprite().getTexture()->isRepeated());
-        this->setScale(float(m_r_vector.absLength()), 1.f); //Stretch the texture
+        this->setScale(float(m_r_vector.absLength().get_d()), 1.f); //Stretch the texture
         //Now rotate the sprite accordingly
-        float desired_rotation = (float)atan(m_r_vector.y / m_r_vector.x);
+		mpf_class d = m_r_vector.y / m_r_vector.x;
+        float desired_rotation = (float)atan(d.get_d());
         if (m_r_vector.x < 0.) {
             desired_rotation += float(PI);
         }

@@ -58,11 +58,11 @@ public:
         addObjectToSystem(ptr);
     }
 
-    double x() const override {
+    mpf_class x() const override {
         return m_x / getMass().getScalar(); //Return the actual position
     }
 
-    double y() const override {
+    mpf_class y() const override {
         return m_y / getMass().getScalar(); //Return the actual position
     }
 
@@ -80,8 +80,8 @@ protected:
     PE::PhysicsEngine m_physicsEngine;
     std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
 
-    double m_x;
-    double m_y;
+    mpf_class m_x;
+    mpf_class m_y;
 
 };
 
@@ -107,12 +107,14 @@ public:
 
     int update(float dt) override;
 
-    double x() const override {
-        return double(SFG::FloatRect(m_circle.getGlobalBounds()).center().x);
+    virtual mpf_class x() const override {
+        //return double(SFG::FloatRect(m_circle.getGlobalBounds()).center().x);
+		return m_x;
     }
 
-    double y() const override {
-        return double(SFG::FloatRect(m_circle.getGlobalBounds()).center().y);
+    virtual mpf_class y() const override {
+        //return double(SFG::FloatRect(m_circle.getGlobalBounds()).center().y);
+		return m_y;
     }
 
     int notify(int msg) override
@@ -128,7 +130,22 @@ public:
 
 
     //===BELOW ARE SOME OVERRIDDEN FUNCTIONS TO MAKE THE SHAPE WORK THE SAME WAY AS THE SPRITE. DO NOT TOUCH!
+    void setPosition(mpf_class x, mpf_class y) {
+		m_x = x; 
+		m_y = y;
+        this->m_circle.setPosition(x.get_d(), y.get_d());
+        GObjectBase::setPosition(x.get_d(), y.get_d());
+    }
+    
     void setPosition(float x, float y) override {
+		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__, 
+				   "Function %s with low precision was called. Please call the function with\n"
+				   "the higher precision instead", __FUNCTION__);
+		std::string str;
+		SFG::Util::getStackTrace(str);
+		printf(str.c_str());
+		m_x = x; 
+		m_y = y;
         this->m_circle.setPosition(x, y);
         GObjectBase::setPosition(x, y);
     }
@@ -159,6 +176,8 @@ public:
 
 private:
     sf::CircleShape m_circle;
+	mpf_class m_x;
+	mpf_class m_y;
 	
 };
 

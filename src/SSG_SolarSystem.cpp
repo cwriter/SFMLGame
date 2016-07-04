@@ -34,12 +34,12 @@ int SSG_SolarSystem::load(const XMLReader& reader)
     return 0;
 }
 
-SFG::Vector2f SSG_SolarSystem::getBalancePoint()
+SFG::Vector2<mpf_class> SSG_SolarSystem::getBalancePoint()
 {
     SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "This function should not be called in Release Mode!");
-    SFG::Vector2f center(0.f, 0.f);
+    SFG::Vector2<mpf_class> center(0.f, 0.f);
 
-    double mass_sum = this->getMass().getScalar();
+    mpf_class mass_sum = this->getMass().getScalar();
 
     //Sum up all specific weights
     for(auto p : m_CelestialObjects)

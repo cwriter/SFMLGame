@@ -51,11 +51,11 @@ public:
 
     inline void addShipToGalaxy(const SFG::Pointer<SSG_Ship>& ptr);
 
-    virtual double x() const override
+    virtual mpf_class x() const override
     {
         return m_x / getMass().getScalar();
     }
-    virtual double y() const override
+    virtual mpf_class y() const override
     {
         return m_y / getMass().getScalar();
     }
