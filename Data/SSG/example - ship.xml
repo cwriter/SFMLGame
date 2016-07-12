@@ -1,0 +1,68 @@
+<xml>
+	<ship>
+		<comment>This shall be the list of objects including their links</comment>
+		<comment>
+			We try to model a ship like
+			__________________
+			|				  \
+			|				   \
+			|					\
+			|					 \
+			|_____________________\
+			
+			as an example.
+		</comment>
+		<frame>
+			<comment>The frame scope declares that a background (i.e. the side of the ship) has to be rendered</comment>
+			<part type="hull" param="straight" material="steel" thickness="0.1" length="10." rotation="-90." name="rearplate">
+				<comment> Any damages come in the "damage" tags here</comment>
+				<comment>Coloring shall be stated here as well, in "color"-tags</comment>
+			</part>
+			<part type="hull" param="straight" material="steel" thickness="0.1" length="20." rotation="0." name="topplate">
+				
+			</part>
+			<part type="hull" param="straight" material="steel" thickness="0.1" length="10." rotation="0." name="bottomplate">
+				
+			</part>
+			<part type="hull" param="straight" material="steel" thickness="0.1" length="15." rotation="-45." name="frontplate">
+				
+			</part>
+			
+			<omment>
+				Now the joints...
+			</comment>
+			<join>
+				<from>rearplate</from>
+				<from-pos>0.</from-pos>
+				<to>topplate</to>
+				<to-pos>0.</to-pos>
+				<type>rigid</type>
+				
+			<join>
+			<join>
+				<from>topplate</from>
+				<from-pos>1.</from-pos>
+				<to>frontplate</to>
+				<to-pos>0.</to-pos>
+				<type>rigid</type>
+				
+			<join>
+			<join>
+				<from>frontplate</from>
+				<from-pos>1.</from-pos>
+				<to>bottomplate</to>
+				<to-pos>1.</to-pos>
+				<type>rigid</type>
+				
+			<join>	
+			<join>
+				<from>bottomplate</from>
+				<from-pos>0.</from-pos>
+				<to>rearplate</to>
+				<to-pos>1.</to-pos>
+				<type>rigid</type>
+				
+			<join>
+		</frame>
+	</ship>
+</xml>

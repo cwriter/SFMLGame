@@ -220,6 +220,16 @@ public:
         }
         return ret;
     }
+    
+    Vector<dim, T> operator/(const mpf_class s) const
+    {
+        Vector<dim, T> ret;
+        for (size_t i = 0; i < dim; i++)
+        {
+            ret.m_vec[i] = this->m_vec[i] / s;
+        }
+        return ret;
+    }
 
     Vector<dim, T> operator=(const Vector<dim, T>& v)
     {
@@ -359,6 +369,12 @@ public:
         this->m_vec.x = x;
         this->m_vec.y = y;
     }
+    
+    Velocity(const PE::Vector2df& v)
+    {
+        this->m_vec = v;
+    }
+    
     Velocity(const Acceleration& a, const Time& dt)
     {
         this->m_vec.x = a.getVector().x*dt.getValue();
@@ -513,8 +529,16 @@ public:
         m_force = m_force + f;
     }
 
-    virtual mpf_class x() const = 0;
-    virtual mpf_class y() const = 0;
+    virtual mpf_class x() const {
+		printf("This is an invalid call!\n");
+		getchar();
+		return mpf_class(0);
+	}
+    virtual mpf_class y() const {
+		printf("This is an invalid call!\n");
+		getchar();
+		return mpf_class(0);
+	}
 
     ///<summary>
     ///Applies forces to the relative mass a = F/(y*m)

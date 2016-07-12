@@ -113,49 +113,52 @@ int main(int argc, char* argv[])
 #endif // _WIN32
 	//Set the precision we need (we'll stick with 128 bits for the moment)
 	mpf_set_default_prec(128);
-    testingStuff(argc, argv);
-
-    Game game;
-
-    game.parseArgs(argc, argv);
-
-    int ret = game.load();
-    //Add the SSG gamestate
-    SFG::Pointer<GameState> SSG_gs(new SSG_Game);
-	//Load the game (give a folder path)
-	int SSG_load_ret = SSG_gs->load("Data/SSG/");
-	if(SSG_load_ret != 0)
 	{
-		//Loading failed
-		SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, 
-							"Failed to load SSG with code %d", SSG_load_ret);
+		//Scope of the actual game
+		testingStuff(argc, argv);
+
+		Game game;
+
+		game.parseArgs(argc, argv);
+
+		int ret = game.load();
+		//Add the SSG gamestate
+		SFG::Pointer<GameState> SSG_gs(new SSG_Game);
+		//Load the game (give a folder path)
+		int SSG_load_ret = SSG_gs->load("Data/SSG/");
+		if(SSG_load_ret != 0)
+		{
+			//Loading failed
+			SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, 
+								"Failed to load SSG with code %d", SSG_load_ret);
+		}
+		game.addGamestate(SSG_gs);
+		//game.window.create(1024, 720, "Game");
+		game.window.create(1920, 1080, "Game");
+		game.window.setScale(1.f);
+
+		game.window.getSFMLWindow().setFramerateLimit(60);
+
+
+		//Create debug window and overwatch the game
+	#ifdef _DEBUG
+		SFG::DebugWindow dbgwnd;
+		dbgwnd.create(&game);
+	#endif
+
+
+		//Set the timer to 0 again
+		printf("Loading the engine core took %f seconds.\n", game.elapsedTime.restart().asMilliseconds() / 1000.f);
+
+		//Loop while the game doesn't require any breakage
+		while (game.gameLoop() == 0);
+
+	#ifdef _DEBUG
+		//dbgwnd.close();
+		system("PAUSE");
+	#endif
 	}
-    game.addGamestate(SSG_gs);
-    //game.window.create(1024, 720, "Game");
-	game.window.create(1920, 1080, "Game");
-    game.window.setScale(1.f);
 
-    game.window.getSFMLWindow().setFramerateLimit(60);
-
-
-    //Create debug window and overwatch the game
-#ifdef _DEBUG
-    SFG::DebugWindow dbgwnd;
-    dbgwnd.create(&game);
-#endif
-
-
-    //Set the timer to 0 again
-    printf("Loading the engine core took %f seconds.\n", game.elapsedTime.restart().asMilliseconds() / 1000.f);
-
-    //Loop while the game doesn't require any breakage
-    while (game.gameLoop() == 0);
-
-#ifdef _DEBUG
-    //dbgwnd.close();
-    system("PAUSE");
-#endif
-
-
+	printf("Exit succeeded. Have nice day :)");
     return 0;
 }

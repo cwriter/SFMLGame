@@ -46,7 +46,7 @@ int SSG_Planet::load(const XMLReader& reader)
 	
 	this->getShape().setRadius(reader.asDouble("radius/", real));
 	//#TODO: REMOVE TO HAVE CORRECT SIZES!!!! #important!
-	//this->getShape().setRadius(reader.asDouble("radius/", real) * 50.f);
+	//this->getShape().setRadius(2.5559e9 + reader.asDouble("radius/", real));
 	if(!real)
 	{
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,

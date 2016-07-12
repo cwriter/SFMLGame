@@ -25,9 +25,9 @@ int SSG_Game::update(double dt)
 	if(m_cam_counter >= 250)
 	{
 		m_cam_counter = 0;
-		printf("Switching target=(%f->", m_cam_index);
+		printf("Switching target=(%d->", m_cam_index);
 		m_cam_index = ++m_cam_index % m_next_planets.size();
-		printf("%f)================================.\n", m_cam_index);
+		printf("%d)================================.\n", m_cam_index);
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
 		m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*250.f,
 					  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*250.f);
@@ -37,8 +37,8 @@ int SSG_Game::update(double dt)
     this->m_physicsEngine.applyMutualForces();
 	
 	//#TODO: REMOVE THE LINE BELOW THE COMMENT AND UN-COMMENT THE COMMENT FOR REAL VALUES
-	//this->m_universe.update(dt);
-	this->m_universe.update(dt*100000.f);
+	this->m_universe.update(dt);
+	//this->m_universe.update(dt*100000.f);
 
     /*this->moon->update(float(dt));
 
@@ -133,17 +133,17 @@ int SSG_Game::load(const sf::String& path)
 	m_cam_index = 4;
 	
 	
-	this->m_next_planets.push_back(m_universe.findPlanet("Sol"));
+	/*this->m_next_planets.push_back(m_universe.findPlanet("Sol"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Mercury"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Venus"));
-	this->m_next_planets.push_back(m_universe.findPlanet("Terra"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Terra"));*/
 	this->m_next_planets.push_back(m_universe.findPlanet("Luna"));
-	this->m_next_planets.push_back(m_universe.findPlanet("Mars"));
+	/*this->m_next_planets.push_back(m_universe.findPlanet("Mars"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Jupiter"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Saturn"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Uranus"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Neptune"));
-	this->m_next_planets.push_back(m_universe.findPlanet("Pluto"));
+	this->m_next_planets.push_back(m_universe.findPlanet("Pluto"));*/
 	
 	size_t index = 0;
 	for(auto p : m_next_planets)
@@ -204,12 +204,12 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	*/
 	
 	//TESTING
-	this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
+	//this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	/*printf("Dist is %f|%f\n", 
 		   m_lock_on->x() - m_cam.getView().getCenter().x,
 		   m_lock_on->y() - m_cam.getView().getCenter().y);*/
 	printf("Cam locking at %f|%f\n", m_lock_on->x().get_d(), m_lock_on->y().get_d());
-	//m_cam.animatedPanTo((float)m_lock_on->x(), (float)m_lock_on->y());
+	m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	t->setView(m_cam);
 	//!TESTING
 	this->m_universe.draw(t);
