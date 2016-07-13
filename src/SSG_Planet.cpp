@@ -100,8 +100,8 @@ int SSG_Planet::update(float dt)
 {
     double time = dt / 1000.f;
     this->finishPhysicsCycle(dt);
-    assert(!isnan(x().get_d()));
-    assert(!isnan(y().get_d()));
+    assert(!std::isnan(x().get_d()));
+    assert(!std::isnan(y().get_d()));
 	
 	printf("Velocity is %f|%f\n", this->getVelocity().getVector().x.get_d(), this->getVelocity().getVector().y.get_d());
 
@@ -112,11 +112,11 @@ int SSG_Planet::update(float dt)
     float test2 = float(ex2.get_d());
 
     //We can lose precision, so if the precision is too small, just ignore everything
-    if (!(isnan(test1) || std::isinf(test1)) && !(isnan(test2) || std::isinf(test2)))
+    if (!(std::isnan(test1) || std::isinf(test1)) && !(std::isnan(test2) || std::isinf(test2)))
     {
         this->setPosition(ex1, ex2);
-        assert(!isnan(x().get_d()));
-        assert(!isnan(y().get_d()));
+        assert(!std::isnan(x().get_d()));
+        assert(!std::isnan(y().get_d()));
     }
     //std::cout << "Vel (" << this->getVelocity().getVector().x << "|" << this->getVelocity().getVector().y << ")" << std::endl;
     //std::cout << "Loc (" << this->x() << "|" << this->y() << ")" << std::endl;

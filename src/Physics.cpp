@@ -15,6 +15,57 @@ void PhysicObject::finishPhysicsCycle(double time)
     this->m_force.setVector(PE::Vector2df { 0.,0. });
 }
 
+SFG::Pointer<CollisionDetail> PhysicObject::collide(const PE::PhysicObject* inc) const
+{
+    //#TODO: CONSIDER MOVING TO THE PHYSICOBJECT CLASS DIRECTLY
+
+    //Safety first
+    assert(inc != nullptr);
+
+    //Get quick links
+    const auto& vel = inc->getVelocity();
+    const auto& mass = inc->getMass();
+    const PE::Vector2df pos( {
+        inc->x(), inc->y()
+    });
+
+    //Get local quick links
+    const auto& localvel = this->getVelocity();
+    const auto& localmass = this->getMass();
+    const PE::Vector2df localpos( {
+        this->x(), this->y()
+    });
+
+    //Now we have a nice little equation to solve:
+    //localpos + localvel*t = pos + vel*t
+    //-> localpos - pos = vel*t - localvel*t
+    //-> (localpos - pos) / (vel - localvel) = t
+    mpf_class tmp = (localpos.x - pos.x) / (vel.getVector().x- localvel.getVector().x);
+    double eta = tmp.get_d();
+    //Get a (really) rough estimate whether the objects will collide
+    bool b_collides = (abs((localpos.y - pos.y) / (vel.getVector().y- localvel.getVector().y) - eta) < 5);
+
+
+
+    //Also, get the (elastic) impulse:
+    //v_1' = 2*(m_1*v_1 + m_2*v_2)/(m_1 + m_2) - v_1
+    //(dito for v_2')
+    PE::Vector2df reusable = 	(vel.getVector() * mass.getScalar()
+                                 + localvel.getVector() * localmass.getScalar())
+                                / (mass.getScalar() + localmass.getScalar());
+    PE::Vector2df newvel = reusable*2.f - vel.getVector();
+    PE::Vector2df newlocalvel = reusable*2.f - localvel.getVector();
+
+
+    //Create the collision object
+    SFG::Pointer<CollisionDetail> ptr(new CollisionDetail(b_collides, eta,
+                                      *this, *inc,
+                                      PE::Velocity(newlocalvel),  PE::Velocity(newvel)));
+
+    //Return the created object
+    return ptr;
+}
+
 PhysicsEngine::PhysicsEngine()
 {
 }

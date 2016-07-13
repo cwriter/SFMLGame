@@ -8,7 +8,7 @@
 #include "Pointer.h"
 #include "Object.h"
 #include <gmpxx.h>
-
+#include <list>
 
 #ifndef GRAVITY_CONSTANT
 //The gravity constant (in m^3 * kg^-1 * s^-2)
@@ -27,6 +27,9 @@ class Acceleration;
 class Velocity;
 class Mass;
 class Junction;
+
+class PhysicObject;
+class CollisionDetail;
 
 
 template <typename T>
@@ -439,6 +442,8 @@ private:
     Vector2df m_vec;
 };
 
+
+
 class PhysicObject
     : public virtual MsgObject
 {
@@ -547,6 +552,14 @@ public:
     void finishPhysicsCycle(double time);
 
 
+	///<summary>
+    ///Gets a collision report from the provided parameters.
+    ///</summary>
+    ///<param name="inc">The incoming object.
+    ///WARNING: The lifetime of the object must be guaranteed by the calling function.
+    ///</param>
+    virtual SFG::Pointer<CollisionDetail> collide(const PE::PhysicObject* inc) const;
+    
 
 private:
     Mass m_mass;
@@ -554,11 +567,38 @@ private:
     Acceleration m_acc;
     Force m_force;
 
+    std::list<PE::Vector2df> m_physics_mesh[3];		//Array of lists of polygons that depict the detail levels low (just a bounding rectangle), medium (Convex shape) and high (should be close to exact).
+	
+	
     int m_destruction_type;
 
     int m_flags;
 
 };
+
+
+class CollisionDetail
+	: public virtual MsgObject
+{
+public:
+	CollisionDetail(bool collides, double eta,
+					const PE::PhysicObject& obj1, const PE::PhysicObject& obj2,
+					const PE::Velocity& newvel1, const PE::Velocity& newvel2)
+		: m_collides(collides), m_eta(eta), m_o1(obj1), m_o2(obj2), m_nv1(newvel1), m_nv2(newvel2)
+	{
+			
+	}
+
+	
+private:	
+	bool m_collides;		//Whether the objects will be likely to collide
+	double m_eta; 			//Time until contact (in s)
+	const PE::PhysicObject& m_o1;	//The first object
+	const PE::PhysicObject& m_o2;	//The second object
+	PE::Velocity m_nv1;		//The anticipated movement speed of the first object after impact
+	PE::Velocity m_nv2;		//The anticipated movement speed of the second object after impact
+};
+
 
 //A junction
 class Junction
