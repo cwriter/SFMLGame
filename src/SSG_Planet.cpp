@@ -41,7 +41,8 @@ int SSG_Planet::load(const XMLReader& reader)
 		//Failed to load pos and Velocity
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to load PosAndVel");
 	}
-	this->setPosition(r.left, r.top);
+	//this->setPosition(r.left, r.top);
+	this->setPosition(mpf_class(r.left), mpf_class(r.top));
 	this->setVelocity(PE::Velocity(r.width, r.height));
 	
 	this->getShape().setRadius(reader.asDouble("radius/", real));

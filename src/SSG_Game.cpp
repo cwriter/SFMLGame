@@ -184,6 +184,22 @@ int SSG_Game::load(const sf::String& path)
 		printf("Planet \"%s\" is at %f|%f\n", p->getName().toAnsiString().c_str(), p->x(), p->y());
 		index++;
 	}
+	
+	//Load a ship
+	int sret = 0;
+	SFG::Pointer<SSG_Ship> p(new SSG_Ship());
+	sf::String shippath = path + "example - ship.xml";
+	XMLReader shipreader;
+	sret = basicLoadFile(shippath, out);
+	assert(sret == 0);
+	shipreader.setSource(out);
+	sret = shipreader.parse();
+	assert(sret == 0);
+	XMLReader sread(*shipreader.getXMLGroupHandle("xml/ship/"));
+	sret = p->load(sread);
+	assert(sret == 0);
+	this->m_universe.addShip(p);
+	
 	//!TESTING
 	
     return 0;

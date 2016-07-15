@@ -26,11 +26,30 @@ public:
     ///The reader to load the data from
     ///</param>
     int load(XMLReader& reader) override;
+	
+    virtual int update(float dt) override
+    {
+	
+		return 0;
+	}
+	
+    virtual mpf_class x() const override
+    {
+		return m_x;
+	}
+	
+    virtual mpf_class y() const override
+    {
+		return m_y;
+	}
 
 private:
+	
+	mpf_class m_x;
+	mpf_class m_y;
+	
+	
     std::vector<SFG::Pointer<SSG_Part>> m_parts;	//All parts associated with the ship
     PE::PhysicsEngine m_local_physics;				//All objects that enter this ship shall enter a local system
-    //to take load from the global system
-    sf::ConvexShape m_collision_box;				//The collision box of the ship
 };
 

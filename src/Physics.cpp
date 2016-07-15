@@ -17,8 +17,6 @@ void PhysicObject::finishPhysicsCycle(double time)
 
 SFG::Pointer<CollisionDetail> PhysicObject::collide(const PE::PhysicObject* inc) const
 {
-    //#TODO: CONSIDER MOVING TO THE PHYSICOBJECT CLASS DIRECTLY
-
     //Safety first
     assert(inc != nullptr);
 
@@ -40,7 +38,7 @@ SFG::Pointer<CollisionDetail> PhysicObject::collide(const PE::PhysicObject* inc)
     //localpos + localvel*t = pos + vel*t
     //-> localpos - pos = vel*t - localvel*t
     //-> (localpos - pos) / (vel - localvel) = t
-    mpf_class tmp = (localpos.x - pos.x) / (vel.getVector().x- localvel.getVector().x);
+    mpf_class tmp = (localpos.x - pos.x) / (vel.getVector().x - localvel.getVector().x);
     double eta = tmp.get_d();
     //Get a (really) rough estimate whether the objects will collide
     bool b_collides = (abs((localpos.y - pos.y) / (vel.getVector().y- localvel.getVector().y) - eta) < 5);

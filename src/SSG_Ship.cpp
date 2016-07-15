@@ -20,6 +20,13 @@ int SSG_Ship::load(XMLReader& reader)
         r.parse();
         r.for_all("part", [&](const XMLGroup* group) {
             SFG::Pointer<SSG_Part> part(new SSG_Part());
+			XMLReader r(*group);
+			int ret = part->load(r);
+			//#TODO: Handle return value
+			
+			
+			
+			
             this->m_parts.push_back(part);
         });
     });

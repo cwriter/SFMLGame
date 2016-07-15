@@ -64,6 +64,13 @@ public:
 
         return ret;
     }
+    
+    void setRow(size_t index, const std::vector<T>& row)
+	{
+		assert(row.size() == m_width);
+		//overwrite the elements
+		std::copy(row.begin(), row.end(), m_data.begin() + index * m_width);
+	}
 
     ///<summary>
     ///Compares if two matrices are equal.
@@ -263,6 +270,25 @@ public:
 
         return ret;
     }
+    
+    PE::Matrix<T> toRow() const
+    {
+		PE::Matrix<T> m(dim, 1);
+		m.setRow(0, std::vector<T>(m_vec));
+		
+		
+		return m;
+	}
+	
+	 PE::Matrix<T> toCol() const
+    {
+		PE::Matrix<T> m(1, dim);
+		for(size_t i = 0; i < dim; i++)
+			m.set(0, i, m_vec[i]);
+		
+		
+		return m;
+	}
 
     T& x = m_vec[0];
     T& y = m_vec[1];
@@ -560,6 +586,28 @@ public:
     ///</param>
     virtual SFG::Pointer<CollisionDetail> collide(const PE::PhysicObject* inc) const;
     
+	///<summary>
+	///Gets the physics mesh (collision box) of the object
+	///WARNING: Does NOT update the mesh. See setPhysicsMesh()
+	///</summary>
+	std::list<PE::Vector2df>& getPhysicsMesh(int level = 2)
+	{
+		assert(level < 3 && level >= 0);
+		return m_physics_mesh[level];
+	}
+	
+	int transrotatePhysicsMesh(const PE::Matrix<mpf_class>& m)
+	{
+		
+		return 0;
+	}
+	
+	int setPhysicsMesh()
+	{
+		
+		return 0;
+	}
+	
 
 private:
     Mass m_mass;
