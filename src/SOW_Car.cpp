@@ -21,6 +21,18 @@ SOW_Car::~SOW_Car()
 {
 }
 
+int SOW_Car::load(const XMLReader& data)
+{
+	data.for_all("blinker", [=](const XMLGroup* g){
+		XMLReader(*g).for_all("Light",[=](const XMLGroup* g2){
+			//Add lights and stuff
+			
+			
+		});
+	});
+	return 0;
+}
+
 int Module_SOW_Car::load(const XMLReader& xmldata)
 {
     //See comment below
@@ -29,46 +41,19 @@ int Module_SOW_Car::load(const XMLReader& xmldata)
         return -1;
     }
     //Load from xml
-    sf::String path;
-    size_t i = 0;
-    while (true) {
-        path = sf::String(L"object#") + (std::to_wstring(i)).append(L"/");
-        sf::String result = xmldata.getValue(path);
-        if (result == L"__xml_failure") {
-            //Data not found (meaning index out of range)
-            break;
-        }
-        //Otherwise, use data
-        //sf::String namepath = path + L"name.";
-        //sf::String name = xmldata.getValue(path);
-
-        //See ModuleG2D::load for examples
-
-        //Load specifc car data
-        sf::String blinkerpath = path + L"blinker";
-        const XMLGroup* data = xmldata.getXMLGroupHandle(blinkerpath);
-        if (data == NULL) {
-            break;
-        }
-        XMLReader blinkerReader(*data);
-        blinkerReader.parse();
-        size_t b_index = 0;
-        while (true)
-        {
-            const XMLGroup* blinkerLight = blinkerReader.getXMLGroupHandle(L"Light#" + std::to_wstring(b_index) + L"/");
-            if (blinkerLight == NULL) break;
-            //Add blinker to car
-
-            //#TODO: INSERT CODE
-
-            //#END TODO
-            b_index++;
-        }
-
-        //Same for front-lights, rear-light, reverse-light
-        //#TODO: INSERT CODE
-        i++;
-    }
-
+    xmldata.for_all("object", [=](const XMLGroup* g) {
+		
+		XMLReader r(*g);
+		SFG::Pointer<SOW_Car> c(new SOW_Car(this));
+		c.cast<Loadable>()->Loadable::load(r);
+		
+		c.cast<GObjectBase>()->GObjectBase::load(XMLReader(*r.getXMLGroupHandle("GObjectBase")));
+		
+		c->load(XMLReader(*r.getXMLGroupHandle("Car")));
+		
+		this->addObject(c);
+		
+		
+	});
     return 0;
 }

@@ -122,6 +122,10 @@ class SOW_Car : public GObjectBase, public PE::PhysicObject
 	 */
 public:
     SOW_Car();
+    SOW_Car(Module* gov)
+	{
+		this->m_governor = gov;
+	}
     virtual ~SOW_Car();
    
 	
@@ -132,11 +136,7 @@ public:
         return (this->m_mtr_trq = (m_mtr_pwr) / (2.0f*float(PI)*m_mtr_rpm));
     }
     
-    virtual int load(const XMLReader& data) override
-    {
-		
-		return 0;
-	}
+    virtual int load(const XMLReader& data) override;
 
     virtual int update(float dt)
 	{
