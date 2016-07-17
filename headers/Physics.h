@@ -440,6 +440,13 @@ public:
         ret.m_vec = this->m_vec + v.getVector();
         return ret;
     }
+    
+    Velocity operator-(const Velocity& v)
+    {
+        Velocity ret;
+        ret.m_vec = this->m_vec - v.getVector();
+        return ret;
+    }
 private:
     Vector2df m_vec;
 };

@@ -25,7 +25,7 @@ public:
     ///<param name="reader">
     ///The reader to load the data from
     ///</param>
-    int load(XMLReader& reader) override;
+    int load(const XMLReader& reader) override;
 	
     virtual int update(float dt) override
     {

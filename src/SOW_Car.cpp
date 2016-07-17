@@ -5,6 +5,15 @@
 
 SOW_Car::SOW_Car()
 {
+	this->m_gear_ratios.push_back(1.f);
+	this->m_current_gear = 0;
+	this->m_differential_ratio = 1.f;
+	this->m_mtr_rpm = 0.f;
+	
+	this->m_wheel_front_left.setMass(250.f);
+	this->m_wheel_front_left.setWheelRadius(0.25f);
+	
+	m_wheel_rear_left = m_wheel_rear_right = m_wheel_front_right = m_wheel_front_left;
 }
 
 

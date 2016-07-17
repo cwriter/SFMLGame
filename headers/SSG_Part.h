@@ -47,7 +47,7 @@ public:
         return 0;
     }
 
-    virtual int load(XMLReader& data) override
+    virtual int load(const XMLReader& data) override
     {
 		//First, clear any previous data
 		m_points.clear();

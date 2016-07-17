@@ -15,7 +15,7 @@ public:
 
     }
 
-    int load(XMLReader& data) override
+    int load(const XMLReader& data) override
     {
         bool b = false;
         this->level = data.asInt(L"level.", b);
@@ -76,7 +76,7 @@ public:
 
     }
 
-    int load(XMLReader& data) override
+    int load(const XMLReader& data) override
     {
         auto name = data.getValue(L"name.");
         assert(name != L"__xml_failure");

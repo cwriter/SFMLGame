@@ -61,8 +61,17 @@ public:
         return 0;
     }
 
-    virtual int load(XMLReader& data) {
-
+    virtual int load(const XMLReader& data) {
+		
+		//Load default values
+		sf::String name = data.getValue("name.");
+        if (name == "__xml_failure")
+        {
+            printf("[Error] Failed to get name in %s:%d\n", __FILE__, __LINE__);
+        }
+        else
+			this->m_name = name;
+		
         return 0;
     }
 
@@ -181,7 +190,7 @@ public:
         return 0;
     }
 
-    int load(XMLReader& data) override;
+    int load(const XMLReader& data) override;
 
     void createFromTexture(Texture& tex, float time) {
         this->m_tex = tex;
@@ -275,7 +284,7 @@ public:
         m_frames.clear();
     }
 
-    int load(XMLReader& data) override;
+    int load(const XMLReader& data) override;
 
     virtual char* createMemoryChunk(size_t* size) override;
 
@@ -314,7 +323,7 @@ public:
 
     }
 
-    int load(XMLReader& xmldata) override;
+    int load(const XMLReader& xmldata) override;
 
 private:
     sf::String m_string;
@@ -393,7 +402,7 @@ public:
         return ret;
     }
 
-    virtual int load(XMLReader& data) override;
+    virtual int load(const XMLReader& data) override;
 
     virtual int preload() override {
         //this->m_xml_source;
@@ -425,6 +434,10 @@ public:
     SFG::FloatRect getBoundingRect() const {
         return this->m_sprite.getGlobalBounds();
     }
+    
+    sf::Vector2f getPosition() const {
+		return this->m_sprite.getPosition();
+	}
 
     virtual int playAnimation(const sf::String& name);
 

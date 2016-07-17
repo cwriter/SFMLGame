@@ -19,7 +19,12 @@ private:
 class SOW_Wheel
 {
 public:
-	
+	SOW_Wheel()
+	{
+		m_steer = 0.;
+		m_wheel_radius = 0.;
+		m_current_rps = 0.;
+	}
 	
 	void setMass(const PE::Mass& m) {
 		m_mass = m;
@@ -35,10 +40,6 @@ public:
 	
 	float getSteering() const {
 		return m_steer;
-	}
-	
-	void setDriveForce(const PE::Force& f){
-		m_tireforce = f;
 	}
 	
 	void setCurrentRPS(float rps){
@@ -63,7 +64,7 @@ public:
 								float rolling_friction_coefficient,
 								const PE::Velocity& basevel,
 								float dt
-   							) const
+   							)
 	{
 		PE::Force f;
 		
@@ -77,8 +78,8 @@ public:
 		//Get the velocity difference between the vehicle speed and the tire speed
 		auto veldiff = wheelvel - basevel;
 		
-		PE::Acceleration a(veldiff.getVector().x / dt, veldiff.getVector().y / dt);
-		if(a.getVector().absLength() <= EARTH_GRAVITY * static_friction_coefficient)
+		PE::Acceleration a(veldiff.getVector().x.get_d() / dt, veldiff.getVector().y.get_d() / dt);
+		if(a.getVector().absLength().get_d() <= EARTH_GRAVITY * static_friction_coefficient)
 		{
 			//We are in stiction
 			
@@ -86,14 +87,14 @@ public:
 			m_current_rps = basevel.abs() / wheel_cf;
 			
 			//Return the force 
-			f.setVector(a.getVector() * static_friction_coefficient * m_mass);
+			f.setVector(a.getVector() * static_friction_coefficient * m_mass.getScalar().get_d());
 			return f;
 		}
 		else
 		{
 			//We are gliding
 			
-			f.setVector(a.getVector() * kinetic_friction_coefficient * m_mass);
+			f.setVector(a.getVector() * kinetic_friction_coefficient * m_mass.getScalar().get_d());
 			return f;
 		}
 		
@@ -105,7 +106,6 @@ private:
 	float m_steer;
 	
 	PE::Mass m_mass;
-	PE::Force m_tireforce;	//Direction does not matter for this one
 	
 	float m_current_rps;
 	float m_wheel_radius;
@@ -131,9 +131,21 @@ public:
     virtual float getMotorTorque() {
         return (this->m_mtr_trq = (m_mtr_pwr) / (2.0f*float(PI)*m_mtr_rpm));
     }
+    
+    virtual int load(const XMLReader& data) override
+    {
+		
+		return 0;
+	}
 
     virtual int update(float dt)
 	{
+		
+		m_wheel_front_left.setSteering(m_steering);
+		m_wheel_front_right.setSteering(m_steering);
+		
+		m_wheel_front_left.setCurrentRPS(m_mtr_rpm * m_gear_ratios[m_current_gear] * m_differential_ratio);
+		
 		const float c_f_s = 0.8;
 		const float c_f_k = 0.6;
 		const float c_f_r = 0.1;
@@ -143,11 +155,37 @@ public:
 		auto f3 = m_wheel_rear_left.getResultingForce(getRotation(), c_f_s, c_f_k, c_f_r, getVelocity(), dt);
 		auto f4 = m_wheel_rear_right.getResultingForce(getRotation(), c_f_s, c_f_k, c_f_r, getVelocity(), dt);
 		
+		PE::Force total = f1 + f2 + f3 + f4;
+		this->addForceToCycle(total);
+		this->finishPhysicsCycle(dt);
 		
+		this->setPosition(x().get_d() + getVelocity().getVector().x.get_d() * dt,
+						  y().get_d() + getVelocity().getVector().y.get_d() * dt);
 		
 		return 0;
 	}
     
+    virtual mpf_class x() const override
+    {
+		return this->getPosition().x;
+	}
+    
+    
+    virtual mpf_class y() const override
+    {
+		return this->getPosition().y;
+	}
+	
+	void accel()
+	{
+		m_ped_gas_state = 50.f;
+	}
+	
+	void stopAccel()
+	{
+		m_ped_gas_state = 0.f;
+	}
+	
 protected:
 	
 	//Wheels
@@ -156,14 +194,16 @@ protected:
 	SOW_Wheel m_wheel_rear_left;
 	SOW_Wheel m_wheel_rear_right;
 	
+	float m_steering;
+	
     float m_max_fuel;//The fuel capacity
     float m_fuel_left; //The remaining fuel (m_fuel_left <= m_max_fuel)
-
+    
     float m_mtr_rpm; //The motor rpm
     float m_mtr_pwr; //The motor power (in W)
     float m_mtr_trq; //The motor torque (in Nm)
     float m_mtr_displacement; //"Hubraum"
-
+	
     float m_ped_gas_state;		//The gas pedal state (max is 100 meaning fully pressed)
     float m_ped_brake_state;	//The brake pedal state (max is 100 meaning fully pressed)
     float m_ped_clutch_state;	//The clutch pedal state (max is 100 meaning fully pressed)

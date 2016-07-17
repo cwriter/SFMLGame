@@ -307,67 +307,23 @@ int ModuleG2D::load(const XMLReader& xmldata)
 
     //Load from xml
     sf::String path;
-    size_t i = 0;
-    while (true)
-    {
-        path = sf::String(L"object#") + (std::to_wstring(i)).append(L"/");
-        sf::String result = xmldata.getValue(path);
-        if (result == L"__xml_failure") {
-            //Data not found (meaning index out of range)
-            break;
-        }
-        //Otherwise, use data
-        sf::String namepath = path + L"name.";
-        sf::String name = xmldata.getValue(namepath);
-        if (name == "__xml_failure")
-        {
-            printf("[Error] Failed to get name in %s:%d\n", __FILE__, __LINE__);
-        }
-
-        path += "GObjectBase/";
-
-        //Object with the name
+	
+	xmldata.for_all("object", [=](const XMLGroup* g){
+		
+		XMLReader r(*g);
+		
+		 //Object with the name
         SFG::Pointer<GObjectBase> ob(new GObjectBase(this));
-
-        ob->setGraphicsName(name);
-        this->m_data.push_back(ob);
-
-        sf::String ext_file(path + L"file/");
-
-        sf::String str;
-        if ((str = xmldata.getValue(ext_file)) != L"__xml_failure")
-        {
-            //If a file has been specified, parse that
-            sf::String out;
-            int ret = basicLoadFile(str + L".xml", out);
-            //#TODO: Handle ret
-
-            //Create the reader
-            XMLReader rdr;
-            rdr.setSource(out);
-            ret = rdr.parse();
-            //#TODO: Handle ret
-
-            XMLWriter wr;
-            auto handle = rdr.getXMLGroupHandle(L"");
-            XMLPair p(L"image", str);
-            for (size_t i = 0; i < handle->lowerElements.size(); i++)
-            {
-                ((XMLGroup*)handle)->lowerElements[i].attributes.push_back(p);
-            }
-            wr.setBaseGroup(*handle);
-
-            this->load_animation(L"", ob.getElement(), wr);
-        }
-        else
-        {
-            //If not in external file
-            this->load_animation(path, ob.getElement(), xmldata);
-        }
-
-
-        i++;
-    }
+		
+		ob.cast<Loadable>()->Loadable::load(r);
+		
+		XMLReader r2(*r.getXMLGroupHandle("GObjectBase/"));
+		
+		ob->load(r2);
+		
+		this->m_data.push_back(ob);
+		
+	});
 
     return 0;
 }
@@ -401,37 +357,6 @@ int GameState::loadAssets(const XMLReader& reader)
                 }
             }
         }
-    }
-    return 0;
-}
-
-int ModuleG2D::load_animation(const sf::String& path, GObjectBase* ob, const XMLReader& xmldata)
-{
-    size_t i_anim = 0;
-    while (true)
-    {
-
-        sf::String animations(path + L"animation#" + std::to_wstring(i_anim) + L"/");
-        if (xmldata.getValue(animations) == L"__xml_failure")
-        {
-            //Nothing more to load
-            return -1;
-        }
-
-
-        SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this)));
-        if (a == NULL)
-        {
-            printf("[Error] Memory allocation error in %s:%d\n", __FILE__, __LINE__);
-            return -2;
-        }
-        XMLReader reader(*xmldata.getXMLGroupHandle(animations));
-
-        auto ret = a->load(reader);
-
-        ob->addAnimation(a);
-
-        i_anim++;
     }
     return 0;
 }

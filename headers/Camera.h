@@ -21,6 +21,10 @@ public:
     void setCenter(float x, float y) {
         this->view.setCenter(x, y);
     }
+    
+    void setCenter(const sf::Vector2f& pos) {
+        this->view.setCenter(pos.x, pos.y);
+    }
 
     void setSize(float x, float y) {
         this->view.setSize(x, y);

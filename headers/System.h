@@ -228,6 +228,7 @@ class SystemClient
 public:
     bool IDReady(int ID, float* progress = nullptr)
     {
+		std::lock_guard<std::mutex> g(m_mutex);
         auto it = m_pending.find(ID);
         if (it != m_pending.end())
         {
@@ -276,12 +277,16 @@ public:
 
     void addID(int ID, const SFG::Pointer<SFG::Event>& ev)
     {
+		m_mutex.lock();
         m_pending[-ID] = ev;
+		m_mutex.unlock();
     }
 
     void removeID(int ID)
     {
+		m_mutex.lock();
         m_pending.erase(ID);
+		m_mutex.unlock();
     }
 private:
     std::mutex m_mutex;

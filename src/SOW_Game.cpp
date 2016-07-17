@@ -39,6 +39,46 @@ int SOW_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 
             window.getSFMLWindow().setView(m_cam);
         }
+        else if(events[i].type == sf::Event::EventType::KeyPressed)
+		{
+			if(events[i].key.code == 'W')
+			{
+				testcar.accel();
+			}
+			else if(events[i].key.code == 'S')
+			{
+				
+			}
+			else if(events[i].key.code == 'A')
+			{
+				
+			}
+			else if(events[i].key.code == 'D')
+			{
+				
+			}
+			
+		}
+		else if(events[i].type == sf::Event::EventType::KeyReleased)
+		{
+			if(events[i].key.code == 'W')
+			{
+				testcar.stopAccel();
+			}
+			else if(events[i].key.code == 'S')
+			{
+				
+			}
+			else if(events[i].key.code == 'A')
+			{
+				
+			}
+			else if(events[i].key.code == 'D')
+			{
+				
+			}
+			
+		}
     }
     window.getSFMLWindow().setView(m_cam);
     return 0;

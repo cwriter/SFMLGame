@@ -66,7 +66,7 @@ char* Frame::createMemoryChunk(size_t* size)
     return data;
 }
 
-int Frame::load(XMLReader& data)
+int Frame::load(const XMLReader& data)
 {
     bool b = false;
     this->m_time = float(data.asInt(L"duration/", b));
@@ -240,10 +240,75 @@ int GObjectBase::update(float dt)
     return 0;
 }
 
-int GObjectBase::load(XMLReader& data)
+int GObjectBase::load(const XMLReader& data)
 {
     //Definition states that we shall search a subtree called "GObjectBase" in the given reader and parse that one.
+       
 
+        this->setGraphicsName(m_name);
+
+
+        sf::String str;
+        if ((str = data.getValue("file/")) != L"__xml_failure")
+        {
+            //If a file has been specified, parse that
+            sf::String out;
+            int ret = basicLoadFile(str + L".xml", out);
+            //#TODO: Handle ret
+
+            //Create the reader
+            XMLReader rdr;
+            rdr.setSource(out);
+            ret = rdr.parse();
+            //#TODO: Handle ret
+
+            XMLWriter wr;
+            auto handle = rdr.getXMLGroupHandle(L"");
+            XMLPair p(L"image", str);
+            for (size_t i = 0; i < handle->lowerElements.size(); i++)
+            {
+                ((XMLGroup*)handle)->lowerElements[i].attributes.push_back(p);
+            }
+            wr.setBaseGroup(*handle);
+
+            //this->load_animation(L"", ob.getElement(), wr);
+			wr.for_all("animation", [=](const XMLGroup* g){
+				
+				SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this->m_governor)));
+				if (a == NULL)
+				{
+					printf("[Error] Memory allocation error in %s:%d\n", __FILE__, __LINE__);
+					return -2;
+				}
+					
+				auto ret = a->load(XMLReader(*g));
+
+				this->addAnimation(a);
+			});
+        }
+        else
+        {
+            //If not in external file
+		
+			data.for_all("animation", [=](const XMLGroup* g){
+				
+				SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this->m_governor)));
+				if (a == NULL)
+				{
+					printf("[Error] Memory allocation error in %s:%d\n", __FILE__, __LINE__);
+					return -2;
+				}
+					
+				auto ret = a->load(XMLReader(*g));
+
+				this->addAnimation(a);
+			});
+        }
+
+        
+
+	
+	
     return 0;
 }
 
@@ -435,7 +500,7 @@ void Animation::updateAnimation(float dt, bool restart)
     //updateAnimation(dt); //Again, should not loop. Try if necessary
 }
 
-int Animation::load(XMLReader& data)
+int Animation::load(const XMLReader& data)
 {
     this->m_xml_source = data;
 
@@ -576,7 +641,7 @@ char* Animation::createMemoryChunk(size_t* size)
     return data;
 }
 
-int GTextBase::load(XMLReader& xmldata)
+int GTextBase::load(const XMLReader& xmldata)
 {
     this->m_xml_source = xmldata;
 

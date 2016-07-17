@@ -12,7 +12,7 @@ SSG_Ship::~SSG_Ship()
 {
 }
 
-int SSG_Ship::load(XMLReader& reader)
+int SSG_Ship::load(const XMLReader& reader)
 {
     //Load ship
     reader.for_all("xml/ship", [&](const XMLGroup* group) {

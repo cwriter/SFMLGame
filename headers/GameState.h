@@ -32,6 +32,9 @@ public:
 
     virtual int load(const XMLReader& xmldata) {
         //Mostly usable for stat-heavy objects
+		
+		
+		
         return 0;
     }
 
@@ -87,7 +90,7 @@ public:
     virtual int unload() override;
     int load(const XMLReader& xmldata) override;
 protected:
-    int load_animation(const sf::String& path, GObjectBase* ob, const XMLReader& xmldata);
+
 private:
 
 };

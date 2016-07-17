@@ -21,6 +21,9 @@ public:
     ///</summary>
     virtual int update(double dt)
     {
+		this->m_cam.setCenter(testcar.getSprite().getPosition());
+		m_cam.update(dt);
+		
         return 0;
     }
 
