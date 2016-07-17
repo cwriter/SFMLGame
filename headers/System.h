@@ -319,7 +319,7 @@ public:
     int CreateID();
 
     ///<summary>
-    ///Read a f�le asynchronously.
+    ///Read a file asynchronously.
     ///</summary>
     int readfile(SystemClient* client, const char* path, size_t start, size_t count);
 

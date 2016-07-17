@@ -15,6 +15,13 @@
 #define GRAVITY_CONSTANT 6.67408e-11
 #endif
 
+#ifndef EARTH_GRAVITY
+//The gravity constant (in m*s^(-2))
+#define EARTH_GRAVITY 9.81
+#endif
+
+
+
 #ifndef LIGHTSPEED_CONSTANT
 #define LIGHTSPEED_CONSTANT 299792458.
 #endif
@@ -300,7 +307,7 @@ public:
 
 };
 
-//typedef Vector<2, double> Vector2df;
+typedef Vector<2, float> Vector2f;
 typedef Vector<2, mpf_class> Vector2df;
 
 class Mass
@@ -368,6 +375,11 @@ public:
 
     }
     Acceleration(const Force& f, const Mass& m);
+	
+	Acceleration(float x, float y) {
+		m_vec.x = x;
+		m_vec.y = y;
+	}
 
     Acceleration operator+(const Acceleration& a)
     {

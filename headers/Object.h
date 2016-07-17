@@ -452,6 +452,10 @@ public:
         m_sprite.setRotation(angle);
         notifyAll(GObjectMessages::RotationChanged);
     }
+    
+    virtual float getRotation() const {
+		return m_sprite.getRotation();
+	}
 
     void setGraphicsName(const sf::String& str) {
         this->m_graphics_name = str; //#TODO: Evalute if necessary

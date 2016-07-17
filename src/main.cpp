@@ -6,12 +6,16 @@
 #include "ExtensionInterface.h"
 #include "DebugWindow.h"
 #include "SSG_Game.h"
+#include "SOW_Game.h"
 #include <gmpxx.h>
 
 
 #ifndef _WIN32
 #include <X11/Xlib.h>
 #endif
+
+#define RUNNING_SOW 1
+//#define RUNNING_SSG 1
 
 int testingStuff(int argc, char* argv[])
 {
@@ -122,6 +126,8 @@ int main(int argc, char* argv[])
 		game.parseArgs(argc, argv);
 
 		int ret = game.load();
+#ifdef RUNNING_SSG
+		
 		//Add the SSG gamestate
 		SFG::Pointer<GameState> SSG_gs(new SSG_Game);
 		//Load the game (give a folder path)
@@ -133,6 +139,11 @@ int main(int argc, char* argv[])
 								"Failed to load SSG with code %d", SSG_load_ret);
 		}
 		game.addGamestate(SSG_gs);
+#elif RUNNING_SOW
+		SFG::Pointer<GameState> SOW_gs(new SOW_Game);
+		game.addGamestate(SOW_gs);
+		
+#endif
 		//game.window.create(1024, 720, "Game");
 		game.window.create(1920, 1080, "Game");
 		game.window.setScale(1.f);

@@ -2,6 +2,8 @@
 #include "stdafx.h"
 #include "GameState.h"
 #include "SOW_World.h"
+#include "Camera.h"
+#include "SOW_Car.h"
 
 class SOW_Game :
     public GameState
@@ -25,11 +27,7 @@ public:
     ///<summary>
     ///New list of inputs to process. The Inputlag of this operation is the render time
     ///</summary>
-    virtual int processEvents(SFG::Window& window, std::vector<sf::Event>& events)
-    {
-
-        return 0;
-    }
+    virtual int processEvents(SFG::Window& window, std::vector<sf::Event>& events);
 
     ///<summary>
     ///Draw the current scene
@@ -137,5 +135,7 @@ public:
 private:
 
     SOW_World m_world;	//The actual world
+    SOW_Car testcar;	//Just for testing
+    SFG::Camera m_cam;	//The standard game camera
 };
 
