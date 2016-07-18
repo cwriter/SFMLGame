@@ -47,6 +47,8 @@ public:
     std::vector<SFG::Pointer<Loadable>>* getData() {
         return &m_data;
     }
+    
+    void listObjects() const;
 
     void addObject(const SFG::Pointer<Loadable>& obj) {
         this->m_data.push_back(obj);

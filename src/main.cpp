@@ -153,8 +153,10 @@ int main(int argc, char* argv[])
 
 		//Create debug window and overwatch the game
 	#ifdef _DEBUG
+		#ifdef _DBGWIN
 		SFG::DebugWindow dbgwnd;
 		dbgwnd.create(&game);
+		#endif
 	#endif
 
 

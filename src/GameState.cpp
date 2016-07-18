@@ -297,6 +297,14 @@ int ModuleLoader::load(const sf::String& xmlpath, Module& target, sf::String mod
     return 0;
 }
 
+void Module::listObjects() const
+{
+	for(auto o : m_data)
+	{
+		puts(o->m_name.toAnsiString().c_str());
+	}
+}
+
 ModuleG2D::~ModuleG2D()
 {
     unload();

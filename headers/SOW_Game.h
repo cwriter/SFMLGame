@@ -21,8 +21,11 @@ public:
     ///</summary>
     virtual int update(double dt)
     {
-		this->m_cam.setCenter(testcar.getSprite().getPosition());
+		this->m_cam.setCenter(testcar->getSprite().getPosition());
+		this->m_cam.setSize(testcar->getSprite().getGlobalBounds().width*2.f,
+							testcar->getSprite().getGlobalBounds().height*2.f);
 		m_cam.update(dt);
+		this->testcar->update(dt);
 		
         return 0;
     }
@@ -41,6 +44,8 @@ public:
         SFG::FloatRect rect(SFG::Vector2f(t->getView().getCenter()) - SFG::Vector2f(t->getView().getSize()) / 2.f, t->getView().getSize());
         m_world.draw(*t, rect);
 
+		
+		testcar->draw(*t);
         //#TODO: Draw UI etc...
     }
 
@@ -138,7 +143,7 @@ public:
 private:
 
     SOW_World m_world;	//The actual world
-    SOW_Car testcar;	//Just for testing
+    SFG::Pointer<SOW_Car> testcar;	//Just for testing
     SFG::Camera m_cam;	//The standard game camera
 };
 

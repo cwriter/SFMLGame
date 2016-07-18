@@ -11,6 +11,10 @@
 class Module_SOW_Car : public ModuleG2D
 {
 public:
+    Module_SOW_Car()
+	{
+		this->m_name = "Module_SOW_Car";
+	}
     int load(const XMLReader& xmldata) override;
 private:
 
@@ -125,9 +129,11 @@ public:
     SOW_Car(Module* gov)
 	{
 		this->m_governor = gov;
+		init_car();
 	}
     virtual ~SOW_Car();
    
+	void init_car();
 	
     ///<summary>
     ///Gets the motor torque and sets the member variable accordingly
@@ -140,6 +146,7 @@ public:
 
     virtual int update(float dt)
 	{
+		GObjectBase::update(dt);
 		
 		m_wheel_front_left.setSteering(m_steering);
 		m_wheel_front_right.setSteering(m_steering);
@@ -176,15 +183,6 @@ public:
 		return this->getPosition().y;
 	}
 	
-	void accel()
-	{
-		m_ped_gas_state = 50.f;
-	}
-	
-	void stopAccel()
-	{
-		m_ped_gas_state = 0.f;
-	}
 	
 protected:
 	

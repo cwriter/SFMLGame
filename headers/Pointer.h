@@ -1,5 +1,6 @@
 #pragma once
 #include "stdafx.h"
+#include "Util.h"
 
 //SFMLGameEngine defaults
 namespace SFG

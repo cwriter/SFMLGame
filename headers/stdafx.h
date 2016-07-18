@@ -12,6 +12,7 @@
 #endif  // _DEBUG
 
 //#define _SFGPROFILE
+#define _DEBUG 1
 
 //Basic
 #include <stdio.h>

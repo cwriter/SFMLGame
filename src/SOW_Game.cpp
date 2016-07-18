@@ -8,6 +8,20 @@ SOW_Game::SOW_Game()
 {
     this->name = "main_gamestate";
 	Module_SOW_Car md;
+	
+	sf::String out;
+	
+	basicLoadFile("Data/SOW_Cars.xml", out);
+	
+	XMLReader r;
+	r.setSource(out);
+	r.parse();
+	
+	md.load(XMLReader(*r.getXMLGroupHandle("xml/module/")));
+	
+	md.listObjects();
+	
+	testcar = md.requestByName("CAR_HORNET");
 }
 
 
@@ -43,7 +57,7 @@ int SOW_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 		{
 			if(events[i].key.code == 'W')
 			{
-				testcar.accel();
+				
 			}
 			else if(events[i].key.code == 'S')
 			{
@@ -63,7 +77,7 @@ int SOW_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 		{
 			if(events[i].key.code == 'W')
 			{
-				testcar.stopAccel();
+				
 			}
 			else if(events[i].key.code == 'S')
 			{

@@ -272,7 +272,7 @@ int GObjectBase::load(const XMLReader& data)
             wr.setBaseGroup(*handle);
 
             //this->load_animation(L"", ob.getElement(), wr);
-			wr.for_all("animation", [=](const XMLGroup* g){
+			auto rets = wr.for_all("animation", [=](const XMLGroup* g){
 				
 				SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this->m_governor)));
 				if (a == NULL)
@@ -285,12 +285,14 @@ int GObjectBase::load(const XMLReader& data)
 
 				this->addAnimation(a);
 			});
+			if(rets == 0)
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to get animations");
         }
         else
         {
             //If not in external file
 		
-			data.for_all("animation", [=](const XMLGroup* g){
+			size_t ret = data.for_all("animation", [=](const XMLGroup* g){
 				
 				SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this->m_governor)));
 				if (a == NULL)
@@ -303,6 +305,8 @@ int GObjectBase::load(const XMLReader& data)
 
 				this->addAnimation(a);
 			});
+			if(ret == 0)
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to get animations");
         }
 
         
