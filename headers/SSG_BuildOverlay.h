@@ -10,7 +10,7 @@ public:
 	
 	int processEvents(std::vector<>& events)
 	{
-		
+		return 0;
 	}
 	
 	void draw(sf::RenderTarget& target)
