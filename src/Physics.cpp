@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Physics.h"
+#include "Polygon.h"
 
 namespace PE
 {
@@ -13,6 +14,12 @@ void PhysicObject::finishPhysicsCycle(double time)
 
     //Reset the force
     this->m_force.setVector(PE::Vector2df { 0.,0. });
+}
+
+SFG::Pointer<SFG::Polygon> PhysicObject::transrotatedPhysicsMesh(int lod, double rot, const PE::Vector2df& trans)
+{
+	assert(lod >= 0 && lod < 3);
+	return m_physics_mesh[lod].transrotatedPolygon(rot, trans);
 }
 
 SFG::Pointer<CollisionDetail> PhysicObject::collide(const PE::PhysicObject* inc) const

@@ -9,6 +9,7 @@
 #include "Object.h"
 #include <gmpxx.h>
 #include <list>
+#include "Polygon.h"
 
 #ifndef GRAVITY_CONSTANT
 //The gravity constant (in m^3 * kg^-1 * s^-2)
@@ -28,6 +29,7 @@
 
 namespace PE
 {
+
 class Force;
 class Time;
 class Acceleration;
@@ -39,276 +41,6 @@ class PhysicObject;
 class CollisionDetail;
 
 
-template <typename T>
-class Matrix
-{
-public:
-    Matrix(size_t width, size_t height) : m_width(width), m_height(height)
-    {
-        m_data.resize(width*height, T(0));
-    }
-
-    Matrix<T> operator*(const Matrix<T>& other)
-    {
-        assert(m_width == other.m_height);
-        Matrix<T> ret(m_width, other.m_height);
-
-        for (size_t row_i = 0; row_i < m_height; row_i++)
-        {
-            for (size_t col_i = 0; col_i < other.m_width; col_i++)
-            {
-                //Sum up
-                T sum(0);
-                for (size_t c = 0; c < m_width; c++)
-                {
-                    sum += T(this->get(c, row_i) * other.get(col_i, c));
-                }
-
-                //Do the calculations
-                ret.set(col_i, row_i, sum);
-            }
-        }
-
-        return ret;
-    }
-    
-    void setRow(size_t index, const std::vector<T>& row)
-	{
-		assert(row.size() == m_width);
-		//overwrite the elements
-		std::copy(row.begin(), row.end(), m_data.begin() + index * m_width);
-	}
-
-    ///<summary>
-    ///Compares if two matrices are equal.
-    ///</summary>
-    bool operator==(const Matrix<T>& other) const
-    {
-        if (other.m_width != m_width || other.m_height != m_height) return false;
-        //Compare bytes
-        if (memcmp(m_data.data(), other.m_data.data(), m_height*m_width*sizeof(T)) == 0)
-            return true; // return true if no differences have been found
-        else
-            return false;// otherwise just return false
-    }
-
-    ///<summary>
-    ///Sets the entry at (x,y) to value
-    ///</summary>
-    void set(size_t x, size_t y, T value)
-    {
-        assert(x < m_width);
-        assert(y < m_height);
-
-        m_data[y*m_width + x] = value;
-    }
-
-    ///<summary>
-    ///Returns the entry at (x,y).
-    ///</summary>
-    T get(size_t x, size_t y) const
-    {
-        assert(x < m_width);
-        assert(y < m_height);
-
-        return m_data[y*m_width + x];
-    }
-
-    ///<summary>
-    ///Very time-consuming operation (compared to getRow())
-    ///</summary>
-    std::vector<T> getColumn(size_t index)
-    {
-        assert(index < m_width);
-        std::vector<T> ret(m_height);
-        for (size_t i = 0; i < m_height; i++)
-        {
-            ret[i] = m_data[index + m_width*i];
-        }
-
-        return ret;
-    }
-    ///<summary>
-    ///Gets a row
-    ///</summary>
-    std::vector<T> getRow(size_t index)
-    {
-        assert(index < m_height);
-        std::vector<T> ret(m_data.begin() + index*m_width, m_data.begin() + index*m_width + m_width);
-
-        return ret;
-    }
-
-    size_t m_width;
-    size_t m_height;
-    std::vector<T> m_data; //Formatted as lines pinned together (line1line2...)
-};
-
-template <size_t dim, typename T>
-class Vector
-{
-public:
-    Vector()
-    {
-        for (size_t i = 0; i < dim; i++)
-        {
-            this->m_vec[i] = T(0);
-        }
-    }
-    Vector(std::initializer_list<T> list) {
-        size_t i = 0;
-        for (const T* it = begin(list); it != end(list); ++it) {
-            this->m_vec[i] = *it;
-            i++;
-        }
-    }
-    ~Vector()
-    {
-
-    }
-    T absLength() const
-    {
-        //return sqrt(pow(x, T(2)) + pow(y, T(2)));
-		return sqrt(pow(x.get_d(), 2.0) + pow(y.get_d(), 2.0));
-	
-    }
-
-    Vector<dim + 1, T> addRow(T val = T(0)) {
-        Vector<dim + 1, T> ret;
-        for (size_t i = 0; i < dim; i++)
-            ret.m_vec[i] = this->m_vec[i];
-
-        ret.m_vec[dim] = val;
-        return ret;
-    }
-
-    Vector<dim - 1, T> removeRow() {
-        Vector<dim - 1, T> ret;
-        for (size_t i = 0; i < dim - 1; i++)
-            ret.m_vec[i] = this->m_vec[i];
-        return ret;
-    }
-
-    Vector<dim, T> operator+(const Vector<dim, T>& v) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] + v.m_vec[i];
-        }
-        return ret;
-    }
-
-    Vector<dim, T> operator-(const Vector<dim, T>& v) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] - v.m_vec[i];
-        }
-        return ret;
-    }
-
-    Vector<dim, T> operator*(const double s) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] * s;
-        }
-        return ret;
-    }
-    Vector<dim, T> operator*(const mpf_class s) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] * s;
-        }
-        return ret;
-    }
-    
-    Vector<dim, T> operator/(const double s) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] / s;
-        }
-        return ret;
-    }
-    
-    Vector<dim, T> operator/(const mpf_class s) const
-    {
-        Vector<dim, T> ret;
-        for (size_t i = 0; i < dim; i++)
-        {
-            ret.m_vec[i] = this->m_vec[i] / s;
-        }
-        return ret;
-    }
-
-    Vector<dim, T> operator=(const Vector<dim, T>& v)
-    {
-        for (size_t i = 0; i < dim; i++)
-        {
-            this->m_vec[i] = v.m_vec[i];
-        }
-        return *this;
-    }
-
-    T dotProduct(const Vector<dim, T>& v) const
-    {
-        T res = T(0);
-        for (size_t i = 0; i < dim; i++)
-        {
-            res += this->m_vec[i] * v->m_vec[i];
-        }
-        return res;
-    }
-
-
-    Vector<3, T> crossProduct(Vector<3, T> v) const
-    {
-        Vector<3, T> ret;
-        ret.x = this->y*v.z - this->z*v.y;
-        ret.y = this->z*v.x - this->x*v.z;
-        ret.z = this->x*v.y - this->y*v.x;
-
-        return ret;
-    }
-    
-    PE::Matrix<T> toRow() const
-    {
-		PE::Matrix<T> m(dim, 1);
-		m.setRow(0, std::vector<T>(m_vec));
-		
-		
-		return m;
-	}
-	
-	 PE::Matrix<T> toCol() const
-    {
-		PE::Matrix<T> m(1, dim);
-		for(size_t i = 0; i < dim; i++)
-			m.set(0, i, m_vec[i]);
-		
-		
-		return m;
-	}
-
-    T& x = m_vec[0];
-    T& y = m_vec[1];
-    T& z = m_vec[2];
-
-    T m_vec[dim];
-
-
-
-};
-
-typedef Vector<2, float> Vector2f;
-typedef Vector<2, mpf_class> Vector2df;
 
 class Mass
 {
@@ -609,22 +341,19 @@ public:
 	///Gets the physics mesh (collision box) of the object
 	///WARNING: Does NOT update the mesh. See setPhysicsMesh()
 	///</summary>
-	std::list<PE::Vector2df>& getPhysicsMesh(int level = 2)
+	SFG::Polygon& getPhysicsMesh(int level = 2)
 	{
 		assert(level < 3 && level >= 0);
 		return m_physics_mesh[level];
 	}
 	
-	int transrotatePhysicsMesh(const PE::Matrix<mpf_class>& m)
-	{
-		
-		return 0;
-	}
+	SFG::Pointer<SFG::Polygon> transrotatedPhysicsMesh(int lod, double rot, const PE::Vector2df& trans);
 	
-	int setPhysicsMesh()
+	void setPhysicsMesh(int lod, const SFG::Polygon& pg)
 	{
+		assert(lod >= 0 && lod < 3);
 		
-		return 0;
+		m_physics_mesh[lod] = pg;
 	}
 	
 
@@ -634,7 +363,7 @@ private:
     Acceleration m_acc;
     Force m_force;
 
-    std::list<PE::Vector2df> m_physics_mesh[3];		//Array of lists of polygons that depict the detail levels low (just a bounding rectangle), medium (Convex shape) and high (should be close to exact).
+    SFG::Polygon m_physics_mesh[3];		//Array of lists of polygons that depict the detail levels low (just a bounding rectangle), medium (Convex shape) and high (should be close to exact).
 	
 	
     int m_destruction_type;
@@ -657,7 +386,7 @@ public:
 	}
 
 	
-private:	
+//private:	
 	bool m_collides;		//Whether the objects will be likely to collide
 	double m_eta; 			//Time until contact (in s)
 	const PE::PhysicObject& m_o1;	//The first object

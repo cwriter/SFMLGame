@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/silvan/Dokumente/Programming/SFMLGame
+CMAKE_SOURCE_DIR = /home/silvan/Programming/SFMLGame/SFMLGame
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/silvan/Dokumente/Programming/SFMLGame
+CMAKE_BINARY_DIR = /home/silvan/Programming/SFMLGame/SFMLGame
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,8 +69,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFMLGame/SFMLGame/CMakeFiles /home/silvan/Programming/SFMLGame/SFMLGame/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFMLGame/SFMLGame/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -798,6 +798,33 @@ src/SOW_main.cpp.s:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SOW_main.cpp.s
 .PHONY : src/SOW_main.cpp.s
 
+src/SSG_BuildOverlay.o: src/SSG_BuildOverlay.cpp.o
+
+.PHONY : src/SSG_BuildOverlay.o
+
+# target to build an object file
+src/SSG_BuildOverlay.cpp.o:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_BuildOverlay.cpp.o
+.PHONY : src/SSG_BuildOverlay.cpp.o
+
+src/SSG_BuildOverlay.i: src/SSG_BuildOverlay.cpp.i
+
+.PHONY : src/SSG_BuildOverlay.i
+
+# target to preprocess a source file
+src/SSG_BuildOverlay.cpp.i:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_BuildOverlay.cpp.i
+.PHONY : src/SSG_BuildOverlay.cpp.i
+
+src/SSG_BuildOverlay.s: src/SSG_BuildOverlay.cpp.s
+
+.PHONY : src/SSG_BuildOverlay.s
+
+# target to generate assembly for a file
+src/SSG_BuildOverlay.cpp.s:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_BuildOverlay.cpp.s
+.PHONY : src/SSG_BuildOverlay.cpp.s
+
 src/SSG_Galaxy.o: src/SSG_Galaxy.cpp.o
 
 .PHONY : src/SSG_Galaxy.o
@@ -1341,6 +1368,9 @@ help:
 	@echo "... src/SOW_main.o"
 	@echo "... src/SOW_main.i"
 	@echo "... src/SOW_main.s"
+	@echo "... src/SSG_BuildOverlay.o"
+	@echo "... src/SSG_BuildOverlay.i"
+	@echo "... src/SSG_BuildOverlay.s"
 	@echo "... src/SSG_Galaxy.o"
 	@echo "... src/SSG_Galaxy.i"
 	@echo "... src/SSG_Galaxy.s"

@@ -14,8 +14,8 @@
 #include <X11/Xlib.h>
 #endif
 
-#define RUNNING_SOW 1
-//#define RUNNING_SSG 1
+//#define RUNNING_SOW 1
+#define RUNNING_SSG 1
 
 int testingStuff(int argc, char* argv[])
 {
@@ -173,5 +173,9 @@ int main(int argc, char* argv[])
 	}
 
 	printf("Exit succeeded. Have nice day :)");
+#ifdef _DEBUG
+	printf("Press ENTER to continue\n");
+	getchar();
+#endif
     return 0;
 }

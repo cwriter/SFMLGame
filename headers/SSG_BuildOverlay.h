@@ -1,6 +1,8 @@
 #include "stdafx.h"
 
-
+///<summary>
+///Provides the menu to build a new ship or modify an old one
+///</summary>
 class SSG_BuildOverlay
 {
 public:
@@ -8,14 +10,15 @@ public:
 	~SSG_BuildOverlay();
 	
 	
-	int processEvents(std::vector<>& events)
+	int processEvents(std::vector<sf::Event>& events)
 	{
 		return 0;
 	}
 	
 	void draw(sf::RenderTarget& target)
 	{
-		target.draw(m_tex);
+		sf::Sprite tmp(m_tex.getTexture());
+		target.draw(tmp);
 	}
 
 	

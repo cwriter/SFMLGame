@@ -22,7 +22,7 @@ void Camera::update(float dt)
     {
         m_animated = false;
         //printf("Shortcutting: %f|%f\n", m_targetx - view.getCenter().x, m_targety - view.getCenter().y);
-        printf("Shortcutting: %f|%f\n", view.getCenter().x, view.getCenter().y);
+        //printf("Shortcutting: %f|%f\n", view.getCenter().x, view.getCenter().y);
         view.setCenter(m_targetx, m_targety);
         return;
     }
@@ -31,7 +31,7 @@ void Camera::update(float dt)
     move(m_stepx * dt,
          m_stepy * dt);
 
-    printf("Left: %f|%f\n", m_targetx - view.getCenter().x, m_targety - view.getCenter().y);
+    //printf("Left: %f|%f\n", m_targetx - view.getCenter().x, m_targety - view.getCenter().y);
 }
 
 void Camera::animatedPanTo(float x, float y)

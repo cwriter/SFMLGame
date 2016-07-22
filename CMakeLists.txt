@@ -13,11 +13,11 @@ file(GLOB Game_sources
 )
 
 #Set compiler flags
-SET(CCFLAGS "-g -rdynamic -std=c++11 -march=native")
+SET(CCFLAGS "-g -fopenmp -rdynamic -O3 -std=c++11 -march=native")
 
 add_executable(Game ${Game_sources})
 
-target_link_libraries(Game sfml-system sfml-window sfml-graphics sfml-audio sfml-network pthread dl X11 gmpxx gmp)
+target_link_libraries(Game sfml-system sfml-window sfml-graphics sfml-audio sfml-network pthread dl X11 gmpxx gmp gomp)
 
 
 add_definitions(${CCFLAGS})

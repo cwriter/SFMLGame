@@ -328,11 +328,11 @@ int Game::gameLoop()
     this->m_timing.drawingTime = clk.restart().asMicroseconds() / 1000.f;
 
 
-    /*SFG::Util::printLog(SFG::Util::LogMessageType::Development, __FILE__, __LINE__, "(%f|%f|%f)",
+    SFG::Util::printLog(SFG::Util::LogMessageType::Development, __FILE__, __LINE__, "(%f|%f|%f)",
           m_timing.processingTime,
           m_timing.updatingTime,
           m_timing.drawingTime
-    );*/
+    );
 
     if (!this->window.getSFMLWindow().isOpen()) {
         //Window has been closed, generally, we should save everything (if not yet done)

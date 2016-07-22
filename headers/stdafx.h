@@ -53,6 +53,7 @@
 #include "Rect.h"
 #include "Util.h"
 #include "Physics.h"
+#include <omp.h>
 
 //Developing
 #ifdef _WIN32

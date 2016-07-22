@@ -104,7 +104,7 @@ int SSG_Planet::update(float dt)
     assert(!std::isnan(x().get_d()));
     assert(!std::isnan(y().get_d()));
 	
-	printf("Velocity is %f|%f\n", this->getVelocity().getVector().x.get_d(), this->getVelocity().getVector().y.get_d());
+	//printf("Velocity is %f|%f\n", this->getVelocity().getVector().x.get_d(), this->getVelocity().getVector().y.get_d());
 
 	mpf_class ex1 = this->x().get_d() + this->getVelocity().getVector().x.get_d() * time;
 	mpf_class ex2 = this->y().get_d() + this->getVelocity().getVector().y.get_d() * time;

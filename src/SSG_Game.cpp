@@ -224,7 +224,7 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	/*printf("Dist is %f|%f\n", 
 		   m_lock_on->x() - m_cam.getView().getCenter().x,
 		   m_lock_on->y() - m_cam.getView().getCenter().y);*/
-	printf("Cam locking at %f|%f\n", m_lock_on->x().get_d(), m_lock_on->y().get_d());
+	//printf("Cam locking at %f|%f\n", m_lock_on->x().get_d(), m_lock_on->y().get_d());
 	m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	t->setView(m_cam);
 	//!TESTING
