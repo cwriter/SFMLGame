@@ -7,6 +7,7 @@
 #include "DebugWindow.h"
 #include "SSG_Game.h"
 #include "SOW_Game.h"
+#include "TEST_Ui.h"
 #include <gmpxx.h>
 
 
@@ -15,7 +16,8 @@
 #endif
 
 //#define RUNNING_SOW 1
-#define RUNNING_SSG 1
+//#define RUNNING_SSG 1
+#define RUNNING_TEST 2
 
 int testingStuff(int argc, char* argv[])
 {
@@ -73,8 +75,8 @@ int testingStuff(int argc, char* argv[])
     //Init loading UI
     XMLReader UIReader;
 
-    SFG::UIManager uim;
-    /*UIWindow* win = new UIWindow();
+    /*SFG::UIManager uim;
+    SFG::UIWindow* win = new UIWindow();
     if (win == NULL) {
     perror("ALLOCATION ERROR");
     exit(-1);
@@ -85,9 +87,10 @@ int testingStuff(int argc, char* argv[])
     winRead.setSource(data);
     winRead.parse();
     win->load(winRead, sf::String(L"Test-Window"), StringManager(L"Data/example - strings.xml"));
-    uim.addWindow(win);*/
+    uim.addWindow(win);
 
     uim.load("Data/example - uimanager.xml", StringManager(L"Data/example - strings.xml"));
+    */
 
     //========================NEEDS TO BE COPIED TO THE MAIN FUNC TO TEST THE UIMAN==============
     //uim.setTarget(game.window);
@@ -142,7 +145,11 @@ int main(int argc, char* argv[])
 #elif RUNNING_SOW
 		SFG::Pointer<GameState> SOW_gs(new SOW_Game);
 		game.addGamestate(SOW_gs);
-		
+#elif RUNNING_TEST
+		SFG::Pointer<GameState> TEST_gs(new TEST_UI);
+		TEST_gs->load("");
+		TEST_gs->UI()->setTarget(&game.window.getSFMLWindow());
+		game.addGamestate(TEST_gs);
 #endif
 		//game.window.create(1024, 720, "Game");
 		game.window.create(1920, 1080, "Game");

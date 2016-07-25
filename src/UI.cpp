@@ -344,9 +344,34 @@ void UIComboBox::draw(sf::RenderTarget& target, float scale)
     }
 }
 
+//UIButton
+
+UIButton::UIButton()
+{
+    this->setFunction(Function::mbDown, [=](void* data) {
+        //Set animation
+
+        return 0;
+    });
+    m_text.setColor(sf::Color::Black);
+    m_button_rect.setFillColor(sf::Color::Magenta);
+    this->setAlign(Align::Center, Align::Center);
+}
+
+void UIButton::draw(sf::RenderTarget& target, float scale)
+{
+    //This has a quite bad performance as it draws the text twice... Haven't found a way to optimize this, though
+    UILabel::draw(target, scale);
+    m_button_rect.setPosition(m_text.getGlobalBounds().left - m_text.getGlobalBounds().width / 2, m_text.getGlobalBounds().top - m_text.getGlobalBounds().height / 2);
+    m_button_rect.setSize(sf::Vector2f(m_text.getGlobalBounds().width * 2, m_text.getGlobalBounds().height * 2));
+    target.draw(m_button_rect);
+    UILabel::draw(target, scale);
+}
+
+
 //UIWindow
 
-int UIWindow::load(XMLReader& xml, sf::String& name, const StringManager& strman)
+int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringManager& strman)
 {
     //Load a specific window style and default values from an xml file
     size_t i = 0;
@@ -432,6 +457,7 @@ int UIWindow::load(XMLReader& xml, sf::String& name, const StringManager& strman
                     //The path has been checked before, so we don't have to check for "__xml_failure" again.
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
+					SFG::Util::printLog(SFG::Util::LogMessageType::Information, __FILE__, __LINE__, "A label is created from string \"%s\"", textid.toAnsiString().c_str());
                     ((UILabel*)component)->setText(strman.getString(textid, lang("**-**")), 15, "Fonts/arial.ttf");
                 }
             }
@@ -447,6 +473,7 @@ int UIWindow::load(XMLReader& xml, sf::String& name, const StringManager& strman
                     //The path has been checked before, so we don't have to check for "__xml_failure" again.
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
+					SFG::Util::printLog(SFG::Util::LogMessageType::Information, __FILE__, __LINE__, "A label is created from string \"%s\"", textid.toAnsiString().c_str());
                     ((UIButton*)component)->setText(strman.getString(textid, lang("**-**")), 50, "Fonts/arial.ttf");
                 }
             }
@@ -484,10 +511,10 @@ int UIWindow::on_mbDown(const sf::Vector2f& mpos, int button)
 
     //Handle window-specific elements
     if (this->m_titlebar.bounds().contains(mpos)) {
-        return this->m_titlebar.on_mbDown();
+        return this->m_titlebar.on_mbDown(button, mpos);
     }
     if (this->m_resizeknob.bounds().contains(mpos)) {
-        return this->m_resizeknob.on_mbDown();
+        return this->m_resizeknob.on_mbDown(button, mpos);
     }
 
 
@@ -496,7 +523,7 @@ int UIWindow::on_mbDown(const sf::Vector2f& mpos, int button)
         if (c == NULL) continue;
         if (c->bounds().contains(mpos)) {
             //Found the object the cursor is hovering over
-            return c->on_mbDown();
+            return c->on_mbDown(button, mpos);
         }
     }
     return 0;
@@ -510,10 +537,10 @@ int UIWindow::on_mbUp(const sf::Vector2f& mpos, int button)
 
     //Handle window-specific elements
     if (this->m_titlebar.bounds().contains(mpos)) {
-        return this->m_titlebar.on_mbUp();
+        return this->m_titlebar.on_mbUp(button, mpos);
     }
     if (this->m_resizeknob.bounds().contains(mpos)) {
-        return this->m_resizeknob.on_mbUp();
+        return this->m_resizeknob.on_mbUp(button, mpos);
     }
 
     //Get the position inside the grid
@@ -527,7 +554,7 @@ int UIWindow::on_mbUp(const sf::Vector2f& mpos, int button)
         if (c == NULL) continue;
         if (c->bounds().contains(mpos)) {
             //Found the object the cursor is hovering over
-            return c->on_mbUp();
+            return c->on_mbUp(button, mpos);
         }
     }
     return 0;
@@ -686,7 +713,10 @@ void UIWindow::init()
 {
     this->m_titlebar.setFunction(UIComponent::Function::mbDown,
     [=](void* data) {
-        m_track = 2;
+		
+		MouseButtonData* mbd = (MouseButtonData*)data;
+		if(mbd->btn == sf::Mouse::Button::Left)
+			m_track = 2;
         //sf::Vector2f coords = m_target->mapPixelToCoords(sf::Mouse::getPosition(*m_target), m_target->getDefaultView());
 
         //m_last_track_pos = coords;
@@ -695,8 +725,16 @@ void UIWindow::init()
 
     this->m_titlebar.setFunction(UIComponent::Function::mbUp,
     [=](void* data) {
-        m_track = 0;
-        m_resize_track = 0;
+		MouseButtonData* mbd = (MouseButtonData*)data;
+		if(mbd->btn == sf::Mouse::Button::Left)
+		{
+			m_track = 0;
+			m_resize_track = 0;
+		}
+		else if(mbd->btn == sf::Mouse::Button::Right)
+		{
+			//Display context menu
+		}
         return 1;
     });
 
@@ -829,9 +867,11 @@ int UIManager::processEvents(std::vector<sf::Event>& events)
 
 void UIManager::draw(sf::RenderTarget& target)
 {
+/*
 #ifdef _DEBUG
-    printf("[Warning] Using non-scaling aware function in %s:%d\n", __FILE__, __LINE__);
+    SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__, "[Warning] Using non-scaling aware function");
 #endif
+*/
     size_t i = 0;
     for (auto w : m_windows) {
         //#TODO: Get the size of the view and align objects accordingly
@@ -839,7 +879,7 @@ void UIManager::draw(sf::RenderTarget& target)
         if (w->changed)
         {
             w->correctPositions();
-            drawWindowToTexture(target, i, 1.f);
+            drawWindowToTexture(target, i, m_manager_scale);
 
             m_tmp_textures[i]->display();
         }
@@ -915,4 +955,74 @@ void UIManager::drawWindowToTexture(sf::RenderTarget& target, size_t i, float sc
 
     m_windows[i]->changed = false;	//Mark all changes as accepted and redrawn
 }
+
+int UIManager::load(const sf::String& path, const StringManager& strman)
+{
+    sf::FileInputStream file;
+    if (!file.open(path)) return -1;
+    sf::Int64 fsize = file.getSize();
+    if (fsize == -1) return -2;
+
+    char* data = (char*)malloc(size_t(fsize));
+    if (data == NULL) return -2;
+
+    if (file.read(data, fsize) != fsize)
+    {
+        free(data);
+        return -3;
+    }
+    sf::String src = sf::String::fromUtf8(data, data + fsize);
+    XMLReader reader;
+    //reader.setSource(std::string(data, size_t(fsize))); //#TODO/CRITICAL: CHECK IF WORKING!
+    reader.setSource(src); //#TODO/CRITICAL: CHECK IF WORKING!
+    //Free the file read data
+    free(data);
+    int ret = reader.parse();
+    if (ret != 0)
+    {
+        printf("[Error] Failed to parse structure in %s:%d with Code %d\n", __FILE__, __LINE__, ret);
+        return -2;
+    }
+    //get the general group handle
+    auto h = reader.getXMLGroupHandle(L"xml/module[UI]/manager/");
+    if (h == nullptr)
+    {
+        printf("[Error] Failed to load %s in %s:%d\n", path.toAnsiString().c_str(), __FILE__, __LINE__);
+        return -4;
+    }
+    //Get a reader for this
+    XMLReader sub(*h);
+    //Reparse (should not be necessary)
+    ret = sub.parse();
+    if (ret != 0)
+    {
+        printf("[Error] Failed to parse structure in %s:%d with Code %d\n", __FILE__, __LINE__, ret);
+        return -3;
+    }
+    for (size_t i = 0; true; i++)
+    {
+        UIWindow* window = new UIWindow();
+        if (window == nullptr)
+        {
+            printf("[Error] Failed to allocate memory in %s:%d\n", __FILE__, __LINE__);
+            return -1;
+        }
+        auto _tmp = sf::String(std::to_wstring(i));
+        if (window->load(sub, _tmp, strman) == -1)
+        {
+            //If we read all windows, just break
+            delete window; //Cleanup the tmp instance
+            break;
+        }
+        else
+        {
+            //Otherwise, push the object on the vector
+            addWindow(window);
+        }
+    }
+
+
+    return 0;
+}
+
 };

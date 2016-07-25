@@ -328,12 +328,18 @@ int Game::gameLoop()
     this->m_timing.drawingTime = clk.restart().asMicroseconds() / 1000.f;
 
 
-    SFG::Util::printLog(SFG::Util::LogMessageType::Development, __FILE__, __LINE__, "(%f|%f|%f)",
+    /*SFG::Util::printLog(SFG::Util::LogMessageType::Development, __FILE__, __LINE__, "(%f|%f|%f)",
           m_timing.processingTime,
           m_timing.updatingTime,
           m_timing.drawingTime
-    );
-
+    );*/
+	if(m_timing.processingTime > 2.f)
+		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
+							"Exceeding expected time for processing (%f > 2.f)", m_timing.processingTime);
+	if(m_timing.updatingTime > 10.f)
+		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
+							"Exceeding expected time for updating (%f > 10.f)", m_timing.updatingTime);
+	
     if (!this->window.getSFMLWindow().isOpen()) {
         //Window has been closed, generally, we should save everything (if not yet done)
         //And then end the program

@@ -60,7 +60,7 @@
 #include <Windows.h>
 #else
 //For *nix, we need XInitThreads
-
+//#include <X11/Xlib.h>
 #endif
 
 #ifndef _WIN32
@@ -72,14 +72,13 @@
 #endif
 
 
-#define SFML_ERASE_WHITESPACE(x) for (size_t i = 0; i < x.getSize(); /*nothing to do each loop*/) \
+#define SFML_ERASE_WHITESPACE(x) \
+for (size_t i = 0; i < x.getSize();) \
 { \
-	/*Get the first thing to delete*/ \
-	i = std::min({x.find(" ", i), x.find("\t", i), x.find("\n", i)}); \
+	i = std::min({x.find(" ", i), x.find("\t", i), x.find("\n", i), x.find("\b", i), x.find("\r", i)}); \
 	if (i == x.InvalidPos) break; \
 	else \
 	{ \
-		/*Erase*/ \
 		x.erase(i, 1);\
 	} \
 }

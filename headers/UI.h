@@ -3,6 +3,7 @@
 #include "XML.h"
 #include "StringManager.h"
 #include "Window.h"
+#include "Pointer.h"
 
 namespace SFG
 {
@@ -80,6 +81,12 @@ private:
     std::vector<UIComponent*> m_components;
 };
 
+struct MouseButtonData
+{
+	int btn;
+	sf::Vector2f pos;
+};
+
 class UIComponent
 {
 public:
@@ -104,21 +111,40 @@ public:
     void setFunction(int type, std::function<int(void*)> func) {
         m_functions[type] = func;
     }
+    
+    ///<summary>
+    ///Sets the size of a component. If a parameter is 0, the component shall
+    ///take the size it finds fitting.
+    ///</summary>
+    virtual void setSize(float x, float y)
+	{
+		
+	}
 
-    virtual int on_mbDown() {
-        return launchFunction(Function::mbDown);
+    virtual int on_mbDown(int btn, const sf::Vector2f& pos) {
+		MouseButtonData mbd;
+		mbd.btn = btn;
+		mbd.pos = pos;
+        return launchFunction(Function::mbDown, &mbd);
     }
-    virtual int on_mbUp() {
-        return launchFunction(Function::mbUp);
+    
+    virtual int on_mbUp(int btn, const sf::Vector2f& pos) {
+		MouseButtonData mbd;
+		mbd.btn = btn;
+		mbd.pos = pos;
+        return launchFunction(Function::mbUp, &mbd);
     }
+    
     virtual int on_hoverEnter() {
         hovered = true;
         return launchFunction(Function::hoverEnter, NULL);
     }
+    
     virtual int on_hoverLeave() {
         hovered = false;
         return launchFunction(Function::hoverLeave, NULL);
     }
+    
     virtual int on_mouseMoved(const sf::Vector2f* mpos) {
         return launchFunction(Function::mouseMoved, (void*)mpos);
     }
@@ -256,27 +282,10 @@ protected:
 class UIButton : public UILabel
 {
 public:
-    UIButton() {
-        this->setFunction(Function::mbDown, [=](void* data) {
-            //Set animation
-
-            return 0;
-        });
-        m_text.setColor(sf::Color::Black);
-        m_button_rect.setFillColor(sf::Color::Magenta);
-        this->setAlign(Align::Center, Align::Center);
-    }
+    UIButton();
     //~UIButton();
 
-    virtual void draw(sf::RenderTarget& target, float scale) override
-    {
-        //This has a quite bad performance as it draws the text twice... Haven't found a way to optimize this, though
-        UILabel::draw(target, scale);
-        m_button_rect.setPosition(m_text.getGlobalBounds().left - m_text.getGlobalBounds().width / 2, m_text.getGlobalBounds().top - m_text.getGlobalBounds().height / 2);
-        m_button_rect.setSize(sf::Vector2f(m_text.getGlobalBounds().width * 2, m_text.getGlobalBounds().height * 2));
-        target.draw(m_button_rect);
-        UILabel::draw(target, scale);
-    }
+    virtual void draw(sf::RenderTarget& target, float scale) override;
 
 private:
     sf::RectangleShape m_button_rect;
@@ -288,21 +297,45 @@ public:
     UITitleBar()
     {
         m_rect.setFillColor(sf::Color(50, 50, 250));
+		m_tex.create(10,10);
     }
 
     virtual void setPosition(const sf::Vector2f& pos) {
         this->m_rect.setPosition(pos);
         this->m_bounds = this->m_rect.getGlobalBounds();
+		this->m_button_sprite.setPosition(pos);
     }
 
     virtual void setSize(const sf::Vector2f& size) {
         this->m_rect.setSize(size);
+		m_tex.create(uint(size.x), uint(size.y));
+		m_tex.clear(sf::Color(0,0,0,0)); //Fill with transparent color
+		
         this->m_bounds = this->m_rect.getGlobalBounds();
     }
 
     virtual void draw(sf::RenderTarget& target, float scale) override {
         m_rect.setScale(1.f, scale);
+
+		float current_x = 0.f;
+		//Draw elements to texture
+		for(size_t i = 0; i < m_elements.size(); i++)
+		{
+			auto& c = m_elements[i];
+			c->setPosition(current_x, 0.f);
+			c->setSize(0.f, this->m_bounds.height);
+			c->draw(m_tex, scale);
+			current_x += c->bounds().width;
+			if(current_x > float(m_tex.getSize().x))
+			{
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Buttons in titlebar are wider than the bar itself");
+			}
+		}
+		m_button_sprite.setTexture(m_tex.getTexture());
+		
+		
         target.draw(m_rect);
+		target.draw(m_button_sprite);
     }
 
     virtual void move(float x, float y) override {
@@ -321,6 +354,9 @@ public:
 
 private:
     sf::RectangleShape m_rect;
+	std::vector<SFG::Pointer<UIComponent>> m_elements;
+	sf::Sprite m_button_sprite;
+	sf::RenderTexture m_tex;
 };
 
 class UIWindow
@@ -403,7 +439,7 @@ public:
         return 0;
     }
 
-    int load(XMLReader& xml, sf::String& name, const StringManager& strman);
+    int load(const XMLReader& xml, const sf::String& name, const StringManager& strman);
 
     sf::FloatRect relativePos;
     sf::FloatRect m_position;
@@ -419,6 +455,9 @@ private:
 
     unsigned char m_track;
     unsigned char m_resize_track;
+	
+	
+	
     sf::Vector2f m_last_track_pos;
     sf::Vector2f m_last_resize_track_pos;
     //sf::RenderWindow* m_target;
@@ -439,7 +478,8 @@ class UIManager
 {
 public:
     UIManager() {
-        m_target = NULL;
+        m_target = nullptr;
+		m_manager_scale = 1.f;
     }
     ~UIManager() {
         for (auto p : this->m_tmp_textures)
@@ -455,6 +495,14 @@ public:
         }
     }
 
+    void setScale(float s){
+		m_manager_scale = s;
+	}
+	
+	float getScale() const {
+		return m_manager_scale;
+	}
+    
     void setTarget(sf::RenderWindow* w) {
         m_target = w;
     }
@@ -467,75 +515,9 @@ public:
     ///Loads up all windows / things that should be open already
     ///</summary>
     ///<param name="path">The path to the file containing the UI Manager data</param>
-    int load(const sf::String& path, const StringManager& strman)
-    {
-        sf::FileInputStream file;
-        if (!file.open(path)) return -1;
-        sf::Int64 fsize = file.getSize();
-        if (fsize == -1) return -2;
-
-        char* data = (char*)malloc(size_t(fsize));
-        if (data == NULL) return -2;
-
-        if (file.read(data, fsize) != fsize)
-        {
-            free(data);
-            return -3;
-        }
-        sf::String src = sf::String::fromUtf8(data, data + fsize);
-        XMLReader reader;
-        //reader.setSource(std::string(data, size_t(fsize))); //#TODO/CRITICAL: CHECK IF WORKING!
-        reader.setSource(src); //#TODO/CRITICAL: CHECK IF WORKING!
-        //Free the file read data
-        free(data);
-        int ret = reader.parse();
-        if (ret != 0)
-        {
-            printf("[Error] Failed to parse structure in %s:%d with Code %d\n", __FILE__, __LINE__, ret);
-            return -2;
-        }
-        //get the general group handle
-        auto h = reader.getXMLGroupHandle(L"xml/module[UI]/manager/");
-        if (h == nullptr)
-        {
-            printf("[Error] Failed to load %s in %s:%d\n", path.toAnsiString().c_str(), __FILE__, __LINE__);
-            return -4;
-        }
-        //Get a reader for this
-        XMLReader sub(*h);
-        //Reparse (should not be necessary)
-        ret = sub.parse();
-        if (ret != 0)
-        {
-            printf("[Error] Failed to parse structure in %s:%d with Code %d\n", __FILE__, __LINE__, ret);
-            return -3;
-        }
-        for (size_t i = 0; true; i++)
-        {
-            UIWindow* window = new UIWindow();
-            if (window == nullptr)
-            {
-                printf("[Error] Failed to allocate memory in %s:%d\n", __FILE__, __LINE__);
-                return -1;
-            }
-            auto _tmp = sf::String(std::to_wstring(i));
-            if (window->load(sub, _tmp, strman) == -1)
-            {
-                //If we read all windows, just break
-                delete window; //Cleanup the tmp instance
-                break;
-            }
-            else
-            {
-                //Otherwise, push the object on the vector
-                addWindow(window);
-            }
-        }
-
-
-        return 0;
-    }
-
+    int load(const sf::String& path, const StringManager& strman);
+	
+	
     size_t selectElementByMousePos(sf::Vector2f* out);
 
     int processEvents(std::vector<sf::Event>& events);
@@ -544,6 +526,7 @@ public:
     void draw(SFG::Window& target);
 
     void update(float dt) {
+		assert(m_target != nullptr);
         for (auto w : m_windows) {
             sf::Vector2f mpos;
             mpos = m_target->mapPixelToCoords(sf::Mouse::getPosition(*m_target), m_target->getView());
@@ -563,7 +546,7 @@ private:
     void drawWindowToTexture(sf::RenderTarget& target, size_t i, float scale);
 
 
-
+	float m_manager_scale;
     sf::RenderWindow* m_target;
     std::vector<UIWindow*> m_windows;
     std::vector<sf::RenderTexture*> m_tmp_textures;
