@@ -3,6 +3,7 @@
 #include "GameState.h"
 #include "Camera.h"
 #include "SSG_Universe.h"
+#include "SSG_BuildOverlay.h"
 
 class SSG_Game :
     public GameState
@@ -73,6 +74,8 @@ public:
     }
 
 private:
+	SSG_BuildOverlay m_build_overlay;
+	
     PE::PhysicsEngine m_physicsEngine;		//The physics engine used
     SFG::Camera m_cam;						//The standard game camera
     SFG::Pointer<PE::PhysicObject> m_lock_on;	//Center of the Camera

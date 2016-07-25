@@ -4,6 +4,7 @@
 #include "StringManager.h"
 #include "Window.h"
 #include "Pointer.h"
+#include <functional>
 
 namespace SFG
 {
@@ -241,6 +242,11 @@ public:
     virtual void draw(sf::RenderTarget& target, float scale) override;
 
     void setText(const sf::String& text, int size, const std::string& font);
+	
+	void setImage(const sf::Texture& tex)
+	{
+		this->m_sprite.setTexture(tex);
+	}
 
     void setBounds(const sf::FloatRect& fr) override;
 
@@ -273,6 +279,8 @@ protected:
 
     sf::FloatRect m_size;
 
+	sf::Sprite m_sprite;
+	
     sf::String m_string;
     sf::Text m_text;
     sf::Font m_font;
@@ -286,8 +294,14 @@ public:
     //~UIButton();
 
     virtual void draw(sf::RenderTarget& target, float scale) override;
+	
+	void setAction(std::function<void(void)> func)
+	{
+		m_action_on_click = func;
+	}
 
 private:
+	std::function<void(void)> m_action_on_click;
     sf::RectangleShape m_button_rect;
 };
 
@@ -314,29 +328,7 @@ public:
         this->m_bounds = this->m_rect.getGlobalBounds();
     }
 
-    virtual void draw(sf::RenderTarget& target, float scale) override {
-        m_rect.setScale(1.f, scale);
-
-		float current_x = 0.f;
-		//Draw elements to texture
-		for(size_t i = 0; i < m_elements.size(); i++)
-		{
-			auto& c = m_elements[i];
-			c->setPosition(current_x, 0.f);
-			c->setSize(0.f, this->m_bounds.height);
-			c->draw(m_tex, scale);
-			current_x += c->bounds().width;
-			if(current_x > float(m_tex.getSize().x))
-			{
-				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Buttons in titlebar are wider than the bar itself");
-			}
-		}
-		m_button_sprite.setTexture(m_tex.getTexture());
-		
-		
-        target.draw(m_rect);
-		target.draw(m_button_sprite);
-    }
+    virtual void draw(sf::RenderTarget& target, float scale) override;
 
     virtual void move(float x, float y) override {
         this->m_rect.move(x, y);
@@ -362,6 +354,16 @@ private:
 class UIWindow
 {
 public:
+	
+	enum WindowFlags
+	{
+		Default = 0,
+		NoResize = 1,
+		NoTitlebar = 2,
+		NoContextMenu = 4,
+		CloseButton = 8
+	};
+	
     UIWindow()
     {
         this->m_grid = NULL;
@@ -373,6 +375,8 @@ public:
         this->m_resizeknob.setSize(sf::Vector2f(20.f, 20.f));
         this->titlebarheight = 20.f;
         this->changed = true;
+		
+		this->m_window_flags = 0;
     }
 
     ~UIWindow() {
@@ -397,6 +401,17 @@ public:
         return 0;
     }
 
+    int setWindowFlags(uint32_t flags)
+	{
+		this->m_window_flags |= flags;
+		return 0;
+	}
+    
+    uint32_t getWindowFlags() const
+    {
+		return this->m_window_flags;
+	}
+    
     virtual int on_mbDown(const sf::Vector2f& mpos, int button);
 
     virtual int on_mbUp(const sf::Vector2f& mpos, int button);
@@ -449,7 +464,7 @@ public:
     float titlebarheight;
 private:
 
-
+	uint32_t m_window_flags;
 
     void init();
 
@@ -484,12 +499,12 @@ public:
     ~UIManager() {
         for (auto p : this->m_tmp_textures)
         {
-            if (p != NULL) {
+            if (p != nullptr) {
                 delete p;
             }
         }
         for (auto w : this->m_windows) {
-            if (w != NULL) {
+            if (w != nullptr) {
                 delete w;
             }
         }
@@ -536,7 +551,7 @@ public:
 
     inline void addWindow(UIWindow* w) {
         this->m_windows.push_back(w);
-        this->m_tmp_textures.push_back(NULL);
+        this->m_tmp_textures.push_back(nullptr);
     }
 
     sf::FloatRect m_positions;
@@ -548,6 +563,10 @@ private:
 
 	float m_manager_scale;
     sf::RenderWindow* m_target;
+	
+	//The global context menu
+	SFG::UIWindow m_context_window;
+	
     std::vector<UIWindow*> m_windows;
     std::vector<sf::RenderTexture*> m_tmp_textures;
 };

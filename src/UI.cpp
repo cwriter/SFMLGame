@@ -63,6 +63,10 @@ void UILabel::draw(sf::RenderTarget& target, float scale)
         printf("Error: Unknown value at %s:%d\n", __FILE__, __LINE__);
         break;
     }
+    
+    m_sprite.setPosition(m_text.getPosition());
+    target.draw(m_sprite);
+    
     target.draw(m_text);
 }
 
@@ -344,12 +348,43 @@ void UIComboBox::draw(sf::RenderTarget& target, float scale)
     }
 }
 
+//UITitleBar
+
+void UITitleBar::draw(sf::RenderTarget& target, float scale) 
+{
+	m_rect.setScale(1.f, scale);
+
+	float current_x = 0.f;
+	//Draw elements to texture
+	for(size_t i = 0; i < m_elements.size(); i++)
+	{
+		auto& c = m_elements[i];
+		c->setPosition(current_x, 0.f);
+		c->setSize(0.f, this->m_bounds.height);
+		c->draw(m_tex, scale);
+		current_x += c->bounds().width;
+		if(current_x > float(m_tex.getSize().x))
+		{
+			SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Buttons in titlebar are wider than the bar itself");
+		}
+	}
+	m_button_sprite.setTexture(m_tex.getTexture());
+	
+		
+	target.draw(m_rect);
+	target.draw(m_button_sprite);
+}
+
 //UIButton
 
 UIButton::UIButton()
 {
     this->setFunction(Function::mbDown, [=](void* data) {
         //Set animation
+		//TODO: Make animation
+		
+		
+		this->m_action_on_click();
 
         return 0;
     });
@@ -673,16 +708,18 @@ void UIWindow::draw(sf::RenderTarget& target, const sf::Vector2f& size, float sc
 
     //printf("Titlebar stats: %f:%f and %f wide\n", m_position.left, m_position.top, m_position.width);
 
-    this->m_titlebar.setPosition(sf::Vector2f(dfr.left, dfr.top));
-    this->m_titlebar.setSize(sf::Vector2f(m_position.width, this->titlebarheight));
-    this->m_titlebar.draw(target, scale);
-    this->m_titlebar.setPosition(sf::Vector2f(m_position.left, m_position.top));
+	if(!(m_window_flags & WindowFlags::NoTitlebar))
+	{
+		this->m_titlebar.setPosition(sf::Vector2f(dfr.left, dfr.top));
+		this->m_titlebar.setSize(sf::Vector2f(m_position.width, this->titlebarheight));
+		this->m_titlebar.draw(target, scale);
+		this->m_titlebar.setPosition(sf::Vector2f(m_position.left, m_position.top));
 
-    this->m_titlebarlabel.setPosition(dfr.left, dfr.top);
-    this->m_titlebarlabel.setSize(this->m_titlebar.bounds().width, this->m_titlebar.bounds().height);
-    this->m_titlebarlabel.draw(target, scale);
-    this->m_titlebarlabel.setPosition(m_position.left, m_position.top);
-
+		this->m_titlebarlabel.setPosition(dfr.left, dfr.top);
+		this->m_titlebarlabel.setSize(this->m_titlebar.bounds().width, this->m_titlebar.bounds().height);
+		this->m_titlebarlabel.draw(target, scale);
+		this->m_titlebarlabel.setPosition(m_position.left, m_position.top);
+	}
 
     this->m_windowframe.setSize(sf::Vector2f(m_position.width, m_position.height));
     this->m_windowframe.setPosition(dfr.left, dfr.top + m_titlebar.bounds().height);
@@ -690,15 +727,17 @@ void UIWindow::draw(sf::RenderTarget& target, const sf::Vector2f& size, float sc
     target.draw(m_windowframe);
     this->m_windowframe.setPosition(m_position.left, m_position.top + m_titlebar.bounds().height);
 
-    this->m_resizeknob.setPosition(sf::Vector2f(
-                                       dfr.left + dfr.width - m_resizeknob.bounds().width,
-                                       dfr.top + m_titlebar.bounds().height + m_position.height - m_resizeknob.bounds().height));
-    this->m_resizeknob.setSize(sf::Vector2f(titlebarheight, titlebarheight));
-    this->m_resizeknob.draw(target, scale);
-    this->m_resizeknob.setPosition(sf::Vector2f(
-                                       m_position.left + m_position.width - m_resizeknob.bounds().width,
-                                       m_position.top + m_titlebar.bounds().height + m_position.height - m_resizeknob.bounds().height));
-
+	if(!(m_window_flags & WindowFlags::NoResize))
+	{
+		this->m_resizeknob.setPosition(sf::Vector2f(
+										dfr.left + dfr.width - m_resizeknob.bounds().width,
+										dfr.top + m_titlebar.bounds().height + m_position.height - m_resizeknob.bounds().height));
+		this->m_resizeknob.setSize(sf::Vector2f(titlebarheight, titlebarheight));
+		this->m_resizeknob.draw(target, scale);
+		this->m_resizeknob.setPosition(sf::Vector2f(
+										m_position.left + m_position.width - m_resizeknob.bounds().width,
+										m_position.top + m_titlebar.bounds().height + m_position.height - m_resizeknob.bounds().height));
+	}
     //Draw Grid and it's children
     if (m_grid != NULL) {
         m_grid->setPosition(m_windowframe.getGlobalBounds().left,
