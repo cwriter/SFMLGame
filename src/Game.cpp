@@ -333,13 +333,15 @@ int Game::gameLoop()
           m_timing.updatingTime,
           m_timing.drawingTime
     );*/
+	
+#ifdef _SFGPROFILE
 	if(m_timing.processingTime > 2.f)
 		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
 							"Exceeding expected time for processing (%f > 2.f)", m_timing.processingTime);
 	if(m_timing.updatingTime > 10.f)
 		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
 							"Exceeding expected time for updating (%f > 10.f)", m_timing.updatingTime);
-	
+#endif
     if (!this->window.getSFMLWindow().isOpen()) {
         //Window has been closed, generally, we should save everything (if not yet done)
         //And then end the program

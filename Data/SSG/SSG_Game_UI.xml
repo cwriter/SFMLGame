@@ -1,0 +1,19 @@
+<xml>
+	<module name="UI">
+		<manager name="SSG_Game_UI_man">
+			<object name="VisorSelector">
+				<title>Test-Window</title>
+				<rect>40.0;0.0;20.0;10.0</rect>
+				<grid cols="4" rows="1">
+					<element name="label_1" type="label" position="0;0">
+						GLOBAL_STRING_TEST
+					</element>
+					<element name="button_1" type="button" position="1;0">
+						bla
+					</element>
+				</grid>
+			</object>
+		</manager>
+	</module>
+	
+</xml>

@@ -3,7 +3,7 @@
 	<module name="UI">
 		<object name="Test-Window">
 			<title>Test-Window</title>
-			<rect>0.0;0.0;50.0;50.0;</rect>
+			<rect>10.0;20.0;50.0;50.0;</rect>
 			<grid cols="1" rows="2">
 				<element name="label_1" type="label" position="0;0">
 					GLOBAL_STRING_TEST

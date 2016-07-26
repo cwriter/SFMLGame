@@ -40,17 +40,19 @@ int SSG_Game::update(double dt)
 	this->m_universe.update(dt);
 	//this->m_universe.update(dt*100000.f);
 
-    /*this->moon->update(float(dt));
-
-    this->planet->update(float(dt));
-
-    this->sun->update(float(dt));*/
-    //this->planet->update(float(dt));
+	if(this->m_build_overlay.isEnabled()) {
+		this->m_build_overlay.update(dt);
+	}
+    
     return 0;
 }
 
 int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 {
+	if(this->m_build_overlay.isEnabled()) {
+		this->m_build_overlay.processEvents(events);
+	}
+	
     for (size_t i = 0; i < events.size(); i++)
     {
         //#TODO: Consider remapping with this->keyMapper()
@@ -230,6 +232,9 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	//!TESTING
 	this->m_universe.draw(t);
 
+	if(this->m_build_overlay.isEnabled()) {
+		this->m_build_overlay.draw(*t);
+	}
 }
 
 bool SSG_Game::pause(bool p)

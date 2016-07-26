@@ -23,6 +23,13 @@ public:
 	
 	int load(const sf::String& path)
 	{
+		int ret = this->m_ui.load(path, StringManager(path));
+		if(ret != 0)
+		{
+			SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+				"Failed to load SSG_BuildOverlay (Code %d)", ret);
+			return ret;
+		}
 		
 		return 0;
 	}
@@ -31,6 +38,10 @@ public:
 	{
 		m_ui.update(dt);
 		return 0;
+	}
+	
+	bool isEnabled() const {
+		return m_enabled;
 	}
 	
 	int enable(sf::RenderTarget& target)

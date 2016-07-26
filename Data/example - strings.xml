@@ -2,7 +2,7 @@
 	<string name="GLOBAL_STRING_TEST">
 		<lang name="en">
 			<sub name="us">Testlabel that displays some bigger texts that can easily exceed the window bounds.
-Additionally, newline feeds are also taken over as well as XML intends. You should be careful about this.</sub>
+Additionally, newline feeds are also taken over as well as XML indents. You should be careful about this.</sub>
 			<sub name="gb">Testlabel that displays some bigger texts.</sub>
 		</lang>
 	</string>

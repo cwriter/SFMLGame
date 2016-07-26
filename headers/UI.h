@@ -453,11 +453,11 @@ public:
         this->m_grid = g;
     }
 
-    virtual void dragMoveHandler(sf::Vector2f mpos);
+    virtual void dragMoveHandler(const sf::Vector2f& mpos);
 
-    virtual void resizeMoveHandler(sf::Vector2f mpos);
+    virtual void resizeMoveHandler(const sf::Vector2f& mpos);
 
-    virtual int update(sf::Vector2f& mpos, float dt) {
+    virtual int update(const sf::Vector2f& mpos, float dt) {
         if (m_track > 0)
             dragMoveHandler(mpos);
         if (m_resize_track > 0)
@@ -480,6 +480,8 @@ public:
 
     int load(const XMLReader& xml, const sf::String& name, const StringManager& strman);
 
+	sf::FloatRect lastViewRect;
+	
     sf::FloatRect relativePos;
     sf::FloatRect m_position;
 

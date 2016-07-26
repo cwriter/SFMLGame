@@ -151,8 +151,8 @@ int main(int argc, char* argv[])
 		TEST_gs->UI()->setTarget(&game.window.getSFMLWindow());
 		game.addGamestate(TEST_gs);
 #endif
-		//game.window.create(1024, 720, "Game");
-		game.window.create(1920, 1080, "Game");
+		game.window.create(1024, 720, "Game");
+		//game.window.create(1920, 1080, "Game");
 		game.window.setScale(1.f);
 
 		game.window.getSFMLWindow().setFramerateLimit(60);

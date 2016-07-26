@@ -547,6 +547,7 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
 
 		});
 		found = true;
+		correctPositions();
 		windex++;
     });
 	if(found)
@@ -557,9 +558,18 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
 
 int UIWindow::on_mbDown(const sf::Vector2f& mpos, int button)
 {
+	SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+		"MBDown @ (%f|%f), window bounds (%f|%f|%f|%f)", 
+		mpos.x, mpos.y, m_position.left, m_position.top,
+		m_position.width, m_position.height);
     //Handle window-specific elements
 	if(!(m_window_flags & WindowFlags::NoTitlebar))
 	{
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"Titlebar bounds (%f|%f|%f|%f), mpos (%f|%f)", 
+			m_titlebar.bounds().left, m_titlebar.bounds().top,
+			m_titlebar.bounds().width, m_titlebar.bounds().height,
+			mpos.x, mpos.y);
 		if (this->m_titlebar.bounds().contains(mpos)) {
 			return this->m_titlebar.on_mbDown(button, mpos);
 		}
@@ -593,12 +603,18 @@ int UIWindow::on_mbUp(const sf::Vector2f& mpos, int button)
     this->m_track = 0;
 
     //Handle window-specific elements
-    if (this->m_titlebar.bounds().contains(mpos)) {
-        return this->m_titlebar.on_mbUp(button, mpos);
-    }
-    if (this->m_resizeknob.bounds().contains(mpos)) {
-        return this->m_resizeknob.on_mbUp(button, mpos);
-    }
+	if(!(m_window_flags & WindowFlags::NoTitlebar))
+	{
+		if (this->m_titlebar.bounds().contains(mpos)) {
+			return this->m_titlebar.on_mbUp(button, mpos);
+		}
+	}
+	if(!(m_window_flags & WindowFlags::NoResize))
+	{
+		if (this->m_resizeknob.bounds().contains(mpos)) {
+			return this->m_resizeknob.on_mbUp(button, mpos);
+		}
+	}
 
     //Get the position inside the grid
     if (this->m_grid == NULL)
@@ -648,9 +664,11 @@ int UIWindow::on_hover(const sf::Vector2f& mpos)
     return 0;
 }
 
-void UIWindow::dragMoveHandler(sf::Vector2f mpos)
+void UIWindow::dragMoveHandler(const sf::Vector2f& mpos)
 {
     if (m_track == 1) {
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"m_track == 1");
         sf::Vector2f coords = mpos;
         /*this->m_titlebar.move(mpos.x - m_last_track_pos.x,
         	mpos.y - m_last_track_pos.y);*/
@@ -658,15 +676,8 @@ void UIWindow::dragMoveHandler(sf::Vector2f mpos)
         this->m_position.left += mpos.x - m_last_track_pos.x;
         this->m_position.top += mpos.y - m_last_track_pos.y;
 
-        /*this->m_position.left = m_titlebar.getPosition().x;
-        this->m_position.top = m_titlebar.getPosition().y;*/
-
-        //Set the correct relative values
-        float xsize = this->m_position.width / this->relativePos.width / m_scale;
-        float ysize = this->m_position.height / this->relativePos.height / m_scale;
-
-        this->relativePos.left = m_position.left / xsize;
-        this->relativePos.top = m_position.top / ysize;
+		relativePos.left = (m_position.left - lastViewRect.left) * 100.f / lastViewRect.width;
+		relativePos.top = (m_position.top - lastViewRect.top) * 100.f / lastViewRect.height;
 
         this->m_last_track_pos = mpos;
 
@@ -674,22 +685,20 @@ void UIWindow::dragMoveHandler(sf::Vector2f mpos)
         this->correctPositions();
     }
     else if (m_track == 2) {
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"m_track == 1");
         this->m_last_track_pos = mpos;
         m_track = 1;
     }
 }
 
-void UIWindow::resizeMoveHandler(sf::Vector2f mpos)
+void UIWindow::resizeMoveHandler(const sf::Vector2f& mpos)
 {
     if (m_resize_track == 1) {
 
         changed = true;
 
         sf::Vector2f coords = mpos;
-
-        //Set the correct relative values
-        float xsize = this->m_position.width / this->relativePos.width;
-        float ysize = this->m_position.height / this->relativePos.height;
 
         this->m_position.width += mpos.x - m_last_resize_track_pos.x;
         this->m_position.height += mpos.y - m_last_resize_track_pos.y;
@@ -703,8 +712,8 @@ void UIWindow::resizeMoveHandler(sf::Vector2f mpos)
         else
             this->m_last_resize_track_pos = mpos;
 
-        this->relativePos.width = m_position.width / xsize;
-        this->relativePos.height = m_position.height / ysize;
+        this->relativePos.width = m_position.width * 100.f / lastViewRect.width;
+        this->relativePos.height = m_position.height * 100.f / lastViewRect.height;
 
         this->m_last_resize_track_pos = mpos;
 
@@ -774,7 +783,8 @@ void UIWindow::init()
 {
     this->m_titlebar.setFunction(UIComponent::Function::mbDown,
     [=](void* data) {
-		
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"Titlebar MBDown");
 		MouseButtonData* mbd = (MouseButtonData*)data;
 		if(mbd->btn == sf::Mouse::Button::Left)
 			m_track = 2;
@@ -825,6 +835,8 @@ void UIWindow::init()
         this->m_track = 0;
         return 1;
     });
+	
+	this->changed = true;
 }
 
 
@@ -832,23 +844,34 @@ void UIWindow::init()
 
 size_t UIManager::selectElementByMousePos(sf::Vector2f* out)
 {
-    if (m_target == nullptr) return 0;
-    int ret = 0;
+    if (m_target == nullptr)
+	{
+		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+			"m_target is nullptr");
+		return 0;
+	}
+	if(this->m_windows.size() == 0) return 0;
     sf::Vector2f mpos = m_target->mapPixelToCoords(
                             sf::Mouse::getPosition(*m_target),
                             m_target->getView());
     if (out != NULL) *out = mpos;
-    for (auto w : m_windows) {
-        if (w == NULL) continue;
+    //for (auto w : m_windows) {
+	//Reverse loop
+	size_t i = m_windows.size();
+	do{
+		i--;
+		//printf("Loop: Window is %d\n", i);
+		UIWindow* w = m_windows[i];
+        if (w == nullptr) continue;
         sf::FloatRect fr = w->m_position;
         fr.height += w->titlebarheight;
         if (fr.contains(mpos))
         {
-            return ret;
+			//printf("\tContaining mouse!\n");
+            return i;
         }
-        ret++;
-    }
-    return ret;
+    } while(i > 0);
+    return m_windows.size();
 }
 
 int UIManager::processEvents(std::vector<sf::Event>& events)
@@ -995,15 +1018,20 @@ void UIManager::drawWindowToTexture(sf::RenderTarget& target, size_t i, float sc
 {
 
     sf::Vector2f size = target.getView().getSize();
-    m_windows[i]->m_position.left = size.x * m_windows[i]->relativePos.left / 100.f;
+	sf::Vector2f center = target.getView().getCenter();
+	sf::Vector2f top_left(center.x - size.x / 2.f, center.y - size.y / 2.f);
+	
+	m_windows[i]->lastViewRect = sf::FloatRect(top_left.x, top_left.y, size.x, size.y);
+	
+    m_windows[i]->m_position.left = top_left.x + size.x * m_windows[i]->relativePos.left / 100.f;
     m_windows[i]->m_position.width = size.x * m_windows[i]->relativePos.width / 100.f * scale;
-    m_windows[i]->m_position.top = size.y * m_windows[i]->relativePos.top / 100.f;
+    m_windows[i]->m_position.top = top_left.y + size.y * m_windows[i]->relativePos.top / 100.f;
     m_windows[i]->m_position.height = size.y * m_windows[i]->relativePos.height / 100.f * scale;
 
 
-    if (m_tmp_textures[i] == NULL) {
+    if (m_tmp_textures[i] == nullptr) {
         m_tmp_textures[i] = new sf::RenderTexture();
-        if (m_tmp_textures[i] == NULL) {
+        if (m_tmp_textures[i] == nullptr) {
             perror("Allocation error");
         }
     }
@@ -1023,7 +1051,7 @@ void UIManager::drawWindowToTexture(sf::RenderTarget& target, size_t i, float sc
     m_windows[i]->m_position.left = 0.0f;
     m_windows[i]->m_position.top = 0.0f;
 
-    m_windows[i]->draw(*m_tmp_textures[i], target.getView().getSize(), scale);
+	m_windows[i]->draw(*m_tmp_textures[i], size, scale);
 
     m_windows[i]->m_position = poscpy;
 
@@ -1038,7 +1066,7 @@ int UIManager::load(const sf::String& path, const StringManager& strman)
     if (fsize == -1) return -2;
 
     char* data = (char*)malloc(size_t(fsize));
-    if (data == NULL) return -2;
+    if (data == nullptr) return -2;
 
     if (file.read(data, fsize) != fsize)
     {
