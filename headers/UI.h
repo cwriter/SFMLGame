@@ -82,10 +82,20 @@ private:
     std::vector<UIComponent*> m_components;
 };
 
-struct MouseButtonData
+class MouseButtonData
 {
+public:
 	int btn;
 	sf::Vector2f pos;
+};
+
+class ActionStruct
+{
+public:
+	sf::String name;
+	std::function<void(void)> func;
+private:
+	
 };
 
 class UIComponent
@@ -97,6 +107,7 @@ public:
         hoverEnter,
         hoverLeave,
         mouseMoved,
+		fillContextMenu,
 
 
         FunctionListSize
@@ -108,6 +119,19 @@ public:
         hovered = false;
     }
     virtual ~UIComponent() {}
+    
+    
+    ///<summary>
+    ///Returns a vector of text and linked action to be filled into a context menu
+    ///</summary>
+    SFG::Pointer<std::vector<ActionStruct>> getContextMenu()
+    {
+		SFG::Pointer<std::vector<ActionStruct>> ptr(new std::vector<ActionStruct>());
+		
+		launchFunction(Function::fillContextMenu, ptr.getElement());
+		
+		return ptr;
+	}
 
     void setFunction(int type, std::function<int(void*)> func) {
         m_functions[type] = func;
@@ -495,6 +519,12 @@ public:
     UIManager() {
         m_target = nullptr;
 		m_manager_scale = 1.f;
+		
+		m_context_window.setWindowFlags(
+			UIWindow::WindowFlags::NoTitlebar | 
+			UIWindow::WindowFlags::NoResize
+		);
+		
     }
     ~UIManager() {
         for (auto p : this->m_tmp_textures)

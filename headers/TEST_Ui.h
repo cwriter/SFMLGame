@@ -41,7 +41,8 @@ public:
 		XMLReader winRead;
 		winRead.setSource(data);
 		winRead.parse();
-		win->load(winRead, sf::String(L"Test-Window"), StringManager(L"Data/example - strings.xml"));
+		
+		win->load(XMLReader(*winRead.getXMLGroupHandle("xml/module/")), sf::String(L"Test-Window"), StringManager(L"Data/example - strings.xml"));
 		UI()->addWindow(win);
 		
 		this->UI()->load("Data/example - uimanager.xml", StringManager(L"Data/example - strings.xml"));

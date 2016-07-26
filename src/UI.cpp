@@ -245,7 +245,7 @@ void UIGrid::draw(sf::RenderTarget& target, float scale, float top_offset)
     int i = 1;
     for (auto c : this->m_components)
     {
-        if (c == NULL) {
+        if (c == nullptr) {
             i++;
             continue;
         }
@@ -408,87 +408,102 @@ void UIButton::draw(sf::RenderTarget& target, float scale)
 
 int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringManager& strman)
 {
+	size_t windex = 0;
     //Load a specific window style and default values from an xml file
-    size_t i = 0;
-    while (true) {
-        //sf::String path = L"object#" + std::to_wstring(i) + L"/";
-        sf::String path = L"object#" + std::to_wstring(i) + L"/";
-        m_name = xml.getValue(path + L"name.");
-        if (m_name == L"__xml_failure") {
-            return -1;
-        }
-        //When not a number
-        if (!isdigit(name[0]) && m_name != name)
-        {
-            i++;
-            continue;
-        }
-        //Otherwise, if the number doesn't match, continue too
-        else if (atoi(name.toAnsiString().c_str()) != i)
-        {
-            i++;
-            continue;
-        }
+    bool found = false;
+	
+	xml.getXMLGroupHandle("")->dump();
+	
+	xml.for_all("object", [&](const XMLGroup* g){
 
-        m_title = xml.getValue(path + L"title/");
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"Found window object"
+		);
+		//Careful: This will overwrite the old xml instance. This is DESIRED.
+        XMLReader xml(*g);
+		
+        m_name = xml.getValue("name.");
+        if (m_name == L"__xml_failure") {
+            SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+								"Failed to get name for UI component");
+			return;
+        }
+        //When the name is defined and the name doesn't match
+        if (!name.isEmpty() && m_name != name)
+        {
+			SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+					"Window criteria (%s / %s / %d)",
+					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
+			if(std::isdigit(name[0]) && name == std::to_string(windex))
+			{
+				found = true;
+			}
+			else
+			{
+				SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+					"Skipping window because criteria doesn't match up (%s / %s / %d)",
+					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
+				windex++;
+				return;
+			}
+        }
+        else
+		{
+			SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+					"Window criteria (%s / %s / %d)",
+					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
+			
+		}
+
+        m_title = xml.getValue("title/");
         if (m_name == L"__xml_failure") {
             printf("Title not set. Defaulting to \"title\".\n");
             m_title = L"title";
         }
         this->m_titlebarlabel.setText(m_title, 18, "Fonts/arial.ttf");
-        sf::String tmp = xml.getValue(path + L"rect/");
-        std::vector<sf::String> strings;
-        if (split(strings, tmp) != 4) {
-            //Wrong format
-        }
-        this->relativePos.left = std::stof(strings[0].toAnsiString());
-        this->relativePos.top = std::stof(strings[1].toAnsiString());
-        this->relativePos.width = std::stof(strings[2].toAnsiString());
-        this->relativePos.height = std::stof(strings[3].toAnsiString());
+		bool r = false;
+        this->relativePos = xml.asFloatRect("rect/", r);
+		if (r == false) {
+			//Handle
+		}
 
         //Get grid and elements next
-        bool r = false;
-        int cols = xml.asInt(path + L"grid/cols.", r);
+        int cols = xml.asInt("grid/cols.", r);
         if (r == false) {
             //Handle
         }
-        int rows = xml.asInt(path + L"grid/rows.", r);
+        int rows = xml.asInt("grid/rows.", r);
         if (r == false) {
             //Handle
         }
-        if (this->m_grid != NULL) {
+        if (this->m_grid != nullptr) {
             delete m_grid;
-            m_grid = NULL;
+            m_grid = nullptr;
         }
-        if (this->m_grid == NULL) {
+        if (this->m_grid == nullptr) {
             this->m_grid = new UIGrid(cols, rows);
-            if (this->m_grid == NULL) {
+            if (this->m_grid == nullptr) {
                 //Error
                 perror("ALLOCATION ERROR");
             }
         }
 
         //Cycle through elements
-        size_t eli = 0;
-        while (true) {
-            sf::String elpath = path + L"grid/element#" + std::to_wstring(eli) + L"/";
-            if (xml.getValue(elpath) == L"__xml_failure") {
-                //Error, not found
-                break;
-            }
-            sf::String type = xml.getValue(elpath + L"type.");
+        xml.for_all("grid/element", [&](const XMLGroup* g){
+			XMLReader xml(*g);
+            sf::String type = xml.getValue("type.");
 
-            UIComponent* component = NULL;
+            UIComponent* component = nullptr;
 
 
             if (type == L"label") {
                 component = new UILabel();
-                if (component == NULL) {
+                if (component == nullptr) {
                     perror("ALLOCATION ERROR");
                 }
                 else {
                     //Load and set the text
-                    sf::String textid = xml.getValue(elpath);
+                    sf::String textid = xml.getValue("");
                     //The path has been checked before, so we don't have to check for "__xml_failure" again.
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
@@ -499,12 +514,12 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
             else if (type == L"button") {
                 //Load and set button
                 component = new UIButton();
-                if (component == NULL) {
+                if (component == nullptr) {
                     perror("ALLOCATION ERROR");
                 }
                 else {
                     //Load and set the text
-                    sf::String textid = xml.getValue(elpath);
+                    sf::String textid = xml.getValue("");
                     //The path has been checked before, so we don't have to check for "__xml_failure" again.
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
@@ -512,46 +527,53 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
                     ((UIButton*)component)->setText(strman.getString(textid, lang("**-**")), 50, "Fonts/arial.ttf");
                 }
             }
-            if (component == NULL) {
+            if (component == nullptr) {
                 printf("UI component in window %s could not be loaded.\n", this->m_name.toAnsiString().c_str());
             }
             else {
                 //Get name
-                sf::String name = xml.getValue(elpath + L"name.");
+                sf::String name = xml.getValue("name.");
                 component->m_name = name;
 
-                sf::String pos = xml.getValue(elpath + L"position.");
+                sf::String pos = xml.getValue("position.");
                 std::vector<sf::String> vpos;
                 split(vpos, pos);
 
-                if (component == NULL) {
+                if (component == nullptr) {
                     printf("WARNING: Adding NULL component to grid\n");
                 }
                 this->m_grid->addComponent(component, std::stoi(vpos[0].toAnsiString()), std::stoi(vpos[1].toAnsiString()));
             }
 
-            eli++;
-        }
-        i++;
-        break;
-    }
-    return 0;
+		});
+		found = true;
+		windex++;
+    });
+	if(found)
+		return 0;
+	else
+		return -1;
 }
 
 int UIWindow::on_mbDown(const sf::Vector2f& mpos, int button)
 {
-    //Get the position inside the grid
+    //Handle window-specific elements
+	if(!(m_window_flags & WindowFlags::NoTitlebar))
+	{
+		if (this->m_titlebar.bounds().contains(mpos)) {
+			return this->m_titlebar.on_mbDown(button, mpos);
+		}
+	}
+	if(!(m_window_flags & WindowFlags::NoResize))
+	{
+		if (this->m_resizeknob.bounds().contains(mpos)) {
+			return this->m_resizeknob.on_mbDown(button, mpos);
+		}
+	}
+    
+	//Get the position inside the grid
     if (this->m_grid == NULL)
         return 0;	//Grid not available
-
-    //Handle window-specific elements
-    if (this->m_titlebar.bounds().contains(mpos)) {
-        return this->m_titlebar.on_mbDown(button, mpos);
-    }
-    if (this->m_resizeknob.bounds().contains(mpos)) {
-        return this->m_resizeknob.on_mbDown(button, mpos);
-    }
-
 
     //Handle general elements
     for (auto c : this->m_grid->getComponentVector()) {
@@ -776,6 +798,19 @@ void UIWindow::init()
 		}
         return 1;
     });
+	
+	this->m_titlebar.setFunction(UIComponent::Function::fillContextMenu,
+	[=](void* data) {
+		
+		std::vector<ActionStruct>* vec = (std::vector<ActionStruct>*)data;
+		
+		ActionStruct as;
+		as.name = "Minimize";
+		
+		vec->push_back(as);
+		
+		return 1;
+	});
 
     this->m_resizeknob.setFunction(UIComponent::Function::mbDown,
     [=](void* data) {
