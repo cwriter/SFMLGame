@@ -429,6 +429,13 @@ Module::~Module()
     unload();
 }
 
+int StartupGameState::init(SFG::Window& win)
+{
+	UI()->setTarget(&win.getSFMLWindow());
+	return 0;
+}
+
+
 int StartupGameState::load(const sf::String& path)
 {
     SFG_UNUSED_STR(path, __FILE__, __LINE__);
@@ -663,6 +670,7 @@ MenuGameState::MenuGameState()
 
 int MenuGameState::init(SFG::Window& win)
 {
+	this->UI()->setTarget(&win.getSFMLWindow());
     this->m_view.setSize(win.getSFMLWindow().getSize().x, win.getSFMLWindow().getSize().y);
     this->m_view.setCenter(0.f, 0.f);
     win.getSFMLWindow().setView(m_view);

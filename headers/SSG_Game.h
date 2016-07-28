@@ -4,6 +4,7 @@
 #include "Camera.h"
 #include "SSG_Universe.h"
 #include "SSG_BuildOverlay.h"
+#include "UI.h"
 
 class SSG_Game :
     public GameState
@@ -66,6 +67,10 @@ public:
     ///<param name="win">The window of the Game</param>
     int init(SFG::Window& win) override
     {
+		m_build_overlay.setTarget(win);
+		this->UI()->setTarget(&win.getSFMLWindow());
+		m_build_overlay.setTarget(win);
+		m_build_overlay.enable(win.getSFMLWindow());
         this->m_cam.setSize(float(win.getSFMLWindow().getSize().x), float(win.getSFMLWindow().getSize().y));
 		//TESTING
 		this->m_cam.setSize(1.0e10, 1.0e10);

@@ -481,6 +481,8 @@ public:
 
         return 0;
     }
+    
+	virtual int init(SFG::Window& win) override;
 
     virtual int dynamicNotify(int msg, const SFG::Pointer<MsgPackage>& pkg) override;
 

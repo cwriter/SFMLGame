@@ -82,6 +82,15 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 
 int SSG_Game::load(const sf::String& path)
 {
+	sf::String baseoverlaypath(path + "Buildoverlay.xml");
+	int boret = m_build_overlay.load(baseoverlaypath);
+	if(boret != 0)
+	{
+		SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
+			"Failed to load overlay with Code %d", boret);
+	}
+	//m_build_overlay.enable(*UI()->getTarget());
+	
     //We got our path, please start loading
     sf::String out;
 	sf::String universepath(path + "example - universe.xml");

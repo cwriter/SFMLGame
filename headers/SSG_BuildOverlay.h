@@ -31,7 +31,7 @@ public:
 			return ret;
 		}
 		
-		return 0;
+		return ret;
 	}
 	
 	int update(float dt)
@@ -65,7 +65,10 @@ public:
 	
 	void draw(sf::RenderTarget& target);
 
-	
+	void setTarget(SFG::Window& t)
+	{
+		this->m_ui.setTarget(&t.getSFMLWindow());
+	}
 	
 protected:
 	bool m_enabled;

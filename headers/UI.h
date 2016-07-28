@@ -576,7 +576,8 @@ public:
 		assert(m_target != nullptr);
         for (auto w : m_windows) {
             sf::Vector2f mpos;
-            mpos = m_target->mapPixelToCoords(sf::Mouse::getPosition(*m_target), m_target->getView());
+            mpos = m_target->mapPixelToCoords(sf::Mouse::getPosition(*m_target), m_target->getDefaultView());
+			//mpos = sf::Vector2f(sf::Mouse::getPosition(*m_target).x, sf::Mouse::getPosition(*m_target).y);
             w->update(mpos, dt);
         }
     }
@@ -587,12 +588,17 @@ public:
     }
 
     sf::FloatRect m_positions;
+	
+	size_t getWindowCount() const {
+		return m_windows.size();
+	}
 
 private:
 
     void drawWindowToTexture(sf::RenderTarget& target, size_t i, float scale);
-
-
+	
+	void priv_draw(sf::RenderTarget& target, float scale);
+	
 	float m_manager_scale;
     sf::RenderWindow* m_target;
 	

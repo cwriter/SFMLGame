@@ -412,7 +412,7 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
     //Load a specific window style and default values from an xml file
     bool found = false;
 	
-	xml.getXMLGroupHandle("")->dump();
+	//xml.getXMLGroupHandle("")->dump();
 	
 	xml.for_all("object", [&](const XMLGroup* g){
 
@@ -431,27 +431,19 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
         //When the name is defined and the name doesn't match
         if (!name.isEmpty() && m_name != name)
         {
-			SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-					"Window criteria (%s / %s / %d)",
-					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
 			if(std::isdigit(name[0]) && name == std::to_string(windex))
 			{
 				found = true;
 			}
 			else
 			{
-				SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-					"Skipping window because criteria doesn't match up (%s / %s / %d)",
-					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
 				windex++;
 				return;
 			}
         }
         else
 		{
-			SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-					"Window criteria (%s / %s / %d)",
-					m_name.toAnsiString().c_str(), name.toAnsiString().c_str(), windex);
+
 			
 		}
 
@@ -492,6 +484,15 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
         xml.for_all("grid/element", [&](const XMLGroup* g){
 			XMLReader xml(*g);
             sf::String type = xml.getValue("type.");
+			
+			bool b = false;
+			int textsize = xml.asInt("textsize.", b);
+			if(!b)
+			{
+				SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__,
+					"Failed to get the textsize. Defaulting to 12");
+				textsize = 12;
+			}
 
             UIComponent* component = nullptr;
 
@@ -508,7 +509,7 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
 					SFG::Util::printLog(SFG::Util::LogMessageType::Information, __FILE__, __LINE__, "A label is created from string \"%s\"", textid.toAnsiString().c_str());
-                    ((UILabel*)component)->setText(strman.getString(textid, lang("**-**")), 15, "Fonts/arial.ttf");
+                    ((UILabel*)component)->setText(strman.getString(textid, lang("**-**")), textsize, "Fonts/arial.ttf");
                 }
             }
             else if (type == L"button") {
@@ -524,7 +525,7 @@ int UIWindow::load(const XMLReader& xml, const sf::String& name, const StringMan
                     //textid.erase(std::remove_if(textid.begin(), textid.end(), isspace), textid.end());
                     SFML_ERASE_WHITESPACE(textid);
 					SFG::Util::printLog(SFG::Util::LogMessageType::Information, __FILE__, __LINE__, "A label is created from string \"%s\"", textid.toAnsiString().c_str());
-                    ((UIButton*)component)->setText(strman.getString(textid, lang("**-**")), 50, "Fonts/arial.ttf");
+                    ((UIButton*)component)->setText(strman.getString(textid, lang("**-**")), textsize, "Fonts/arial.ttf");
                 }
             }
             if (component == nullptr) {
@@ -582,12 +583,12 @@ int UIWindow::on_mbDown(const sf::Vector2f& mpos, int button)
 	}
     
 	//Get the position inside the grid
-    if (this->m_grid == NULL)
+    if (this->m_grid == nullptr)
         return 0;	//Grid not available
 
     //Handle general elements
     for (auto c : this->m_grid->getComponentVector()) {
-        if (c == NULL) continue;
+        if (c == nullptr) continue;
         if (c->bounds().contains(mpos)) {
             //Found the object the cursor is hovering over
             return c->on_mbDown(button, mpos);
@@ -666,6 +667,8 @@ int UIWindow::on_hover(const sf::Vector2f& mpos)
 
 void UIWindow::dragMoveHandler(const sf::Vector2f& mpos)
 {
+	printf("mpos: (%f|%f)\nm_last_track_pos: (%f|%f)\n", mpos.x, mpos.y, m_last_track_pos.x, m_last_track_pos.y);
+	
     if (m_track == 1) {
 		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
 			"m_track == 1");
@@ -703,14 +706,7 @@ void UIWindow::resizeMoveHandler(const sf::Vector2f& mpos)
         this->m_position.width += mpos.x - m_last_resize_track_pos.x;
         this->m_position.height += mpos.y - m_last_resize_track_pos.y;
 
-        if (this->m_position.width < 100) this->m_position.width = 100;
-        if (this->m_position.height < 100) this->m_position.height = 100;
-        if (this->m_position.width == 100 || this->m_position.height == 100) {
-            //Don't change the relpos.
-
-        }
-        else
-            this->m_last_resize_track_pos = mpos;
+        this->m_last_resize_track_pos = mpos;
 
         this->relativePos.width = m_position.width * 100.f / lastViewRect.width;
         this->relativePos.height = m_position.height * 100.f / lastViewRect.height;
@@ -770,7 +766,7 @@ void UIWindow::draw(sf::RenderTarget& target, const sf::Vector2f& size, float sc
 										m_position.top + m_titlebar.bounds().height + m_position.height - m_resizeknob.bounds().height));
 	}
     //Draw Grid and it's children
-    if (m_grid != NULL) {
+    if (m_grid != nullptr) {
         m_grid->setPosition(m_windowframe.getGlobalBounds().left,
                             m_windowframe.getGlobalBounds().top);
         m_grid->setGridSize(m_windowframe.getGlobalBounds().width,
@@ -851,10 +847,11 @@ size_t UIManager::selectElementByMousePos(sf::Vector2f* out)
 		return 0;
 	}
 	if(this->m_windows.size() == 0) return 0;
-    sf::Vector2f mpos = m_target->mapPixelToCoords(
+    /*sf::Vector2f mpos = m_target->mapPixelToCoords(
                             sf::Mouse::getPosition(*m_target),
-                            m_target->getView());
-    if (out != NULL) *out = mpos;
+                            m_target->getDefaultView());*/
+	sf::Vector2f mpos(sf::Mouse::getPosition(*m_target).x, sf::Mouse::getPosition(*m_target).y);
+    if (out != nullptr) *out = mpos;
     //for (auto w : m_windows) {
 	//Reverse loop
 	size_t i = m_windows.size();
@@ -969,37 +966,29 @@ void UIManager::draw(sf::RenderTarget& target)
     SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__, "[Warning] Using non-scaling aware function");
 #endif
 */
-    size_t i = 0;
-    for (auto w : m_windows) {
-        //#TODO: Get the size of the view and align objects accordingly
+	priv_draw(target, m_manager_scale);
 
-        if (w->changed)
-        {
-            w->correctPositions();
-            drawWindowToTexture(target, i, m_manager_scale);
-
-            m_tmp_textures[i]->display();
-        }
-
-        sf::Sprite tmp;
-        tmp.setTexture(this->m_tmp_textures[i]->getTexture());
-        tmp.setPosition(w->m_position.left, w->m_position.top);
-        target.draw(tmp);
-
-        i++;
-    }
 }
 
 void UIManager::draw(SFG::Window& target)
 {
+	priv_draw(target, target.scale());
+}
+
+void UIManager::priv_draw(sf::RenderTarget& target, float scale)
+{
+	
+	const sf::View& prevview = target.getView();
+	target.setView(target.getDefaultView());
+	
     size_t i = 0;
     for (auto w : m_windows) {
         //#TODO: Get the size of the view and align objects accordingly
 
-        if (w->changed)
+        //if (w->changed)
         {
             w->correctPositions();
-            drawWindowToTexture(target, i, target.scale());
+            drawWindowToTexture(target, i, scale);
 
             m_tmp_textures[i]->display();
         }
@@ -1007,21 +996,26 @@ void UIManager::draw(SFG::Window& target)
         sf::Sprite tmp;
         tmp.setTexture(this->m_tmp_textures[i]->getTexture());
         tmp.setPosition(w->m_position.left, w->m_position.top);
-        //tmp.setScale(target.scale(), target.scale());
         target.draw(tmp);
 
         i++;
     }
+    
+    target.setView(prevview);
 }
+
 
 void UIManager::drawWindowToTexture(sf::RenderTarget& target, size_t i, float scale)
 {
 
-    sf::Vector2f size = target.getView().getSize();
-	sf::Vector2f center = target.getView().getCenter();
+    /*sf::Vector2f size = target.getView().getSize();
+	sf::Vector2f center = target.getView().getCenter();*/
+	sf::Vector2f size = target.getDefaultView().getSize();
+	sf::Vector2f center = target.getDefaultView().getCenter();
 	sf::Vector2f top_left(center.x - size.x / 2.f, center.y - size.y / 2.f);
 	
 	m_windows[i]->lastViewRect = sf::FloatRect(top_left.x, top_left.y, size.x, size.y);
+	//printf("View rect (%f|%f|%f|%f)\n", top_left.x, top_left.y, size.x, size.y);
 	
     m_windows[i]->m_position.left = top_left.x + size.x * m_windows[i]->relativePos.left / 100.f;
     m_windows[i]->m_position.width = size.x * m_windows[i]->relativePos.width / 100.f * scale;

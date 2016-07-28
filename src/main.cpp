@@ -16,8 +16,8 @@
 #endif
 
 //#define RUNNING_SOW 1
-//#define RUNNING_SSG 1
-#define RUNNING_TEST 2
+#define RUNNING_SSG 1
+//#define RUNNING_TEST 2
 
 int testingStuff(int argc, char* argv[])
 {
@@ -141,6 +141,7 @@ int main(int argc, char* argv[])
 			SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, 
 								"Failed to load SSG with code %d", SSG_load_ret);
 		}
+		SSG_gs->UI()->setTarget(&game.window.getSFMLWindow());
 		game.addGamestate(SSG_gs);
 #elif RUNNING_SOW
 		SFG::Pointer<GameState> SOW_gs(new SOW_Game);

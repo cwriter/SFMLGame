@@ -5,10 +5,10 @@
 				<title>Materials</title>
 				<rect>90.0;10.0;10.0;80.0</rect>
 				<grid cols="1" rows="8">
-					<element name="mat_steel" type="button" position="0;0">
+					<element name="mat_steel" type="button" position="0;0" textsize="12">
 						Steel
 					</element>
-					<element name="mat_ceramic" type="button" position="0;1">
+					<element name="mat_ceramic" type="button" position="0;1" textsize="12">
 						Ceramic
 					</element>
 				</grid>

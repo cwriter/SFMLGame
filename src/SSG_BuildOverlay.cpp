@@ -23,4 +23,8 @@ void SSG_BuildOverlay::draw(sf::RenderTarget& target)
 	
 	sf::Sprite tmp(m_tex.getTexture());
 	target.draw(tmp);
+	/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+		"Drawing SSG_BuildOverlay with %d windows", m_ui.getWindowCount()
+	);*/
+	m_ui.draw(target);
 }
