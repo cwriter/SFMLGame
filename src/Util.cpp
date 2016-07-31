@@ -19,10 +19,12 @@ void Util::printLog(LogMessageType t, const char* file, int line, const char* fo
     va_start(ap, format);
 
     std::string message = std::string(format) + " in " + file + ":" + std::to_string(line) + "\n";
+	std::string tmp;
+	SFG::Util::getStackTrace(tmp);
     switch (t)
     {
     case LogMessageType::Error:
-        vprintf(std::string(std::string("[Error] ") + message).c_str(), ap);
+        vprintf(std::string(std::string("[Error] ") + message + tmp + "\n").c_str(), ap);
         break;
     case LogMessageType::Warning:
         vprintf(std::string(std::string("[Warning] ") + message).c_str(), ap);

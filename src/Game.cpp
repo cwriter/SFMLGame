@@ -60,6 +60,8 @@ int Game::load(sf::String path, SFG::SplashScreen* ss)
     {
         printf("[Error] Failed to load Startup Gamestate in %s:%d from file \"%s\" with Code %d.\n", __FILE__, __LINE__, path.toAnsiString().c_str(), ret);
     }
+    //The first gamestate always needs to be inited
+    this->g_gamestates[0]->init(this->window);
     //Get the menu gamestate
     SFG::Pointer<GameState> menu(new MenuGameState());
     if ((ret = loadGamestate(reader, L"Menu", menu)) < 0)

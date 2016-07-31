@@ -14,79 +14,58 @@ Polygon::~Polygon()
 {
 }
 
+bool Polygon::contains(const PE::Vector2df& point) const
+{
+	//We assume the polygon's contents are always on the right side
+	//of the connection lines (clockwise polygon)
+	
+	
+	
+	return false;
+}
+
+
 PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
 {
-    if (this->m_points.size() == 0) return PE::Vector2df();
-    //#TODO: This is pretty slow. Check for different, faster approaches
-    PE::Vector2df ret;
-    //Get the points with the minimum distance
-    std::vector<PE::Vector2df> veccpy(m_points.size());
-    //Copy the array to allow sorting
-    std::copy(m_points.begin(), m_points.end(), veccpy.begin());
-
-    std::sort(veccpy.begin(), veccpy.end(), [&](const PE::Vector2df& l, const PE::Vector2df& r)
-    {
-        return l.distanceTo(point) < r.distanceTo(point);
-    });
-
-    //Temporary 2 smallest values
-    PE::Vector2df vecs[2];
-    memset(vecs, 0, sizeof(SFG::Vector2f) * 2);
-
-    //Sorted, now get the 2 smallest values
-    for (size_t i = 0; i < veccpy.size() && i < 2; i++)
-    {
-        vecs[i] = veccpy[i];
-    }
-
-    //Now, create a line between those points
-    PE::Vector2df dvec = vecs[1] - vecs[0];
-
-    //Get the gradient
-    auto m = dvec.y / dvec.x;
-
-    //By that gradient, create the analytic equation y = mx + c
-    auto c = vecs[0].y - vecs[0].x*m;
-
-    //Get the second line 90� on the old gradient.
-    auto m2 = -1.f / m;
-
-    //This second line goes through 'point'
-    auto c2 = point.y - point.x*m2;
-
-    //So we have equations m*x+c=m2*x+c2, so we have an equation (m-m2)*x=c2-c -> x=(c2-c)/(m-m2)
-    auto x = (c2 - c) / (m - m2);
-    auto y = m*x + c;
-
-    //Now, get the distance
-    auto dist = std::sqrt(std::pow(mpf_class(x - point.x).get_d(), 2.) + std::pow(mpf_class(y - point.y).get_d(), 2.));
-    auto min = std::min(dist, PE::Vector2df(point - vecs[0]).absLength().get_d());
-    if (m_points.size() > 1)
-    {
-        min = std::min(min, PE::Vector2df(point - vecs[1]).absLength().get_d());
-    }
-
-    //'min' contains the minimum distance
-    if (min == dist)
-    {
-        //Line distance
-        ret.x = x - point.x;
-        ret.y = y - point.y;
-    }
-    else if (min == PE::Vector2df(point - vecs[0]).absLength().get_d())
-    {
-        //Closest point
-        ret.x = vecs[0].x - point.x;
-        ret.y = vecs[0].y - point.y;
-    }
-    else
-    {
-        //2nd-closest point
-        ret.x = vecs[1].x - point.x;
-        ret.y = vecs[1].y - point.y;
-    }
-
-    return ret;
+	//We assume a clockwise polygon (contents are on the right side of each line
+	
+	//We're lazy as fuck and will copy the lines first
+	//(this will make openmp usage easier / even possible)
+	std::vector<PE::Vector2df> vec(m_points.size());
+	std::copy(m_points.begin(), m_points.end(), vec.begin());
+	
+	//Set the maximal values first
+    PE::Vector2df ret({std::numeric_limits<mpf_class>::max(),std::numeric_limits<mpf_class>::max()});
+    
+	//Create a vector each time
+	#pragma omp parallel for
+	for(size_t i = 1; i <= vec.size(); i++)
+	{
+		//Create the line
+		Line line;
+		line.point = vec[i-1];
+		line.direction = vec[i % vec.size()] - vec[i-1];
+		
+		//Rotate by 90 deg = Pi/2 clockwise
+		auto rightSide = line.direction.rotated2D(-PI/2.f);
+		
+		//Check if the "normal" vector can catch up to the point
+		Line tmp = line;
+		tmp.direction = -rightSide;
+		//TODO: Finish implementation
+		
+		//Replace if shorter
+		#pragma omp critical
+		{
+			if(rightSide.absLength() < ret.absLength())
+			{
+				ret = rightSide;
+			}
+		}
+		
+	}
+	
+	return ret;
 }
 
 SFG::Pointer<Polygon> Polygon::transrotatedPolygon(double rot, const PE::Vector2df& trans) const

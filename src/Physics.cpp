@@ -148,10 +148,9 @@ void PhysicsEngine::applyMutualForces(const Mass& threshhold)
             for (auto& obj2 = cpy; obj2 != m_objects.end(); ++obj2)
             {
                 //Continue condition
-                if (obj1->first == obj2->first ||
-                        !obj2->first->isActive() ||
-                        (obj2->first->getMass().getScalar() < threshhold.getScalar() &&
-                         obj1->first->getMass().getScalar() < threshhold.getScalar()))
+				if(	obj1->first == obj2->first ||
+					!obj2->first->isActive() ||
+					obj1->first->getMass().getScalar() * obj2->first->getMass().getScalar() < threshhold.getScalar())
                 {
                     continue;
                 }

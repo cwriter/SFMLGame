@@ -137,6 +137,11 @@ public:
         }
         return *this;
     }
+    
+    T operator[](size_t index) const
+    {
+		return m_vec[index];
+	}
 
     T dotProduct(const Vector<dim, T>& v) const
     {
@@ -147,6 +152,34 @@ public:
         }
         return res;
     }
+    
+    ///<summary>
+    ///Returns 0 if there exists no x | x * other = this, x otherwise
+    ///</summary>
+    T getFactor(const Vector<dim, T>& other) const
+    {
+		T lastFactor = m_vec[0] / other[0];
+		//TODO: Check if this doesn't have issues with precision
+		for(size_t i = 1; i < dim; i++)
+		{
+			T tmp = m_vec[i] / other[i];
+			if(	std::abs(mpf_class(lastFactor - tmp) > 0.001))
+				return T(0);
+		}
+		return lastFactor;
+	}
+    
+    ///<summary>
+    ///Returns a rotated version of this.
+    ///<param name="angle">The angle in rad</param>
+    ///</summary>
+    Vector<dim, T> rotated2D(double angle) const
+    {
+		PE::Matrix<T> rotmat(2, 2);
+		rotmat.setData({std::cos(angle), -std::sin(angle), std::sin(angle), std::cos(angle)});
+		
+		return PE::Vector<2, T>(PE::Matrix<T>(rotmat * this->toCol()).getColumn(0));
+	}
 
 
     Vector<3, T> crossProduct(Vector<3, T> v) const

@@ -667,11 +667,11 @@ int UIWindow::on_hover(const sf::Vector2f& mpos)
 
 void UIWindow::dragMoveHandler(const sf::Vector2f& mpos)
 {
-	printf("mpos: (%f|%f)\nm_last_track_pos: (%f|%f)\n", mpos.x, mpos.y, m_last_track_pos.x, m_last_track_pos.y);
+	//printf("mpos: (%f|%f)\nm_last_track_pos: (%f|%f)\n", mpos.x, mpos.y, m_last_track_pos.x, m_last_track_pos.y);
 	
     if (m_track == 1) {
-		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-			"m_track == 1");
+		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"m_track == 1");*/
         sf::Vector2f coords = mpos;
         /*this->m_titlebar.move(mpos.x - m_last_track_pos.x,
         	mpos.y - m_last_track_pos.y);*/
@@ -688,8 +688,8 @@ void UIWindow::dragMoveHandler(const sf::Vector2f& mpos)
         this->correctPositions();
     }
     else if (m_track == 2) {
-		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-			"m_track == 1");
+		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"m_track == 1");*/
         this->m_last_track_pos = mpos;
         m_track = 1;
     }
@@ -985,7 +985,7 @@ void UIManager::priv_draw(sf::RenderTarget& target, float scale)
     for (auto w : m_windows) {
         //#TODO: Get the size of the view and align objects accordingly
 
-        //if (w->changed)
+        if (w->changed)
         {
             w->correctPositions();
             drawWindowToTexture(target, i, scale);

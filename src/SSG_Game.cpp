@@ -7,7 +7,8 @@
 SSG_Game::SSG_Game()
 {
     this->name = "main_gamestate";
-    this->m_cam.setSize(10000.f, 10000.f);
+    this->m_cam.setSize(1000.f, 1000.f);
+	this->m_mouse_mode = MouseMode::Select;
 }
 
 SSG_Game::~SSG_Game()
@@ -29,16 +30,16 @@ int SSG_Game::update(double dt)
 		m_cam_index = ++m_cam_index % m_next_planets.size();
 		printf("%d)================================.\n", m_cam_index);
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
-		m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*250.f,
-					  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*250.f);
+		//m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*10.f,
+		//			  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*10.f);
 	}
 	//!TESTING
 
     this->m_physicsEngine.applyMutualForces();
 	
 	//#TODO: REMOVE THE LINE BELOW THE COMMENT AND UN-COMMENT THE COMMENT FOR REAL VALUES
-	this->m_universe.update(dt);
-	//this->m_universe.update(dt*100000.f);
+	//this->m_universe.update(dt);
+	this->m_universe.update(dt*100000.f);
 
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.update(dt);
@@ -60,21 +61,49 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         {
             float ratio = m_cam.getView().getSize().x / m_cam.getView().getSize().y;
             this->m_cam.setSize(
-                m_cam.getView().getSize().x + ratio*events[i].mouseWheel.delta*1000.f,
-                m_cam.getView().getSize().y + 1.f*events[i].mouseWheel.delta*1000.f);
-            //printf("Scrolled %d\n", events[i].mouseWheel.delta);
+                m_cam.getView().getSize().x * (10.f - ratio*events[i].mouseWheel.delta) / 10.f,
+                m_cam.getView().getSize().y * (10.f - 1.f*events[i].mouseWheel.delta) / 10.f);
+            printf("Scrolled %d\n", events[i].mouseWheel.delta);
             window.getSFMLWindow().setView(m_cam);
+			
+			//Invalidate
+			events[i].type = sf::Event::EventType::Count;
         }
         else if (events[i].type == sf::Event::EventType::Resized)
         {
             float oldw = m_cam.getView().getSize().x;
             float oldh = m_cam.getView().getSize().y;
-            this->m_cam.setSize(float(events[i].size.width), float(events[i].size.height));
-            this->m_cam.setCenter(m_cam.getView().getCenter().x + (events[i].size.width - oldw) / 2.f,
-                                  m_cam.getView().getCenter().y + (events[i].size.height - oldh) / 2.f);
+			float ratio = m_cam.getView().getSize().x / m_cam.getView().getSize().y;
+            this->m_cam.setSize(m_cam.getView().getSize().x * ratio, m_cam.getView().getSize().y);
+            this->m_cam.setCenter(m_cam.getView().getCenter().x + (/*events[i].size.width - */oldw) / 2.f,
+                                  m_cam.getView().getCenter().y + (/*events[i].size.height - */oldh) / 2.f);
 
             window.getSFMLWindow().setView(m_cam);
+			
+			//Invalidate
+			events[i].type = sf::Event::EventType::Count;
         }
+        else if (events[i].type == sf::Event::EventType::MouseButtonPressed)
+		{
+			//We _could_ handle that shit, but naaaaah
+		}
+		else if (events[i].type == sf::Event::EventType::MouseButtonReleased)
+		{
+			//We rather use that one
+			if (this->m_mouse_mode == MouseMode::Select)
+			{
+				if (events[i].mouseButton.button == sf::Mouse::Button::Left)
+				{
+					sf::Vector2f pos = window.getSFMLWindow().mapPixelToCoords(
+						sf::Vector2i(events[i].mouseButton.x, events[i].mouseButton.y),
+						m_cam.getView());
+					this->m_mouse_request.active = true;
+					this->m_mouse_request.pos = pos;
+					this->m_mouse_request.button = events[i].mouseButton.button;
+					
+				}
+			}
+		}
     }
     window.getSFMLWindow().setView(m_cam);
     return 0;
@@ -221,7 +250,6 @@ void SSG_Game::draw(sf::RenderTarget* t)
     assert(t != nullptr);
 
     /*//Set the camera
-    this->m_cam.setCenter(moon->getSprite().getPosition().x, moon->getSprite().getPosition().y);
     t->setView(m_cam);
 
     //Draw items
@@ -231,12 +259,12 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	*/
 	
 	//TESTING
-	//this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
+	this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	/*printf("Dist is %f|%f\n", 
 		   m_lock_on->x() - m_cam.getView().getCenter().x,
 		   m_lock_on->y() - m_cam.getView().getCenter().y);*/
 	//printf("Cam locking at %f|%f\n", m_lock_on->x().get_d(), m_lock_on->y().get_d());
-	m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
+	//m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	t->setView(m_cam);
 	//!TESTING
 	this->m_universe.draw(t);

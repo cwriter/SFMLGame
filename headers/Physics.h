@@ -10,6 +10,7 @@
 #include <gmpxx.h>
 #include <list>
 #include "Polygon.h"
+#include <mutex>
 
 #ifndef GRAVITY_CONSTANT
 //The gravity constant (in m^3 * kg^-1 * s^-2)
@@ -39,7 +40,6 @@ class Junction;
 
 class PhysicObject;
 class CollisionDetail;
-
 
 
 class Mass
@@ -259,11 +259,13 @@ public:
     }
 
     inline bool isActive() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return !(m_flags & POflag::Unaffected);
     }
 
     void activate(int flag, bool b)
     {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         if (b)
             m_flags |= flag;
         else
@@ -271,43 +273,53 @@ public:
     }
 
     Mass getMass() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return m_mass;
     }
 
     Mass getRelativeMass() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return Mass(m_mass.getScalar().get_d() / sqrt(1 - (std::pow(getVelocity().abs(), 2.0) / std::pow(LIGHTSPEED_CONSTANT, 2.0))));
     }
 
     void setMass(const Mass& m) {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         this->m_mass = m;
     }
 
     Velocity getVelocity() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return this->m_vel;
     }
 
     void setVelocity(const Velocity& v) {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         this->m_vel = v;
     }
 
     Acceleration getAcceleration() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return this->m_acc;
     }
 
     void setAcceleration(const Acceleration& a) {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         this->m_acc = a;
     }
 
-    int getDestructionType() {
+    int getDestructionType() const {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         return this->m_destruction_type;
     }
 
     void setDestructionType(int t) {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         this->m_destruction_type = t;
     }
 
     void addForceToCycle(const Force& f)
     {
+		std::lock_guard<std::recursive_mutex> lck(m_mutex);
         m_force = m_force + f;
     }
 
@@ -363,6 +375,8 @@ private:
     Acceleration m_acc;
     Force m_force;
 
+	mutable std::recursive_mutex m_mutex;
+	
     SFG::Polygon m_physics_mesh[3];		//Array of lists of polygons that depict the detail levels low (just a bounding rectangle), medium (Convex shape) and high (should be close to exact).
 	
 	
@@ -436,7 +450,7 @@ public:
     ///Sets mutual forces (Kepler's law of gravity). Complexity is O(n!)
     ///</summary>
     ///<param name="threshhold">Set to an appropriate mass to ignore tiny forces.
-    ///This function will ignore forces where the maximum mass of m1 and m2
+    ///This function will ignore forces where the maximum mass of m1 * m2
     ///does not exceed the threshhold to compensate for forces too small to have reasonable impact.
     ///Default is 1.0*10^9kg or 1000 tons.
     ///</param>

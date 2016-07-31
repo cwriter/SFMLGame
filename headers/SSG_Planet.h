@@ -8,11 +8,54 @@
 #define SSG_PLANET_DEFAULT_MASS 4.f/3.f*PI*10e10
 
 class SSG_SolarSystem;
+
+class mouseRequest 
+{
+public:
+	mouseRequest(){
+		active = false;
+	}
+	bool active;
+	sf::Vector2f pos;
+	sf::Mouse::Button button;
+};
+
+class delayedActionTask
+{
+public:
+	delayedActionTask(){
+		active = true;
+	}
+	enum TaskType
+	{
+		mouseRequest = 0,
+		takeoverRequest
+		
+	};
+	
+	bool isActive() const{
+		return active;
+	}
+	
+	void deactivate(){
+		active = false;
+	}
+	
+	TaskType m_task_type;
+	
+	void* m_request;
+	
+private:
+	std::atomic<bool> active;
+	
+};
+
 ///<summary>
 ///Class that contains elements
 ///</summary>
 template <class T>
-class SSG_CelestialObjectContainer : public PE::PhysicObject
+class SSG_CelestialObjectContainer
+	: public PE::PhysicObject, public GObjectBase
 {
     static_assert(std::is_base_of<PE::PhysicObject, T>::value, "T must derive from PE::PhysicObject");
 
@@ -29,6 +72,22 @@ public:
  		this->finishPhysicsCycle(dt);
 		for(auto g : m_CelestialObjects)
 		{
+			//Check for mouse actions
+			for(auto& action : this->m_requests)
+			{
+				if(action->isActive())
+				{
+					if(action->m_task_type == delayedActionTask::TaskType::mouseRequest)
+					{
+						auto req = static_cast<mouseRequest*>(action->m_request);
+						if(g.first->getBoundingRect().contains(req->pos))
+						{
+							
+						}
+				
+					}
+				}
+			}
 			g.first->update(dt);
 		}
 		
@@ -41,6 +100,7 @@ public:
 			g.first->draw(t);
 		}
 	}
+	
 
     inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
     {
@@ -66,6 +126,11 @@ public:
         return m_y / getMass().getScalar(); //Return the actual position
     }
 
+    void addDelayedActionTask(const SFG::Pointer<delayedActionTask>& task)
+	{
+		this->m_requests.push_back(task);
+	}
+    
 protected:
     inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
     {
@@ -77,6 +142,8 @@ protected:
         m_y += ptr->getMass().getScalar() * ptr->y();
     }
 
+    std::vector<SFG::Pointer<delayedActionTask>> m_requests;
+    
     PE::PhysicsEngine m_physicsEngine;
     std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
 
@@ -169,6 +236,12 @@ public:
         this->m_circle.setRotation(angle);
         GObjectBase::setRotation(angle);
     }
+    
+    ///<summary>
+	///Draws physics vectors of force and velocity to the specfied target, 
+	///origining from the x() and y() positions
+	///</summary>
+	void drawPhysicsComponents(sf::RenderTarget* t, float vecscale) const;
     
     SSG_SolarSystem* m_parentSys;	//The parent system
 	
