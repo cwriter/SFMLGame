@@ -65,18 +65,7 @@ public:
     ///Inits the gamestate with the window. This function gets called whenever the game switches to this gamestate.
     ///</summary>
     ///<param name="win">The window of the Game</param>
-    int init(SFG::Window& win) override
-    {
-		m_build_overlay.setTarget(win);
-		this->UI()->setTarget(&win.getSFMLWindow());
-		m_build_overlay.setTarget(win);
-		m_build_overlay.enable(win.getSFMLWindow());
-        this->m_cam.setSize(float(win.getSFMLWindow().getSize().x), float(win.getSFMLWindow().getSize().y));
-		//TESTING
-		this->m_cam.setSize(1.0e10, 1.0e10);
-		//!TESTING
-        return 0;
-    }
+    int init(SFG::Window& win) override;
 
 private:
 	

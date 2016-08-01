@@ -47,7 +47,7 @@ int basicLoadFile(const sf::String& xmlpath, sf::String& out)
         return -2;
     }
 
-    size_t ret = fis.read(filedata, filesize);
+    sf::Int64 ret = fis.read(filedata, filesize);
     assert(ret == filesize);
 
     std::string tmpstr(filedata, filesize);

@@ -105,18 +105,17 @@ int split(std::vector<sf::String>& out, sf::String& str);
 
 #ifdef _WIN32
 #pragma comment(lib, "Dbghelp.lib")
-#endif
-
-#ifdef _DEBUG
-#pragma comment(lib, "sfml-system-d.lib")
-#pragma comment(lib, "sfml-main-d.lib")
-#pragma comment(lib, "sfml-graphics-d.lib")
-#pragma comment(lib, "sfml-window-d.lib")
-#pragma comment(lib, "sfml-network-d.lib")
-#else
-#pragma comment(lib, "sfml-main.lib")
-#pragma comment(lib, "sfml-graphics.lib")
-#pragma comment(lib, "sfml-system.lib")
-#pragma comment(lib, "sfml-window.lib")
-#pragma comment(lib, "sfml-network.lib")
+	#ifdef _DEBUG
+	#pragma comment(lib, "sfml-system-d.lib")
+	#pragma comment(lib, "sfml-main-d.lib")
+	#pragma comment(lib, "sfml-graphics-d.lib")
+	#pragma comment(lib, "sfml-window-d.lib")
+	#pragma comment(lib, "sfml-network-d.lib")
+	#else
+	#pragma comment(lib, "sfml-main.lib")
+	#pragma comment(lib, "sfml-graphics.lib")
+	#pragma comment(lib, "sfml-system.lib")
+	#pragma comment(lib, "sfml-window.lib")
+	#pragma comment(lib, "sfml-network.lib")
+	#endif
 #endif

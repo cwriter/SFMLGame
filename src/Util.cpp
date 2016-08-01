@@ -112,7 +112,6 @@ void Util::getStackTrace(std::string& stream)
 
     for(size_t i = 0; i < size; i++)
     {
-        size_t dms = 0;
         int status = 0;
         //char* name = abi::__cxa_demangle(symbols[i], tmp, &dms, &status);
 

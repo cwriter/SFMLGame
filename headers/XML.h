@@ -114,8 +114,8 @@ public:
     ///<summary>
     ///Gets an XMLGroup from the xml file. Please note that this code is nearly equivalent to getValue and should be treated as such
     ///</summary>
-    ///<param name="path">The path to the value. / means Group -> [group]/ \
-    ///To access named objects, use '[' and ']' after the identifier- So: group[name]/ Note that the this works using the 'name'-Attribute only! \
+    ///<param name="path">The path to the value. / means Group -> [group]/
+    ///To access named objects, use '[' and ']' after the identifier- So: group[name]/ Note that the this works using the 'name'-Attribute only! 
     ///When not using [], the function will return the first appearance of the group type
     ///</param>
     ///<param name="type">Unused, set to 0</param>

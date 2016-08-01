@@ -39,12 +39,12 @@ public:
 
     void profile_mid(const char* dat)
     {
-        fprintf(f,"[PROFILER] Inside %s: %" PRId64 " microseconds elapsed.\n", dat, m_clock.getElapsedTime().asMicroseconds());
+        fprintf(f,"[PROFILER] Inside %s: %lld microseconds elapsed.\n", dat, m_clock.getElapsedTime().asMicroseconds());
     }
 
     void profile_end(const char* dat)
     {
-        fprintf(f,"[PROFILER] Calling %s took %" PRId64 " microseconds.\n", dat, m_clock.getElapsedTime().asMicroseconds());
+        fprintf(f,"[PROFILER] Calling %s took %lld microseconds.\n", dat, m_clock.getElapsedTime().asMicroseconds());
         fclose(f);
     }
 

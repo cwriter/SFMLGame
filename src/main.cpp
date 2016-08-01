@@ -129,6 +129,12 @@ int main(int argc, char* argv[])
 		game.parseArgs(argc, argv);
 
 		int ret = game.load();
+		if(ret != 0)
+		{
+			//Handle error
+			SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+				"Failed to load game with code %d", ret);
+		}
 #ifdef RUNNING_SSG
 		
 		//Add the SSG gamestate

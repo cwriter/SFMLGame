@@ -181,6 +181,12 @@ public:
 		return PE::Vector<2, T>(PE::Matrix<T>(rotmat * this->toCol()).getColumn(0));
 	}
 
+	double getAngle2D() const
+	{
+		assert(dim >= 2);
+		return std::atan2(this->y.get_d(), this->x.get_d());
+	}
+	
 
     Vector<3, T> crossProduct(Vector<3, T> v) const
     {

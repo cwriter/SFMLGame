@@ -28,9 +28,8 @@ void UILabel::draw(sf::RenderTarget& target, float scale)
         updateTextBreaks();
         m_flags &= ~Flags::TextChanged;
     }
+    
     //Adjust alignment
-    const float p = (this->m_size.width - this->m_text.getGlobalBounds().width) / 2.0f;
-
     switch (m_x_align) {
     case Align::Low:
         this->m_text.setPosition(this->m_size.left, this->m_text.getPosition().y);
@@ -88,7 +87,7 @@ int UILabel::updateTextBreaks()
             continue;
         }
 
-        float glyphwidth = glyphwidth = this->m_font.getGlyph(modified[i], this->m_text.getCharacterSize(), false).advance;
+        float glyphwidth = this->m_font.getGlyph(modified[i], this->m_text.getCharacterSize(), false).advance;
 
         float kerning = 0.f;
         if (i > 0)
@@ -672,7 +671,6 @@ void UIWindow::dragMoveHandler(const sf::Vector2f& mpos)
     if (m_track == 1) {
 		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
 			"m_track == 1");*/
-        sf::Vector2f coords = mpos;
         /*this->m_titlebar.move(mpos.x - m_last_track_pos.x,
         	mpos.y - m_last_track_pos.y);*/
 
@@ -700,8 +698,6 @@ void UIWindow::resizeMoveHandler(const sf::Vector2f& mpos)
     if (m_resize_track == 1) {
 
         changed = true;
-
-        sf::Vector2f coords = mpos;
 
         this->m_position.width += mpos.x - m_last_resize_track_pos.x;
         this->m_position.height += mpos.y - m_last_resize_track_pos.y;
@@ -888,6 +884,8 @@ int UIManager::processEvents(std::vector<sf::Event>& events)
                 w->correctPositions();
             }
             break;
+		default:
+			break;
         }
     }
 
@@ -949,7 +947,9 @@ int UIManager::processEvents(std::vector<sf::Event>& events)
                 tindex++;
             }
             break;
-
+			
+		default:
+			break;
 
         }
 

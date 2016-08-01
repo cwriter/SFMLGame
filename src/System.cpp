@@ -55,7 +55,7 @@ int System::readfile(SystemClient* client, const char* path, size_t start, size_
 
         }
         //Get to the starting position
-        if (f.seek(long(start), SEEK_SET) != start)
+        if (f.seek(long(start), SEEK_SET) != (long int)start)
         {
             //Error
         }

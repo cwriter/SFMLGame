@@ -403,7 +403,7 @@ public:
 		this->m_window_flags = 0;
     }
 
-    ~UIWindow() {
+    virtual ~UIWindow() {
         if (this->m_grid != NULL) {
             delete this->m_grid;
         }

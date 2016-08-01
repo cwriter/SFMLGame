@@ -9,6 +9,7 @@ SSG_Game::SSG_Game()
     this->name = "main_gamestate";
     this->m_cam.setSize(1000.f, 1000.f);
 	this->m_mouse_mode = MouseMode::Select;
+	this->m_cam_index = 0;
 }
 
 SSG_Game::~SSG_Game()
@@ -21,14 +22,14 @@ int SSG_Game::update(double dt)
 	//TESTING
 	m_cam_counter++;
 	if(m_cam_counter % 20 == 0)
-			printf("%d\n", m_cam_counter);
+			printf("%zu\n", m_cam_counter);
 	m_cam.update(dt);
 	if(m_cam_counter >= 250)
 	{
 		m_cam_counter = 0;
-		printf("Switching target=(%d->", m_cam_index);
-		m_cam_index = ++m_cam_index % m_next_planets.size();
-		printf("%d)================================.\n", m_cam_index);
+		printf("Switching target=(%zu->", m_cam_index);
+		m_cam_index = (m_cam_index + 1) % m_next_planets.size();
+		printf("%zu)================================.\n", m_cam_index);
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
 		//m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*10.f,
 		//			  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*10.f);
@@ -59,11 +60,10 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         //#TODO: Consider remapping with this->keyMapper()
         if (events[i].type == sf::Event::EventType::MouseWheelMoved)
         {
-            float ratio = m_cam.getView().getSize().x / m_cam.getView().getSize().y;
             this->m_cam.setSize(
-                m_cam.getView().getSize().x * (10.f - ratio*events[i].mouseWheel.delta) / 10.f,
+                m_cam.getView().getSize().x * (10.f - 1.f*events[i].mouseWheel.delta) / 10.f,
                 m_cam.getView().getSize().y * (10.f - 1.f*events[i].mouseWheel.delta) / 10.f);
-            printf("Scrolled %d\n", events[i].mouseWheel.delta);
+            //printf("Scrolled %d\n", events[i].mouseWheel.delta);
             window.getSFMLWindow().setView(m_cam);
 			
 			//Invalidate
@@ -71,10 +71,13 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         }
         else if (events[i].type == sf::Event::EventType::Resized)
         {
-            float oldw = m_cam.getView().getSize().x;
-            float oldh = m_cam.getView().getSize().y;
-			float ratio = m_cam.getView().getSize().x / m_cam.getView().getSize().y;
-            this->m_cam.setSize(m_cam.getView().getSize().x * ratio, m_cam.getView().getSize().y);
+            float oldw = window.getSFMLWindow().getSize().x;
+            float oldh = window.getSFMLWindow().getSize().y;
+			
+			float rescalex = events[i].size.width / oldw;
+
+			float ratio = double(events[i].size.width) / double(events[i].size.height);
+            this->m_cam.setSize(m_cam.getView().getSize().x * ratio * rescalex, m_cam.getView().getSize().x * rescalex);
             this->m_cam.setCenter(m_cam.getView().getCenter().x + (/*events[i].size.width - */oldw) / 2.f,
                                   m_cam.getView().getCenter().y + (/*events[i].size.height - */oldh) / 2.f);
 
@@ -221,7 +224,7 @@ int SSG_Game::load(const sf::String& path)
 				p->getShape().setFillColor(sf::Color::Blue);
 				break;
 		}
-		printf("Planet \"%s\" is at %f|%f\n", p->getName().toAnsiString().c_str(), p->x(), p->y());
+		printf("Planet \"%s\" is at %f|%f\n", p->getName().toAnsiString().c_str(), p->x().get_d(), p->y().get_d());
 		index++;
 	}
 	
@@ -244,6 +247,21 @@ int SSG_Game::load(const sf::String& path)
 	
     return 0;
 }
+
+int SSG_Game::init(SFG::Window& win)
+{
+	m_build_overlay.setTarget(win);
+	this->UI()->setTarget(&win.getSFMLWindow());
+	m_build_overlay.setTarget(win);
+	m_build_overlay.enable(win.getSFMLWindow());
+	float ratio = double(win.getSFMLWindow().getSize().x) / double(win.getSFMLWindow().getSize().y);
+    this->m_cam.setSize(float(win.getSFMLWindow().getSize().x), float(win.getSFMLWindow().getSize().y*ratio));
+	//TESTING
+	this->m_cam.setSize(1.0e10 * ratio, 1.0e10);
+	//!TESTING
+    return 0;
+}
+
 
 void SSG_Game::draw(sf::RenderTarget* t)
 {

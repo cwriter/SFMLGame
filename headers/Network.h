@@ -38,7 +38,7 @@ public:
 
     }
     TaskIdentifier(const sf::Int32 p, const sf::IpAddress& addr, const sf::Uint16 port)
-        : purpose(p), CompleteAddress(addr, port)
+        : CompleteAddress(addr, port), purpose(p)
     {
 
     }

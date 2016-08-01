@@ -46,23 +46,62 @@ PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
 		line.point = vec[i-1];
 		line.direction = vec[i % vec.size()] - vec[i-1];
 		
-		//Rotate by 90 deg = Pi/2 clockwise
-		auto rightSide = line.direction.rotated2D(-PI/2.f);
-		
-		//Check if the "normal" vector can catch up to the point
-		Line tmp = line;
-		tmp.direction = -rightSide;
-		//TODO: Finish implementation
-		
-		//Replace if shorter
-		#pragma omp critical
+		//This scope is for point to point (rather than point to line) dists
 		{
-			if(rightSide.absLength() < ret.absLength())
-			{
-				ret = rightSide;
+			//Create the next line
+			Line nextline;
+			nextline.point = vec[i % vec.size()];
+			nextline.direction = vec[(i+1) % vec.size()] - vec[i % vec.size()];
+			
+			//so it's line-point-nextline. Now, get the line connecting point
+			//with the current polygon vertex
+			Line connection;
+			connection.point = vec[i % vec.size()];
+			connection.direction = point - vec[i % vec.size()];
+			 
+			//Now, compare angles.
+			double a1 = nextline.direction.getAngle2D() + 2.0 * PI;
+			double a2 = connection.direction.getAngle2D() + 2.0 * PI;
+			double a3 = PE::Vector2df(PE::Vector2df({0,0}) - line.direction).getAngle2D() + 2.0 * PI;
+			
+			//Now, it must be that a3 < a2 < a1
+			if(a3 < a2 && a2 < a1)
+			{	
+				#pragma omp critical
+				{
+					if(connection.direction.absLength() < ret.absLength())
+						ret = connection.direction;
+				}
 			}
 		}
 		
+		//Rotate by 90 deg = Pi/2 clockwise
+		auto rightSide = line.direction.rotated2D(-PI/2.f);
+		
+		//Create a line from the point to be checked to the polygon line
+		Line tmp = line;
+		tmp.point = point;
+		tmp.direction = PE::Vector2df({0,0}) - rightSide;
+		
+		//Check if it actually intersects
+		double factor = 0.f;
+		tmp.intersects(line, &factor);
+		if(factor <= 0.f)
+		{
+			//Wrong side or no intersection (the latter is REALLY rare)
+		}
+		else
+		{
+			//YAAAAAY, we have an intersection!
+			//Replace if shorter
+			#pragma omp critical
+			{
+				if(rightSide.absLength() < ret.absLength())
+				{
+					ret = rightSide;
+				}
+			}
+		}
 	}
 	
 	return ret;

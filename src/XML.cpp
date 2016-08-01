@@ -61,7 +61,7 @@ const XMLGroup* XMLGroup::namedGroup(const sf::String& str, size_t* begin, size_
     match = str.substring(*begin, *current_index - *begin);
     //sf::String match(str.begin() + *begin, str.begin() + *current_index);
     *begin = *current_index + 1;
-    for (*current_index; *current_index < str.getSize(); (*current_index)++)
+    for (; *current_index < str.getSize(); (*current_index)++)
     {
         if (str[*current_index] == L']')
         {
@@ -96,7 +96,7 @@ const XMLGroup* XMLGroup::numberedGroup(const sf::String& str, size_t* begin, si
     sf::String match = str.substring(*begin, *current_index - *begin);
     int counting_left = 0;
     size_t num_start = ++(*current_index);
-    for (*current_index; *current_index < str.getSize(); (*current_index)++) {
+    for (; *current_index < str.getSize(); (*current_index)++) {
         if (str[*current_index] == L'/') {
             //Extract the number
             sf::String tmp = str.substring(num_start, *current_index - num_start);
@@ -233,7 +233,7 @@ int XMLGroup::parse()
         size_t delbegin = i;
         size_t begin = i + 1;	//Otherwise, we have the beginning
 
-        for (i; content[i] != L'>'; i++) {
+        for (; content[i] != L'>'; i++) {
             if (i == content.getSize()) break;
         }
 
@@ -249,7 +249,7 @@ int XMLGroup::parse()
         while (copy_i < i)
         {
             //Attributes
-            for (copy_i; content[copy_i] != L' '; copy_i++) {
+            for (; content[copy_i] != L' '; copy_i++) {
                 if (copy_i == content.getSize()) break;
             }
             if (copy_i > i) break;
@@ -261,7 +261,7 @@ int XMLGroup::parse()
 
             size_t begin = ++copy_i;
 
-            for (copy_i; content[copy_i] != L'='; copy_i++) {
+            for (; content[copy_i] != L'='; copy_i++) {
                 if (copy_i == content.getSize()) break;
             }
             if (!(copy_i < i)) break;
@@ -273,7 +273,7 @@ int XMLGroup::parse()
             //pair.str1 = sf::String(content.begin() + begin, content.begin() + copy_i++);
             begin = ++copy_i;
 
-            for (copy_i; content[copy_i] != L'\"'; copy_i++) {
+            for (; content[copy_i] != L'\"'; copy_i++) {
                 if (copy_i == content.getSize()) break;
             }
             //pair.str2 = sf::String(content.begin() + begin, content.begin() + copy_i++);
@@ -328,12 +328,9 @@ const XMLGroup* XMLReader::getXMLGroupHandle(const sf::String& path, int type) c
     const XMLGroup* group = &m_base;
     size_t lasti = 0;
 
-    bool groupAlreadySet = false;
     //path means: attributes are "<attribute>.", groups are "<group>/"
     for (size_t i = 0; i < path.getSize(); i++)
     {
-        bool found = false;
-
         if (path[i] == L'[')
         {
             //Group

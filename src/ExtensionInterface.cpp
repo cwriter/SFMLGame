@@ -309,7 +309,7 @@ dynVar* ScriptEngine::Invoke(const sf::String& name, std::vector<dynVar*>& args)
     size_t begin = it->second;
 
     size_t last = begin;
-    for (last; last < m_datastring.getSize(); last++) {
+    for (last = begin; last < m_datastring.getSize(); last++) {
         if (m_datastring[last] == L'(') {
             last++;
             break;
@@ -784,14 +784,14 @@ int ScriptEngine::load(const sf::String& path)
 
     sf::String trimmed;
     //trimmed.reserve(str.size());
-    unsigned int skip_to_next = 0;
+    //unsigned int skip_to_next = 0;
     for (size_t i = 0; i < str.getSize(); i++) {
         //if (isspace(str[i]))
         //	continue;
 
-        if (str[i] == L'\"') {
+        /*if (str[i] == L'\"') {
             skip_to_next = L'\"';
-        }
+        }*/
 
         if (i > 0) {
             //Chop if previous char was a space or any special sign like ,.-!() and so on

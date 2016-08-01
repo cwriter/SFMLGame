@@ -101,14 +101,14 @@ void SSG_Planet::draw(sf::RenderTarget& t)
 void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) const
 {
 	sf::RectangleShape line(sf::Vector2f(
-		vecscale * getVelocity().abs() * 100.f, vecscale * 5.f));
+		vecscale * getVelocity().abs(), vecscale * 5.f));
 	line.setFillColor(sf::Color::White);
 	line.setPosition(x().get_d(), y().get_d());
 
 	line.setRotation(-180.f/PI*std::atan2(
 		getVelocity().getVector().y.get_d(), getVelocity().getVector().x.get_d()));
 		
-	printf("Velocity of %s is %f|%f\n",m_name.toAnsiString().c_str(), getVelocity().getVector().x.get_d(), getVelocity().getVector().y.get_d());
+	//printf("Velocity of %s is %f|%f\n",m_name.toAnsiString().c_str(), getVelocity().getVector().x.get_d(), getVelocity().getVector().y.get_d());
 	t->draw(line);
 	
 	/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
@@ -116,7 +116,7 @@ void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) cons
 	);*/
 		
 	line.setSize(sf::Vector2f(
-		vecscale * getAcceleration().getVector().absLength().get_d() * 100.f, vecscale * 5.f));
+		vecscale * getAcceleration().getVector().absLength().get_d() * 100000.f, vecscale * 5.f));
 	line.setRotation(-180.f/PI*std::atan2(
 		getAcceleration().getVector().y.get_d(), getAcceleration().getVector().x.get_d()));
 	

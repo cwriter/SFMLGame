@@ -280,7 +280,7 @@ int Game::parseArgs(int argc, char* argv[])
     //check argument count:
     if (argc == 1) return 0; //Nothing to do
 
-    if (argv[1] == "-help")
+    if (strcmp(argv[1],"-help") == 0)
     {
         //Print the help information
 
@@ -290,9 +290,9 @@ int Game::parseArgs(int argc, char* argv[])
             "\t-stream:\t\tEnables streaming server. See -stream -help for more information\n"
         );
     }
-    else if (argv[1] == "-stream")
+    else if (strcmp(argv[1],"-stream") == 0)
     {
-        if (argv[2] == "-help")
+        if (strcmp(argv[2],"-help") == 0)
         {
             printf(
                 "Help for -stream:\n"

@@ -134,7 +134,7 @@ void FadeOutEffect::play(sf::Sprite& target, float time)
     auto height = target.getTextureRect().height;
 
     auto fulltexwidth = target.getTexture()->getSize().x;
-    auto fulltexheight = target.getTexture()->getSize().y;
+    //auto fulltexheight = target.getTexture()->getSize().y;
 
     if (m_new_area == nullptr)
     {
@@ -254,13 +254,21 @@ int GObjectBase::load(const XMLReader& data)
             //If a file has been specified, parse that
             sf::String out;
             int ret = basicLoadFile(str + L".xml", out);
-            //#TODO: Handle ret
+            if(ret != 0)
+			{
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+					"Failed to load file with code %d", ret);
+			}
 
             //Create the reader
             XMLReader rdr;
             rdr.setSource(out);
             ret = rdr.parse();
-            //#TODO: Handle ret
+            if(ret != 0)
+			{
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+					"Failed to parse reader with code %d", ret);
+			}
 
             XMLWriter wr;
             auto handle = rdr.getXMLGroupHandle(L"");
@@ -272,16 +280,21 @@ int GObjectBase::load(const XMLReader& data)
             wr.setBaseGroup(*handle);
 
             //this->load_animation(L"", ob.getElement(), wr);
-			auto rets = wr.for_all("animation", [=](const XMLGroup* g){
+			size_t rets = wr.for_all("animation", [=](const XMLGroup* g){
 				
 				SFG::Pointer<Animation> a(new Animation(reinterpret_cast<Module*>(this->m_governor)));
-				if (a == NULL)
+				if (a == nullptr)
 				{
 					printf("[Error] Memory allocation error in %s:%d\n", __FILE__, __LINE__);
-					return -2;
+					return;
 				}
 					
-				auto ret = a->load(XMLReader(*g));
+				int ret = a->load(XMLReader(*g));
+				if(ret != 0)
+				{
+					SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+						"Failed to load animation with code %d", ret);
+				}
 
 				this->addAnimation(a);
 			});
@@ -298,10 +311,15 @@ int GObjectBase::load(const XMLReader& data)
 				if (a == NULL)
 				{
 					printf("[Error] Memory allocation error in %s:%d\n", __FILE__, __LINE__);
-					return -2;
+					return;
 				}
 					
-				auto ret = a->load(XMLReader(*g));
+				int ret = a->load(XMLReader(*g));
+				if(ret != 0)
+				{
+					SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+						"Failed to load animation with code %d", ret);
+				}
 
 				this->addAnimation(a);
 			});

@@ -51,7 +51,6 @@ int DLLLoadedGameState::resolveAll()
         f_preload = (GameStatePreloadFunc)m_dll.resolve("preload");
 
         //Check if any func didn't get loaded correctly
-        int issue = 0;
         if (f_destructor == nullptr) return -1;
         if (f_update == nullptr) return -2;
         if (f_draw == nullptr) return -3;
@@ -774,11 +773,7 @@ int MenuGameState::processEvents(SFG::Window& window, std::vector<sf::Event>& ev
         }
         else if(events[i].type == sf::Event::Resized)
         {
-            float oldw = m_view.getSize().x;
-            float oldh = m_view.getSize().y;
-
-
-            m_view.setCenter(0.f, 0.f);
+			m_view.setCenter(0.f, 0.f);
 
             m_view.setSize(events[i].size.width, events[i].size.height);
 

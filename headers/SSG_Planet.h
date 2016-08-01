@@ -90,7 +90,7 @@ public:
 			}
 			g.first->update(dt);
 		}
-		
+		return 0;
 	}
 	
 	void draw(sf::RenderTarget* t)

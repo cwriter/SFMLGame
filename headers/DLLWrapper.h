@@ -110,7 +110,7 @@ public:
     template<typename T> static size_t getFreeIndex(const std::string& base, std::map<std::string, T>* map)
     {
         size_t i = 1;
-        for (i; map->find(base + std::to_string(i)) != map->end(); i++);
+        for (i = 1; map->find(base + std::to_string(i)) != map->end(); i++);
         return i;
     }
 

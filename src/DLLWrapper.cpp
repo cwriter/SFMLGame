@@ -134,7 +134,7 @@ ImportedClass::ImportedClass(void* args, const std::string& name, std::map<std::
     {
         this->m_data = (char*)calloc(this->getVartableSize(), 1); //Allocate and set to 0
         if (m_data == nullptr) {
-            printf("[Critical] Failed to allocate memory (%Iu bytes) for class in %s:%d\n", this->getVartableSize(), __FILE__, __LINE__);
+            printf("[Critical] Failed to allocate memory (%zu bytes) for class in %s:%d\n", this->getVartableSize(), __FILE__, __LINE__);
         }
         //Done
     }

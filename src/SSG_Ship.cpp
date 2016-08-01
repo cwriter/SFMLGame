@@ -22,7 +22,11 @@ int SSG_Ship::load(const XMLReader& reader)
             SFG::Pointer<SSG_Part> part(new SSG_Part());
 			XMLReader r(*group);
 			int ret = part->load(r);
-			//#TODO: Handle return value
+			if(ret != 0)
+			{
+				SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+					"Failed to load ship with code %d", ret);
+			}
 			
 			
 			
