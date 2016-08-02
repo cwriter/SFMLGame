@@ -250,7 +250,6 @@ int SSG_Game::load(const sf::String& path)
 
 int SSG_Game::init(SFG::Window& win)
 {
-	m_build_overlay.setTarget(win);
 	this->UI()->setTarget(&win.getSFMLWindow());
 	m_build_overlay.setTarget(win);
 	m_build_overlay.enable(win.getSFMLWindow());

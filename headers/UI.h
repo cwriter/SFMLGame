@@ -41,20 +41,8 @@ public:
 		sfgui.Display(target.getSFMLWindow());
 	}
 	
-	int processEvents(std::vector<sf::Event>& events)
-	{
-		//sfgui doesn't disable events though :(
-		for(auto& e : events)
-		{
-			m_sfg_desktop.HandleEvent(e);
-			if(e.type == sf::Event::Resized)
-			{
-				
-			}
-		}
-		
-		return 0;
-	}
+	int processEvents(std::vector<sf::Event>& events);
+
 	
 	int load(const sf::String& path, const StringManager& strman)
 	{
@@ -63,6 +51,8 @@ public:
 		window->SetTitle( "Hello World example" );
 		window->Add( button );
 		m_sfg_desktop.Add(window);
+		m_windows.push_back(window);
+		
 		return -1;
 	}
 	
@@ -78,6 +68,7 @@ public:
 #endif
 	
 private:
+	std::vector<std::shared_ptr<sfg::Window>> m_windows;
 	sfg::Desktop m_sfg_desktop;
 	sf::RenderWindow* m_target;
 };

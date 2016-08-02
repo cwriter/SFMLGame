@@ -15,6 +15,31 @@ void UIManager::draw(sf::RenderTexture& tex)
 	sfgui.Display(tex);
 	tex.setView(tmp);
 }
+
+int UIManager::processEvents(std::vector< sf::Event >& events)
+{
+	//sfgui doesn't disable events though :(
+	for(auto& e : events)
+	{
+		m_sfg_desktop.HandleEvent(e);
+		if(e.type == sf::Event::MouseButtonPressed || e.type == sf::Event::MouseButtonReleased)
+		{
+			for(auto& w : m_windows)
+			{
+				if(w->GetClientRect().contains((sf::Vector2f(e.mouseButton.x, e.mouseButton.y))))
+				{
+					e.type = sf::Event::EventType::Count;
+				}
+			}
+		}
+		if(e.type == sf::Event::Resized)
+		{
+			
+		}
+	}
+	
+	return 0;
+}
 	
 #else
 size_t UIManager::selectElementByMousePos(sf::Vector2f* out)

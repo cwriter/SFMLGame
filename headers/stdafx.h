@@ -13,6 +13,7 @@
 
 //#define _SFGPROFILE
 #define _DEBUG 1
+//#define SFG_USE_CUSTOM_UI 1
 
 //Basic
 #include <stdio.h>

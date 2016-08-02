@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/silvan/Programming/SFGremote/SFMLGame
+CMAKE_SOURCE_DIR = /home/silvan/Dokumente/Programming/SFMLGame
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/silvan/Programming/SFGremote/SFMLGame
+CMAKE_BINARY_DIR = /home/silvan/Dokumente/Programming/SFMLGame
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,8 +69,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
+	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -1230,6 +1230,33 @@ src/XML.cpp.s:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/XML.cpp.s
 .PHONY : src/XML.cpp.s
 
+src/custom_UI.o: src/custom_UI.cpp.o
+
+.PHONY : src/custom_UI.o
+
+# target to build an object file
+src/custom_UI.cpp.o:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.o
+.PHONY : src/custom_UI.cpp.o
+
+src/custom_UI.i: src/custom_UI.cpp.i
+
+.PHONY : src/custom_UI.i
+
+# target to preprocess a source file
+src/custom_UI.cpp.i:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.i
+.PHONY : src/custom_UI.cpp.i
+
+src/custom_UI.s: src/custom_UI.cpp.s
+
+.PHONY : src/custom_UI.s
+
+# target to generate assembly for a file
+src/custom_UI.cpp.s:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.s
+.PHONY : src/custom_UI.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -1416,6 +1443,9 @@ help:
 	@echo "... src/XML.o"
 	@echo "... src/XML.i"
 	@echo "... src/XML.s"
+	@echo "... src/custom_UI.o"
+	@echo "... src/custom_UI.i"
+	@echo "... src/custom_UI.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"
