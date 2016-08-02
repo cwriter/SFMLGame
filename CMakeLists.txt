@@ -13,7 +13,7 @@ file(GLOB Game_sources
 )
 
 #Set compiler flags
-SET(CCFLAGS "-g -Wall -fopenmp -rdynamic -std=c++11 -march=native")
+SET(CCFLAGS "-g -Wall -O3 -fopenmp -rdynamic -std=c++11 -march=native")
 
 add_executable(Game ${Game_sources})
 

@@ -42,6 +42,16 @@ SFG::Pointer<GameState> Game::getCurrentGameState() const
 
 int Game::load(sf::String path, SFG::SplashScreen* ss)
 {
+	if(!m_timing_font.loadFromFile("Fonts/arial.ttf"))
+		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+			"Failed to load font"
+		);
+	
+	printf("Setting font... ");
+	m_timing_display.setFont(m_timing_font);
+	printf("Done.\n");
+	m_timing_display.setString("Asd");
+	
     XMLReader reader;
     sf::String out;
     if (basicLoadFile(path.toWideString(), out) != 0)
@@ -280,6 +290,22 @@ void Game::draw(sf::RenderTarget* t)
         //draw on specified target
         g_gamestates[current_gamestate]->draw(t);
     }
+    
+    //Draw timing information
+    
+    m_timing_display.setPosition(0,0);
+    if(t != nullptr) {
+		auto tmp = t->getView();
+		t->setView(t->getDefaultView());
+		t->draw(m_timing_display);
+		t->setView(tmp);
+	}
+	else {
+		auto tmp = window.getSFMLWindow().getView();
+		window.getSFMLWindow().setView(window.getSFMLWindow().getDefaultView());
+		window.draw(m_timing_display);
+		window.getSFMLWindow().setView(tmp);
+	}
 }
 
 int Game::parseArgs(int argc, char* argv[])
@@ -324,6 +350,11 @@ int Game::gameLoop()
 
     //Updating the game logic should not take more than 10ms
     this->update();
+	
+	this->m_timing_display.setString(
+		"PT: " + std::to_string(m_timing.processingTime) + "\n" +
+		"UT: " + std::to_string(m_timing.updatingTime) + "\n" +
+		"DT: " + std::to_string(m_timing.drawingTime) + "\n");
 
     this->m_timing.updatingTime = clk.restart().asMicroseconds() / 1000.f;
 
@@ -342,6 +373,7 @@ int Game::gameLoop()
           m_timing.updatingTime,
           m_timing.drawingTime
     );*/
+
 	
 #ifdef _SFGPROFILE
 	if(m_timing.processingTime > 2.f)

@@ -116,6 +116,8 @@ private:
 
     SFG::GameLoopTiming m_timing;
 
+	sf::Text m_timing_display;
+	sf::Font m_timing_font;
     std::vector<sf::Event> m_unhandled_events;
     std::map<sf::Keyboard::Key, sf::Keyboard::Key> m_keyMap;
     std::vector<SFG::Pointer<GameState>> g_gamestates;
