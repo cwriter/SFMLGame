@@ -265,15 +265,6 @@ int SSG_Game::init(SFG::Window& win)
 void SSG_Game::draw(sf::RenderTarget* t)
 {
     assert(t != nullptr);
-
-    /*//Set the camera
-    t->setView(m_cam);
-
-    //Draw items
-    this->sun->draw(*t);
-    this->planet->draw(*t);
-    this->moon->draw(*t);
-	*/
 	
 	//TESTING
 	this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
