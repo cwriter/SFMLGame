@@ -74,13 +74,7 @@ public:
     ///Adds an existing gamestate to the game.
     ///</summary>
     ///<param name="gsptr">An SFG Pointer pointing to the Gamestate that should be added</param>
-    int addGamestate(SFG::Pointer<GameState>& gsptr)
-    {
-        assert(gsptr.isValid());
-        gsptr->getGameSettingsInterface().setGameSettings(&this->m_game_settings);
-        this->g_gamestates.push_back(gsptr);
-        return 0;
-    }
+    int addGamestate(SFG::Pointer<GameState>& gsptr);
 
     ///<summary>
     ///Processes all game events.
@@ -110,12 +104,12 @@ public:
     SFG::Pointer<GameState> getCurrentGameState() const;
 
 
-    SFG::Window window;
+    static SFG::Window window;
 
     sf::Clock elapsedTime;
 
     GameSettings m_game_settings;
-
+		
 private:
     SFG::System m_system;
     SFG::Network m_network;

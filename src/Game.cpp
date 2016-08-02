@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "Game.h"
 
-
-
+SFG::Window Game::window;
 Game::Game()
 {
     //Default event queue size is 64.
@@ -18,6 +17,14 @@ Game::Game()
 
 Game::~Game()
 {
+}
+
+int Game::addGamestate(SFG::Pointer< GameState >& gsptr)
+{
+    assert(gsptr.isValid());
+	gsptr->getGameSettingsInterface().setGameSettings(&this->m_game_settings);
+    this->g_gamestates.push_back(gsptr);
+    return 0;
 }
 
 SFG::Pointer<GameState> Game::getCurrentGameState() const

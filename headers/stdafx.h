@@ -25,6 +25,10 @@
 #include <SFML/Audio.hpp>
 #include <SFML/Network.hpp>
 
+#ifndef SFG_USE_CUSTOM_UI
+#include <SFGUI/SFGUI.hpp>
+#endif
+
 //Standard
 #include <iterator>
 #include <functional>

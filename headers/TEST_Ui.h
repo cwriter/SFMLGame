@@ -30,21 +30,7 @@ public:
 	}
 	
     virtual int load(const sf::String& path) override
-    {
-		SFG::UIWindow* win = new SFG::UIWindow();
-		if (win == NULL) {
-			perror("ALLOCATION ERROR");
-			exit(-1);
-		}
-		sf::String data;
-		basicLoadFile(L"Data/example - window.xml", data);
-		XMLReader winRead;
-		winRead.setSource(data);
-		winRead.parse();
-		
-		win->load(XMLReader(*winRead.getXMLGroupHandle("xml/module/")), sf::String(L"Test-Window"), StringManager(L"Data/example - strings.xml"));
-		UI()->addWindow(win);
-		
+    {		
 		this->UI()->load("Data/example - uimanager.xml", StringManager(L"Data/example - strings.xml"));
 		
 		

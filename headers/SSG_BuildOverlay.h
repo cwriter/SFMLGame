@@ -12,14 +12,7 @@ public:
 	~SSG_BuildOverlay();
 	
 	
-	int processEvents(std::vector<sf::Event>& events)
-	{
-		//Process UI first
-		m_ui.processEvents(events);
-		
-		
-		return 0;
-	}
+	int processEvents(std::vector<sf::Event>& events);
 	
 	int load(const sf::String& path)
 	{

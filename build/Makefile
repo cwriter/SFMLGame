@@ -1230,6 +1230,33 @@ src/XML.cpp.s:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/XML.cpp.s
 .PHONY : src/XML.cpp.s
 
+src/custom_UI.o: src/custom_UI.cpp.o
+
+.PHONY : src/custom_UI.o
+
+# target to build an object file
+src/custom_UI.cpp.o:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.o
+.PHONY : src/custom_UI.cpp.o
+
+src/custom_UI.i: src/custom_UI.cpp.i
+
+.PHONY : src/custom_UI.i
+
+# target to preprocess a source file
+src/custom_UI.cpp.i:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.i
+.PHONY : src/custom_UI.cpp.i
+
+src/custom_UI.s: src/custom_UI.cpp.s
+
+.PHONY : src/custom_UI.s
+
+# target to generate assembly for a file
+src/custom_UI.cpp.s:
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/custom_UI.cpp.s
+.PHONY : src/custom_UI.cpp.s
+
 src/main.o: src/main.cpp.o
 
 .PHONY : src/main.o
@@ -1416,6 +1443,9 @@ help:
 	@echo "... src/XML.o"
 	@echo "... src/XML.i"
 	@echo "... src/XML.s"
+	@echo "... src/custom_UI.o"
+	@echo "... src/custom_UI.i"
+	@echo "... src/custom_UI.s"
 	@echo "... src/main.o"
 	@echo "... src/main.i"
 	@echo "... src/main.s"

@@ -106,7 +106,7 @@ void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) cons
 	line.setPosition(x().get_d(), y().get_d());
 
 	line.setRotation(-180.f/PI*std::atan2(
-		getVelocity().getVector().y.get_d(), getVelocity().getVector().x.get_d()));
+		-getVelocity().getVector().y.get_d(), getVelocity().getVector().x.get_d()));
 		
 	//printf("Velocity of %s is %f|%f\n",m_name.toAnsiString().c_str(), getVelocity().getVector().x.get_d(), getVelocity().getVector().y.get_d());
 	t->draw(line);
@@ -118,7 +118,7 @@ void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) cons
 	line.setSize(sf::Vector2f(
 		vecscale * getAcceleration().getVector().absLength().get_d() * 100000.f, vecscale * 5.f));
 	line.setRotation(-180.f/PI*std::atan2(
-		getAcceleration().getVector().y.get_d(), getAcceleration().getVector().x.get_d()));
+		-getAcceleration().getVector().y.get_d(), getAcceleration().getVector().x.get_d()));
 	
 	line.setFillColor(sf::Color::Red);
 	line.setOutlineColor(sf::Color::Red);
