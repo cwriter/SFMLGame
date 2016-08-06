@@ -17,9 +17,10 @@ SSG_Galaxy::~SSG_Galaxy()
 int SSG_Galaxy::load(const XMLReader& reader)
 {
 	this->m_galaxy_name = reader.getValue("name.");
+	this->m_name = m_galaxy_name;
     size_t count = reader.for_all("SolarSystem", [=](const XMLGroup* g) {
         SFG::Pointer<SSG_SolarSystem> ptr(new SSG_SolarSystem());
-
+		ptr->setGuiDesktop(this->desktop());
         int ret = ptr->load(XMLReader(*g));
 
         if(ret == 0)

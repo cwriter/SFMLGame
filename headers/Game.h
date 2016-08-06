@@ -91,6 +91,9 @@ public:
     ///</summary>
     virtual int gameLoop();
 
+	///<summary>
+	///Update part of the game. Calls gamestate's update functions with the correct dt.
+	///</summary>
     int update();
 
 

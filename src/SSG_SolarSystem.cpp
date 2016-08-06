@@ -16,10 +16,11 @@ SSG_SolarSystem::~SSG_SolarSystem()
 
 int SSG_SolarSystem::load(const XMLReader& reader)
 {
-
+	this->m_name = reader.getValue("name.");
     reader.for_all("Planet", [=](const XMLGroup* g) {
         SFG::Pointer<SSG_Planet> ptr(new SSG_Planet());
 		ptr->m_parentSys = this;
+		ptr->setGuiDesktop(this->desktop());
         int ret = ptr->load(XMLReader(*g));
         if(ret == 0)
             this->addSpecificToSystem(ptr);

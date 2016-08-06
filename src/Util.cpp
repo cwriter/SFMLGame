@@ -17,6 +17,8 @@ void Util::printLog(LogMessageType t, const char* file, int line, const char* fo
 {
     va_list ap;
     va_start(ap, format);
+	
+	bool uc = false;
 
     std::string message = std::string(format) + " in " + file + ":" + std::to_string(line) + "\n";
 	std::string tmp;
@@ -24,16 +26,16 @@ void Util::printLog(LogMessageType t, const char* file, int line, const char* fo
     switch (t)
     {
     case LogMessageType::Error:
-        vprintf(std::string(std::string("[Error] ") + message + tmp + "\n").c_str(), ap);
+        vprintf(std::string(std::string(uc ? "\031[31m" : "") +  std::string("[Error] ") + message + tmp + std::string("\n") + std::string(uc ? "\031[49m\031[39m" : "")).c_str(), ap);
         break;
     case LogMessageType::Warning:
-        vprintf(std::string(std::string("[Warning] ") + message).c_str(), ap);
+        vprintf(std::string(std::string(uc ? "\031[33m" : "") + std::string("[Warning] ") + message + std::string(uc ? "\031[49m\031[39m" : "")).c_str(), ap);
         break;
     case LogMessageType::Development:
-        vprintf(std::string(std::string("[Warning/Development] ") + message).c_str(), ap);
+        vprintf(std::string(std::string(uc ? "\031[35m" : "") + std::string("[Warning/Development] ") + message + std::string(uc ? "\031[49m\031[39m" : "")).c_str(), ap);
         break;
     case LogMessageType::Information:
-        vprintf(std::string(std::string("[Information] ") + message).c_str(), ap);
+        vprintf(std::string(std::string(uc ? "\031[36m" : "") + std::string("[Information] ") + message + std::string(uc ? "\031[49m\031[39m" : "")).c_str(), ap);
         break;
     default:
 

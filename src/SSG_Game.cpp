@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "SSG_Game.h"
 #include <XML.h>
-
+#include "Game.h"
 
 
 SSG_Game::SSG_Game()
@@ -10,6 +10,9 @@ SSG_Game::SSG_Game()
     this->m_cam.setSize(1000.f, 1000.f);
 	this->m_mouse_mode = MouseMode::Select;
 	this->m_cam_index = 0;
+	
+	if(!sfg::Context::Get().GetEngine().SetProperty<std::string>("*", "FontName", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"))
+		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to set font");
 }
 
 SSG_Game::~SSG_Game()
@@ -33,6 +36,10 @@ int SSG_Game::update(double dt)
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
 		//m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*10.f,
 		//			  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*10.f);
+		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+			"Lock_on is @ (%f|%f) %f:%f", m_next_planets[m_cam_index]->getLogicBoundingRect().left, m_next_planets[m_cam_index]->getLogicBoundingRect().top,
+							m_next_planets[m_cam_index]->getLogicBoundingRect().width, m_next_planets[m_cam_index]->getLogicBoundingRect().height
+		);
 	}
 	//!TESTING
 
@@ -45,6 +52,10 @@ int SSG_Game::update(double dt)
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.update(dt);
 	}
+	//Update gui
+    m_uiman.update(dt);
+    //Clear any abandoned tasks
+    m_universe.clearDelayedActionTasks();
     
     return 0;
 }
@@ -100,10 +111,18 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 					sf::Vector2f pos = window.getSFMLWindow().mapPixelToCoords(
 						sf::Vector2i(events[i].mouseButton.x, events[i].mouseButton.y),
 						m_cam.getView());
-					this->m_mouse_request.active = true;
-					this->m_mouse_request.pos = pos;
-					this->m_mouse_request.button = events[i].mouseButton.button;
+					mouseRequest* mreq = new mouseRequest; //The task will later take care of deleting this object
 					
+					mreq->pos = pos;
+					mreq->button = events[i].mouseButton.button;
+					
+					SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+										"Mouse @ (%f|%f)", mreq->pos.x, mreq->pos.y);
+					
+					SFG::Pointer<delayedActionTask> ptr(new delayedActionTask);
+					ptr->m_request = mreq;
+					ptr->m_task_type = delayedActionTask::TaskType::mouseRequest;
+					m_universe.addDelayedActionTask(ptr);
 				}
 			}
 		}
@@ -143,6 +162,9 @@ int SSG_Game::load(const sf::String& path)
         printf("[Error] Failed to parse XML data in %s:%d\n.%s\n", __FILE__, __LINE__, st.c_str());
         return -1;
     }
+    //Set the desktop
+    m_universe.setGuiDesktop(&this->UI()->desktop());
+	
     //Load actual data
     XMLReader versereader(*reader.getXMLGroupHandle("xml/universe/"));
     int ret = m_universe.load(versereader);
@@ -252,7 +274,7 @@ int SSG_Game::init(SFG::Window& win)
 {
 	this->UI()->setTarget(&win.getSFMLWindow());
 	m_build_overlay.setTarget(win);
-	m_build_overlay.enable(win.getSFMLWindow());
+	//m_build_overlay.enable(win.getSFMLWindow());
 	float ratio = double(win.getSFMLWindow().getSize().x) / double(win.getSFMLWindow().getSize().y);
     this->m_cam.setSize(float(win.getSFMLWindow().getSize().x), float(win.getSFMLWindow().getSize().y*ratio));
 	//TESTING
@@ -280,6 +302,7 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.draw(*t);
 	}
+	this->UI()->draw(Game::window);
 }
 
 bool SSG_Game::pause(bool p)

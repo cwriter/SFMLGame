@@ -1,7 +1,9 @@
 #include "stdafx.h"
 #include "SSG_Planet.h"
 #include <SSG_SolarSystem.h>
-
+#include <functional>
+#include <SFGUI/Widgets.hpp>
+#include <sstream>
 
 
 SSG_Planet::SSG_Planet()
@@ -16,6 +18,10 @@ SSG_Planet::SSG_Planet()
     this->m_circle.setRadius(SSG_PLANET_DEFAULT_RADIUS);
     this->setMass(PE::Mass(SSG_PLANET_DEFAULT_MASS));
 
+	//bind the functions
+	setClick(std::bind(&SSG_Planet::internal_onclick, this, std::placeholders::_1, std::placeholders::_2));
+	
+	m_info_show = false;
 }
 
 
@@ -61,6 +67,7 @@ int SSG_Planet::load(const XMLReader& reader)
 	reader.for_all("Moon", [=](const XMLGroup* g){
 		SFG::Pointer<SSG_Planet> ptr(new SSG_Planet());
 		ptr->m_parentSys = this->m_parentSys;
+		ptr->setGuiDesktop(this->desktop());
 		int ret = ptr->load(XMLReader(*g));
 		if(ret != 0)
 		{
@@ -151,5 +158,85 @@ int SSG_Planet::update(float dt)
     //std::cout << "Vel (" << this->getVelocity().getVector().x << "|" << this->getVelocity().getVector().y << ")" << std::endl;
     //std::cout << "Loc (" << this->x() << "|" << this->y() << ")" << std::endl;
 
+    update_info(dt);
+	
     return 0;
+}
+
+void SSG_Planet::setPosition(float x, float y)
+{
+	SFG::Util::printLog(SFG::Util::Warning, __FILE__, __LINE__, 
+			   "Function %s with low precision was called. Please call the function with\n"
+			   "the higher precision instead", __FUNCTION__);
+	std::string str;
+	SFG::Util::getStackTrace(str);
+	printf(str.c_str());
+	m_x = x; 
+	m_y = y;
+   this->m_circle.setPosition(x, y);
+   GObjectBase::setPosition(x, y);
+}
+
+int SSG_Planet::internal_onclick(const sf::Vector2f& mpos, const sf::Mouse::Button& but)
+{
+	if(m_info_show) return 0;
+	
+	auto win = sfg::Window::Create(
+		sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
+	win->GetSignal(sfg::Window::OnCloseButton).Connect([win, this](){
+		win->Show(false);
+		this->m_info_show = false;
+		desktop()->Remove(win);
+	});
+	win->SetTitle("Properties of planet \"" + m_name + "\"");
+	
+	auto table = sfg::Table::Create();
+	
+	
+	auto masslabel = sfg::Label::Create("Mass:");
+	
+	std::ostringstream strm;
+	strm << std::scientific << this->getMass().getScalar().get_d();
+	
+	m_info_masstext = sfg::Label::Create(strm.str() + "kg");
+	m_info_masstext->SetAlignment(sf::Vector2f(1.f,0.f));
+	
+	auto poslabel = sfg::Label::Create("Position:");
+	
+	strm.str(std::string());
+	
+	strm << std::scientific << "(" << this->x().get_d() << "|" << this->y().get_d() << ")m";
+	m_info_postext = sfg::Label::Create(strm.str());
+	m_info_postext->SetAlignment(sf::Vector2f(1.f,0.f));
+	
+	
+	table->Attach(masslabel, sf::Rect<sf::Uint32>(0,0,1,1), sfg::Table::EXPAND, sfg::Table::EXPAND);
+	table->Attach(m_info_masstext, sf::Rect<sf::Uint32>(1,0,1,1), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::EXPAND);
+	
+	table->Attach(poslabel, sf::Rect<sf::Uint32>(0,1,1,1), sfg::Table::EXPAND, sfg::Table::EXPAND);
+	table->Attach(m_info_postext, sf::Rect<sf::Uint32>(1,1,1,1), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::EXPAND);
+	
+	win->Add(table);
+	desktop()->Add(win);
+	
+	
+	m_info_show = true;
+	
+	return 0;
+}
+
+int SSG_Planet::update_info(float dt)
+{
+	if(!m_info_show)
+		return 0;
+	std::ostringstream strm;
+	strm << std::scientific << this->getMass().getScalar().get_d() << "kg";
+	m_info_masstext->SetText(strm.str());
+	
+	strm.str(std::string());
+	
+	strm << std::scientific << "(" << this->x().get_d() << "|" << this->y().get_d() << ")m";
+	m_info_postext->SetText(strm.str());
+	
+	return 0;
 }

@@ -18,18 +18,6 @@ public:
 
     int load(const XMLReader& reader);
 
-
-    int update(float dt)
-    {
-        this->m_physicsEngine.applyMutualForces();
-        this->finishPhysicsCycle(dt);
-        for(auto p : m_CelestialObjects)
-        {
-            p.first->update(dt);
-        }
-        return 0;
-    }
-
     void draw(sf::RenderTarget* t)
     {
         for(auto p : m_CelestialObjects)

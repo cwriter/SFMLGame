@@ -17,6 +17,7 @@ int SSG_Universe::load(const XMLReader& reader)
     //Dump first time
     size_t count = reader.for_all("Galaxy", [=](const XMLGroup* g) {
         SFG::Pointer<SSG_Galaxy> ptr(new SSG_Galaxy());
+		ptr->setGuiDesktop(this->desktop());
         int ret = ptr->load(XMLReader(*g));
         if(ret == 0)
             this->addSpecificToSystem(ptr);

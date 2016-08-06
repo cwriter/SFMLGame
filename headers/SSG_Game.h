@@ -76,8 +76,6 @@ private:
 	
 	MouseMode m_mouse_mode;
 	
-	mouseRequest m_mouse_request;
-	
 	SSG_BuildOverlay m_build_overlay;
 	
     PE::PhysicsEngine m_physicsEngine;		//The physics engine used

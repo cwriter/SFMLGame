@@ -38,6 +38,7 @@ public:
 	
     void draw(SFG::Window& target)
 	{
+		target.getSFMLWindow().resetGLStates();
 		sfgui.Display(target.getSFMLWindow());
 	}
 	
@@ -61,6 +62,10 @@ public:
 	}
 	void refresh(){
 		this->m_sfg_desktop.Refresh();
+	}
+	
+	inline sfg::Desktop& desktop() {
+		return m_sfg_desktop;
 	}
 	
 #ifndef SFG_USE_CUSTOM_UI

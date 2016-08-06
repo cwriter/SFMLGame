@@ -431,7 +431,7 @@ public:
     /*virtual sf::FloatRect getBoundingRect() const {
     	return this->m_sprite.getGlobalBounds();
     }*/
-    SFG::FloatRect getBoundingRect() const {
+   virtual SFG::FloatRect getBoundingRect() const {
         return this->m_sprite.getGlobalBounds();
     }
     
