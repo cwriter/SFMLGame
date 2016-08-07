@@ -18,28 +18,23 @@ public:
 
     int load(const XMLReader& reader);
 
-    void draw(sf::RenderTarget* t)
-    {
-        for(auto p : m_CelestialObjects)
-        {
-            p.first->draw(*t);
-        }
-    }
-    
     SFG::Pointer<SSG_Planet> find(const sf::String& identifier) const
 	{
-		SFG::Pointer<SSG_Planet> ptr(nullptr);
-		for(auto p : m_CelestialObjects)
+		for(auto& p : m_CelestialObjects)
 		{
-			if(p.first->getName() == identifier)
+			if(p->getName() == identifier)
 			{
-				ptr.reset(p.second);
-				return ptr;
+				return p;
 			}
 		}
 		
-		return ptr;
+		return SFG::Pointer<SSG_Planet>(nullptr);
 	}
+	
+	///<summary>
+	///Calculates (simple) lighting for all objects in this solar system.
+	///</summary>
+	int illuminate(int steps = 2);
 
 
     inline void addShipToSystem(SFG::Pointer<SSG_Ship>& ptr)

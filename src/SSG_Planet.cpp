@@ -103,11 +103,12 @@ void SSG_Planet::draw(sf::RenderTarget& t)
     //We have to override the default as we're not drawing a sprite, but a shape
     t.draw(this->m_circle);
 	drawPhysicsComponents(&t, 1000.f);
+	draw_info(t);
 }
 
 void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) const
 {
-	sf::RectangleShape line(sf::Vector2f(
+	/*sf::RectangleShape line(sf::Vector2f(
 		vecscale * getVelocity().abs(), vecscale * 5.f));
 	line.setFillColor(sf::Color::White);
 	line.setPosition(x().get_d(), y().get_d());
@@ -117,10 +118,6 @@ void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) cons
 		
 	//printf("Velocity of %s is %f|%f\n",m_name.toAnsiString().c_str(), getVelocity().getVector().x.get_d(), getVelocity().getVector().y.get_d());
 	t->draw(line);
-	
-	/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-		"Acceleration is %f", getAcceleration().getVector().absLength().get_d()
-	);*/
 		
 	line.setSize(sf::Vector2f(
 		vecscale * getAcceleration().getVector().absLength().get_d() * 100000.f, vecscale * 5.f));
@@ -130,7 +127,27 @@ void SSG_Planet::drawPhysicsComponents(sf::RenderTarget* t, float vecscale) cons
 	line.setFillColor(sf::Color::Red);
 	line.setOutlineColor(sf::Color::Red);
 		
-	t->draw(line);
+	t->draw(line);*/
+	sf::VertexArray va(sf::Lines);
+	
+	va.append(sf::Vertex(sf::Vector2f(x().get_d(), y().get_d()), sf::Color::White));
+	va.append(sf::Vertex(
+		sf::Vector2f(x().get_d() + getVelocity().getVector().x.get_d() * vecscale * 5.f, 
+					 y().get_d() + getVelocity().getVector().y.get_d() * vecscale * 5.f)
+		, sf::Color::White));
+	
+	t->draw(va);
+	
+	va.clear();
+	
+	
+	va.append(sf::Vertex(sf::Vector2f(x().get_d(), y().get_d()), sf::Color::Red));
+	va.append(sf::Vertex(
+		sf::Vector2f(x().get_d() + getAcceleration().getVector().x.get_d() * vecscale * 100000.f, 
+					 y().get_d() + getAcceleration().getVector().y.get_d() * vecscale * 100000.f)
+		, sf::Color::Red));
+	
+	t->draw(va);
 }
 
 int SSG_Planet::update(float dt)
@@ -181,14 +198,14 @@ int SSG_Planet::internal_onclick(const sf::Vector2f& mpos, const sf::Mouse::Butt
 {
 	if(m_info_show) return 0;
 	
-	auto win = sfg::Window::Create(
+	m_info_window = sfg::Window::Create(
 		sfg::Window::Style::TOPLEVEL | sfg::Window::Style::CLOSE);
-	win->GetSignal(sfg::Window::OnCloseButton).Connect([win, this](){
-		win->Show(false);
+	m_info_window->GetSignal(sfg::Window::OnCloseButton).Connect([this](){
+		m_info_window->Show(false);
 		this->m_info_show = false;
-		desktop()->Remove(win);
+		desktop()->Remove(m_info_window);
 	});
-	win->SetTitle("Properties of planet \"" + m_name + "\"");
+	m_info_window->SetTitle("Properties of planet \"" + m_name + "\"");
 	
 	auto table = sfg::Table::Create();
 	
@@ -216,8 +233,8 @@ int SSG_Planet::internal_onclick(const sf::Vector2f& mpos, const sf::Mouse::Butt
 	table->Attach(poslabel, sf::Rect<sf::Uint32>(0,1,1,1), sfg::Table::EXPAND, sfg::Table::EXPAND);
 	table->Attach(m_info_postext, sf::Rect<sf::Uint32>(1,1,1,1), sfg::Table::EXPAND | sfg::Table::FILL, sfg::Table::EXPAND);
 	
-	win->Add(table);
-	desktop()->Add(win);
+	m_info_window->Add(table);
+	desktop()->Add(m_info_window);
 	
 	
 	m_info_show = true;
@@ -240,3 +257,58 @@ int SSG_Planet::update_info(float dt)
 	
 	return 0;
 }
+
+void SSG_Planet::draw_info(sf::RenderTarget& t)
+{
+	if(!m_info_show) return;
+	this->m_info_window->GetAllocation();
+	
+	sf::VertexArray va(sf::Lines);
+	
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left, getLogicBoundingRect().top), sf::Color::White));
+	
+	va.append(sf::Vertex(t.mapPixelToCoords(
+		sf::Vector2i(m_info_window->GetAllocation().left, m_info_window->GetAllocation().top), t.getView()
+	), sf::Color::White));
+	
+	t.draw(va);
+	
+	va.clear();
+	
+	
+	
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left + getLogicBoundingRect().width, getLogicBoundingRect().top), sf::Color::White));
+	
+	va.append(sf::Vertex(t.mapPixelToCoords(
+		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width, m_info_window->GetAllocation().top), t.getView()
+	), sf::Color::White));
+	
+	t.draw(va);
+	
+	va.clear();
+	
+	
+	
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left, getLogicBoundingRect().top + getLogicBoundingRect().height), sf::Color::White));
+	
+	va.append(sf::Vertex(t.mapPixelToCoords(
+		sf::Vector2i(m_info_window->GetAllocation().left, m_info_window->GetAllocation().top + m_info_window->GetAllocation().height), t.getView()
+	), sf::Color::White));
+	
+	t.draw(va);
+	
+	va.clear();
+	
+	
+	
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left + getLogicBoundingRect().width, getLogicBoundingRect().top + getLogicBoundingRect().height), sf::Color::White));
+	
+	va.append(sf::Vertex(t.mapPixelToCoords(
+		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width, m_info_window->GetAllocation().top+ m_info_window->GetAllocation().height), t.getView()
+	), sf::Color::White));
+	
+	t.draw(va);
+	
+	va.clear();
+}
+

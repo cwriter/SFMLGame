@@ -20,7 +20,7 @@ public:
 		SFG::Pointer<SSG_Planet> ptr;
 		for(auto g : m_CelestialObjects)
 		{
-			ptr.reset(g.first->find(identifier));
+			ptr.reset(g->find(identifier));
 			if(ptr.isValid())
 				return ptr;
 		}

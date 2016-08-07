@@ -16,21 +16,13 @@ public:
 
     int load(const XMLReader& reader);
 	
-	void draw(sf::RenderTarget* t)
-	{
-			for(auto ss : m_CelestialObjects)
-			{
-				ss.first->draw(t);
-			}
-	}
-	
 	SFG::Pointer<SSG_Planet> find(const sf::String& identifier) const
 	{
 		SFG::Pointer<SSG_Planet> ptr;
 		
 		for(auto ss : m_CelestialObjects)
 		{
-			ptr.reset(ss.first->find(identifier));
+			ptr.reset(ss->find(identifier));
 			if(ptr.isValid())
 				return ptr;
 		}

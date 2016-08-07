@@ -46,8 +46,8 @@ SFG::Vector2<mpf_class> SSG_SolarSystem::getBalancePoint()
     for(auto p : m_CelestialObjects)
     {
         //Add to sum up by weight
-        center.x += p.first->x()*p.first->getMass().getScalar();
-        center.y += p.first->y()*p.first->getMass().getScalar();
+        center.x += p->x()*p->getMass().getScalar();
+        center.y += p->y()*p->getMass().getScalar();
     }
 
     return center / mass_sum;

@@ -36,6 +36,12 @@ public:
 			return -1;
 		});
     }
+    
+    void draw(sf::RenderTarget& t)
+	{
+		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
+			m_CelestialObjects[i]->draw(t);
+	}
 
     int update(float dt)
 	{
@@ -45,11 +51,15 @@ public:
 			"Updating \"%s\" with %d objects", m_name.toAnsiString().c_str(),
 							m_CelestialObjects.size()
 		);*/
-		for(auto& g : m_CelestialObjects)
+		#pragma omp parallel for
+		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
 		{
+			auto& g = m_CelestialObjects[i];
 			//Check for mouse actions
-			for(auto& action : this->m_requests)
+			//for(auto& action : this->m_requests)
+			for(size_t ii = 0; ii < m_requests.size(); ii++)
 			{
+				auto& action = m_requests[ii];
 				if(action->isActive())
 				{
 					if(action->m_task_type == delayedActionTask::TaskType::mouseRequest)
@@ -60,15 +70,18 @@ public:
 							"%s: (%f|%f) %f:%f", g.first->m_name.toAnsiString().c_str(), g.first->getLogicBoundingRect().left, g.first->getLogicBoundingRect().top,
 											g.first->getLogicBoundingRect().width, g.first->getLogicBoundingRect().height
 						);*/
-						if(g.first->getLogicBoundingRect().contains(req->pos))
+						if(g->getLogicBoundingRect().contains(req->pos))
 						{
-							if(g.first->onClick(req->pos, req->button) == 0)
+							if(g->onClick(req->pos, req->button) == 0)
 							{
 								//We're done
 								/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
 									"Event has been consumed"
 								);*/
-								action->deactivate();
+								#pragma omp critical
+								{
+									action->deactivate();
+								}
 							}
 							else
 							{
@@ -79,21 +92,16 @@ public:
 								//g.first->addDelayedActionTask(action);
 							}
 						}
-						g.first->addDelayedActionTask(action);
+						#pragma omp critical
+						{
+							g->addDelayedActionTask(action);
+						}
 					}
 				}
 			}
-			g.first->update(dt);
+			g->update(dt);
 		}
 		return 0;
-	}
-	
-	void draw(sf::RenderTarget* t)
-	{
-		for(auto g : m_CelestialObjects) 
-		{
-			g.first->draw(t);
-		}
 	}
 	
 	sf::FloatRect getLogicBoundingRect() const override
@@ -103,9 +111,12 @@ public:
 		r = std::numeric_limits<float>::min();
 		t = std::numeric_limits<float>::max();
 		b = std::numeric_limits<float>::min();
-		for(const auto& o : m_CelestialObjects)
+		
+		//for(const auto& o : m_CelestialObjects)
+		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
 		{
-			sf::FloatRect rect = o.first->getLogicBoundingRect();
+			auto& o = m_CelestialObjects[i];
+			sf::FloatRect rect = o->getLogicBoundingRect();
 			l = std::min(l, rect.left);
 			r = std::max(r, rect.left + rect.width);
 			t = std::min(t, rect.top);
@@ -125,9 +136,10 @@ public:
         this->setMass(getMass() - ptr->getMass());
     }
 
-    inline void addSpecificToSystem(SFG::Pointer<T>& ptr)
+    inline void addSpecificToSystem(const SFG::Pointer<T>& ptr)
     {
-        m_CelestialObjects[ptr.getElement()] = ptr;
+        //m_CelestialObjects[ptr.getElement()] = ptr;
+		m_CelestialObjects.push_back(ptr);
         addObjectToSystem(ptr);
     }
 
@@ -142,7 +154,7 @@ public:
 	virtual void clearDelayedActionTasks() override {
 		m_requests.clear();
 		for(auto& o : m_CelestialObjects)
-			o.first->clearDelayedActionTasks();
+			o->clearDelayedActionTasks();
 	}
 
 protected:
@@ -158,9 +170,9 @@ protected:
 
     
     PE::PhysicsEngine m_physicsEngine;
-    std::map<T*, SFG::Pointer<T>> m_CelestialObjects;
-
-    mpf_class m_x;
+	std::vector<SFG::Pointer<T>> m_CelestialObjects;
+    
+	mpf_class m_x;
     mpf_class m_y;
 
 };
@@ -247,6 +259,8 @@ public:
 	}
     
     int update_info(float dt);
+	
+	void draw_info(sf::RenderTarget& t);
     
     ///<summary>
 	///Draws physics vectors of force and velocity to the specfied target, 
@@ -268,6 +282,7 @@ private:
 	
 	//================
 	bool m_info_show;
+	sfg::Window::Ptr m_info_window;
 	sfg::Label::Ptr m_info_masstext;
 	sfg::Label::Ptr m_info_postext;
 	//================

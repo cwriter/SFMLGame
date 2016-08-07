@@ -24,22 +24,22 @@ int SSG_Game::update(double dt)
 {
 	//TESTING
 	m_cam_counter++;
-	if(m_cam_counter % 20 == 0)
-			printf("%zu\n", m_cam_counter);
+	/*if(m_cam_counter % 20 == 0)
+			printf("%zu\n", m_cam_counter);*/
 	m_cam.update(dt);
 	if(m_cam_counter >= 250)
 	{
 		m_cam_counter = 0;
-		printf("Switching target=(%zu->", m_cam_index);
+		//printf("Switching target=(%zu->", m_cam_index);
 		m_cam_index = (m_cam_index + 1) % m_next_planets.size();
-		printf("%zu)================================.\n", m_cam_index);
+		//printf("%zu)================================.\n", m_cam_index);
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
 		//m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*10.f,
 		//			  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*10.f);
-		SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
 			"Lock_on is @ (%f|%f) %f:%f", m_next_planets[m_cam_index]->getLogicBoundingRect().left, m_next_planets[m_cam_index]->getLogicBoundingRect().top,
 							m_next_planets[m_cam_index]->getLogicBoundingRect().width, m_next_planets[m_cam_index]->getLogicBoundingRect().height
-		);
+		);*/
 	}
 	//!TESTING
 
@@ -116,8 +116,8 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 					mreq->pos = pos;
 					mreq->button = events[i].mouseButton.button;
 					
-					SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-										"Mouse @ (%f|%f)", mreq->pos.x, mreq->pos.y);
+					/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
+										"Mouse @ (%f|%f)", mreq->pos.x, mreq->pos.y);*/
 					
 					SFG::Pointer<delayedActionTask> ptr(new delayedActionTask);
 					ptr->m_request = mreq;
@@ -200,8 +200,8 @@ int SSG_Game::load(const sf::String& path)
 	
 	/*this->m_next_planets.push_back(m_universe.findPlanet("Sol"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Mercury"));
-	this->m_next_planets.push_back(m_universe.findPlanet("Venus"));
-	this->m_next_planets.push_back(m_universe.findPlanet("Terra"));*/
+	this->m_next_planets.push_back(m_universe.findPlanet("Venus"));*/
+	this->m_next_planets.push_back(m_universe.findPlanet("Terra"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Luna"));
 	/*this->m_next_planets.push_back(m_universe.findPlanet("Mars"));
 	this->m_next_planets.push_back(m_universe.findPlanet("Jupiter"));
@@ -270,6 +270,15 @@ int SSG_Game::load(const sf::String& path)
     return 0;
 }
 
+int SSG_Game::unload()
+{
+    for (auto m : this->m_modules)
+    {
+        m->unload();
+    }
+    return 0;
+}
+
 int SSG_Game::init(SFG::Window& win)
 {
 	this->UI()->setTarget(&win.getSFMLWindow());
@@ -297,7 +306,7 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	//m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
 	t->setView(m_cam);
 	//!TESTING
-	this->m_universe.draw(t);
+	this->m_universe.draw(*t);
 
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.draw(*t);

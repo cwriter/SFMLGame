@@ -198,6 +198,15 @@ public:
         return ret;
     }
     
+    Vector<dim, T> normalized() const
+    {
+		PE::Vector<dim, T> ret;
+		
+		ret = *this / this->absLength();
+		
+		return ret;
+	}
+    
     PE::Matrix<T> toRow() const
     {
 		PE::Matrix<T> m(dim, 1);

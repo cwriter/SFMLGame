@@ -53,13 +53,7 @@ public:
     ///<summary>
     ///Unloads all data from this gamestate while begin able to instantly reload (=keeping filepaths for example)
     ///</summary>
-    int unload() override {
-        for (auto m : this->m_modules)
-        {
-            m->unload();
-        }
-        return 0;
-    }
+    int unload() override;
 
     ///<summary>
     ///Inits the gamestate with the window. This function gets called whenever the game switches to this gamestate.

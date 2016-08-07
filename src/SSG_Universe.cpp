@@ -77,12 +77,20 @@ int SSG_Universe::object_message_handler_galaxies(int msg, const SFG::Pointer<Ms
         //First argument is the sender
         SSG_Galaxy* sender = (SSG_Galaxy*)pkg->getValue(0);
         //Remove this guy from the object list
-        this->m_CelestialObjects.erase(sender); //#TODO: Check if this actually calls the destructor
+        //this->m_CelestialObjects.erase(sender); //#TODO: Check if this actually calls the destructor
+		//Find the object
+		auto it = std::find_if(m_CelestialObjects.begin(), m_CelestialObjects.end(), [sender](const SFG::Pointer<SSG_Galaxy>& ptr){
+			return (sender == ptr.getElement());
+		});
+		if(it == m_CelestialObjects.end()) return -2;
 
         this->m_x -= sender->getMass().getScalar() * sender->x();
         this->m_y -= sender->getMass().getScalar() * sender->y();
 
         setMass(getMass() - sender->getMass());
+		
+		//Now erase it
+		m_CelestialObjects.erase(it);
     }
     else
     {
