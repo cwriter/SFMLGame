@@ -48,10 +48,10 @@ RM = /usr/bin/cmake -E remove -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /home/silvan/Dokumente/Programming/SFMLGame
+CMAKE_SOURCE_DIR = /home/silvan/Programming/SFGremote/SFMLGame
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /home/silvan/Dokumente/Programming/SFMLGame
+CMAKE_BINARY_DIR = /home/silvan/Programming/SFGremote/SFMLGame
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -69,8 +69,8 @@ rebuild_cache/fast: rebuild_cache
 
 # Special rule for the target edit_cache
 edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "No interactive CMake dialog available..."
-	/usr/bin/cmake -E echo No\ interactive\ CMake\ dialog\ available.
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/usr/bin/cmake-gui -H$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
 .PHONY : edit_cache
 
 # Special rule for the target edit_cache
@@ -80,9 +80,9 @@ edit_cache/fast: edit_cache
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles/progress.marks
 	$(MAKE) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Dokumente/Programming/SFMLGame/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /home/silvan/Programming/SFGremote/SFMLGame/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -1066,6 +1066,36 @@ src/SSG_Planet.cpp.s:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_Planet.cpp.s
 .PHONY : src/SSG_Planet.cpp.s
 
+src/SSG_PlanetSurface.o: src/SSG_PlanetSurface.cpp.o
+
+.PHONY : src/SSG_PlanetSurface.o
+
+# target to build an object file
+src/SSG_PlanetSurface.cpp.o:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/SSG_PlanetSurface.cpp.o
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_PlanetSurface.cpp.o
+.PHONY : src/SSG_PlanetSurface.cpp.o
+
+src/SSG_PlanetSurface.i: src/SSG_PlanetSurface.cpp.i
+
+.PHONY : src/SSG_PlanetSurface.i
+
+# target to preprocess a source file
+src/SSG_PlanetSurface.cpp.i:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/SSG_PlanetSurface.cpp.i
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_PlanetSurface.cpp.i
+.PHONY : src/SSG_PlanetSurface.cpp.i
+
+src/SSG_PlanetSurface.s: src/SSG_PlanetSurface.cpp.s
+
+.PHONY : src/SSG_PlanetSurface.s
+
+# target to generate assembly for a file
+src/SSG_PlanetSurface.cpp.s:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/SSG_PlanetSurface.cpp.s
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/SSG_PlanetSurface.cpp.s
+.PHONY : src/SSG_PlanetSurface.cpp.s
+
 src/SSG_Ship.o: src/SSG_Ship.cpp.o
 
 .PHONY : src/SSG_Ship.o
@@ -1589,6 +1619,9 @@ help:
 	@echo "... src/SSG_Planet.o"
 	@echo "... src/SSG_Planet.i"
 	@echo "... src/SSG_Planet.s"
+	@echo "... src/SSG_PlanetSurface.o"
+	@echo "... src/SSG_PlanetSurface.i"
+	@echo "... src/SSG_PlanetSurface.s"
 	@echo "... src/SSG_Ship.o"
 	@echo "... src/SSG_Ship.i"
 	@echo "... src/SSG_Ship.s"

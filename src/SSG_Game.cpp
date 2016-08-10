@@ -46,8 +46,8 @@ int SSG_Game::update(double dt)
     this->m_physicsEngine.applyMutualForces();
 	
 	//#TODO: REMOVE THE LINE BELOW THE COMMENT AND UN-COMMENT THE COMMENT FOR REAL VALUES
-	//this->m_universe.update(dt);
-	this->m_universe.update(dt*100000.f);
+	this->m_universe.update(dt);
+	//this->m_universe.update(dt*100000.f);
 
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.update(dt);

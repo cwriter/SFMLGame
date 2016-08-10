@@ -106,7 +106,14 @@ public:
     ///a pointer to the current gamestate otherwise</returns>
     SFG::Pointer<GameState> getCurrentGameState() const;
 
-
+	///<summary>
+	///Shows or hides the timing informations
+	///</summary>
+	inline void setShowTimings(bool show = true)
+	{
+		m_timing_show = show;
+	}
+	
     static SFG::Window window;
 
     sf::Clock elapsedTime;
@@ -119,8 +126,11 @@ private:
 
     SFG::GameLoopTiming m_timing;
 
+	bool m_timing_show;
 	sf::Text m_timing_display;
 	sf::Font m_timing_font;
+	
+	
     std::vector<sf::Event> m_unhandled_events;
     std::map<sf::Keyboard::Key, sf::Keyboard::Key> m_keyMap;
     std::vector<SFG::Pointer<GameState>> g_gamestates;

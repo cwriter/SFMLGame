@@ -18,16 +18,29 @@ bool Polygon::contains(const PE::Vector2df& point) const
 {
 	//We assume the polygon's contents are always on the right side
 	//of the connection lines (clockwise polygon)
+	bool inside = false;
+	getVectorToPoint(point, &inside);
 	
+	return inside;
+}
+
+void Polygon::draw(sf::RenderTarget& target, const sf::Color& color, float linewidth)
+{	
+	sf::VertexArray va(sf::LinesStrip);
 	
+	//This loop connects all points
+	for(auto it = m_points.begin(); it != m_points.end(); ++it)
+	{
+		va.append(sf::Vertex(sf::Vector2f(it->x.get_d(), it->y.get_d()), color));
+	}
 	
-	return false;
+	target.draw(va);
 }
 
 
-PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
+PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point, bool* inside) const
 {
-	//We assume a clockwise polygon (contents are on the right side of each line
+	//We assume a clockwise polygon (contents are on the right side of each line)
 	
 	//We're lazy as fuck and will copy the lines first
 	//(this will make openmp usage easier / even possible)
@@ -70,7 +83,23 @@ PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
 				#pragma omp critical
 				{
 					if(connection.direction.absLength() < ret.absLength())
+					{
 						ret = connection.direction;
+						if(inside != nullptr)
+							*inside = true;
+					}
+				}
+			}
+			else
+			{
+				#pragma omp critical
+				{
+					if(connection.direction.absLength() < ret.absLength())
+					{
+						ret = connection.direction;
+						if(inside != nullptr)
+							*inside = false;
+					}
 				}
 			}
 		}
@@ -89,6 +118,14 @@ PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
 		if(factor <= 0.f)
 		{
 			//Wrong side or no intersection (the latter is REALLY rare)
+			#pragma omp critical
+			{
+				if(rightSide.absLength() < ret.absLength())
+				{
+					if(inside != nullptr)
+						*inside = false;
+				}
+			}
 		}
 		else
 		{
@@ -99,6 +136,8 @@ PE::Vector2df Polygon::getVectorToPoint(const PE::Vector2df& point)
 				if(rightSide.absLength() < ret.absLength())
 				{
 					ret = rightSide;
+					if(inside != nullptr)
+						*inside = true;
 				}
 			}
 		}

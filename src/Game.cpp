@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "Game.h"
+#include <iosfwd>
+#include <ostream>
+#include <sstream>
 
 SFG::Window Game::window;
 Game::Game()
@@ -9,6 +12,8 @@ Game::Game()
     //Set the current gamestate correctly
     this->current_gamestate = 0;
 
+	setShowTimings(false);
+	
     //Test the stack call lister
     std::string out;
     SFG::Util::getStackTrace(out);
@@ -293,18 +298,21 @@ void Game::draw(sf::RenderTarget* t)
     
     //Draw timing information
     
-    m_timing_display.setPosition(0,0);
-    if(t != nullptr) {
-		auto tmp = t->getView();
-		t->setView(t->getDefaultView());
-		t->draw(m_timing_display);
-		t->setView(tmp);
-	}
-	else {
-		auto tmp = window.getSFMLWindow().getView();
-		window.getSFMLWindow().setView(window.getSFMLWindow().getDefaultView());
-		window.draw(m_timing_display);
-		window.getSFMLWindow().setView(tmp);
+    if(m_timing_show) 
+	{
+		m_timing_display.setPosition(0,0);
+		if(t != nullptr) {
+			auto tmp = t->getView();
+			t->setView(t->getDefaultView());
+			t->draw(m_timing_display);
+			t->setView(tmp);
+		}
+		else {
+			auto tmp = window.getSFMLWindow().getView();
+			window.getSFMLWindow().setView(window.getSFMLWindow().getDefaultView());
+			window.draw(m_timing_display);
+			window.getSFMLWindow().setView(tmp);
+		}
 	}
 }
 
@@ -313,26 +321,35 @@ int Game::parseArgs(int argc, char* argv[])
     //check argument count:
     if (argc == 1) return 0; //Nothing to do
 
-    if (strcmp(argv[1],"-help") == 0)
-    {
-        //Print the help information
+    for(size_t c_i = 0; c_i < size_t(argc); c_i++)
+	{
+		if (strcmp(argv[c_i],"-help") == 0)
+		{
+			//Print the help information
 
-        printf(
-            "SFMLGameEngine CLI options:\n"
-            "\t-help:\t\tPrint this information\n"
-            "\t-stream:\t\tEnables streaming server. See -stream -help for more information\n"
-        );
-    }
-    else if (strcmp(argv[1],"-stream") == 0)
-    {
-        if (strcmp(argv[2],"-help") == 0)
-        {
-            printf(
-                "Help for -stream:\n"
-                "-stream starts a server that can stream content to another computer to enable remote playing.\n"
-                "Note that starting the server might take some time.\n");
-        }
-    }
+			printf(
+				"SFMLGameEngine CLI options:\n"
+				"\t-help:\t\tPrint this information\n"
+				"\t-stream:\t\tEnables streaming server. See -stream -help for more information\n"
+			);
+		}
+		else if(strcmp(argv[c_i], "-showtimings") == 0)
+		{
+			setShowTimings(true);
+		}
+		else if (strcmp(argv[c_i],"-stream") == 0)
+		{
+			c_i++;
+			if(c_i >= argc) break;
+			if (strcmp(argv[c_i],"-help") == 0)
+			{
+				printf(
+					"Help for -stream:\n"
+					"-stream starts a server that can stream content to another computer to enable remote playing.\n"
+					"Note that starting the server might take some time.\n");
+			}
+		}
+	}
     return 0;
 }
 
@@ -351,11 +368,29 @@ int Game::gameLoop()
     //Updating the game logic should not take more than 10ms
     this->update();
 	
-	this->m_timing_display.setString(
-		"PT: " + std::to_string(m_timing.processingTime) + "\n" +
-		"UT: " + std::to_string(m_timing.updatingTime) + "\n" +
-		"DT: " + std::to_string(m_timing.drawingTime) + "\n");
-
+	if(m_timing_show)
+	{
+		std::ostringstream numberformatter;
+		
+		numberformatter << std::fixed << std::setprecision(2) << std::setfill('0');
+		
+		numberformatter << std::setw(7) << m_timing.processingTime;
+		auto ptnum = numberformatter.str();
+		numberformatter.str("");
+		
+		numberformatter << std::setw(7) << m_timing.updatingTime;
+		auto utnum = numberformatter.str();
+		numberformatter.str("");
+		
+		numberformatter << std::setw(7) << m_timing.drawingTime;
+		auto dtnum = numberformatter.str();
+		numberformatter.str("");
+		
+		this->m_timing_display.setString(
+			"PT: " + ptnum + "\n" +
+			"UT: " + utnum + "\n" +
+			"DT: " + dtnum + "\n");
+	}
     this->m_timing.updatingTime = clk.restart().asMicroseconds() / 1000.f;
 
     //This leaves us with 4ms for drawing
