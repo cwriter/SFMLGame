@@ -5,6 +5,7 @@
 #include "Network.h"
 #include "KeyMapper.h"
 #include "GameSettings.h"
+#include "GameConsole.h"
 
 //The first gamestate (will load the game)
 #define GAMESTATE_LOAD 0
@@ -84,6 +85,12 @@ public:
     ///</summary>
     void processEvents();
 
+	///<summary>
+	///Draws the game to a target or to the default window of the game
+	///</summary>
+	///<param name="t">
+	///A target to draw on or nullptr if the default window shall be used
+	///</param>
     void draw(sf::RenderTarget* t = nullptr);
 
     ///<summary>
@@ -98,11 +105,11 @@ public:
 
 
     ///<summary>
-    ///Returns the current gamestate. There are multiple issues with this function:<br/>
-    ///The gamestate might change quickly, the vector itself is NOT threadsafe.<br/>
+    ///Returns the current gamestate. There are multiple issues with this function:
+    ///The gamestate might change quickly, the vector itself is NOT threadsafe.
     ///Therefore, this function only has effects when run in Debug Mode.
     ///</summary>
-    ///<returns>nullptr if the gamestate could not be determined,<br/>
+    ///<returns>nullptr if the gamestate could not be determined,
     ///a pointer to the current gamestate otherwise</returns>
     SFG::Pointer<GameState> getCurrentGameState() const;
 
@@ -115,6 +122,8 @@ public:
 	}
 	
     static SFG::Window window;
+	
+	static SFG::CommandTranslator cmdTranslator;
 
     sf::Clock elapsedTime;
 
@@ -126,10 +135,13 @@ private:
 
     SFG::GameLoopTiming m_timing;
 
-	bool m_timing_show;
+	//bool m_timing_show;
+	SFG::Var<bool> m_timing_show;
+	
 	sf::Text m_timing_display;
 	sf::Font m_timing_font;
 	
+	SFG::GameConsole m_game_console;
 	
     std::vector<sf::Event> m_unhandled_events;
     std::map<sf::Keyboard::Key, sf::Keyboard::Key> m_keyMap;

@@ -346,6 +346,36 @@ src/Game.cpp.s:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/Game.cpp.s
 .PHONY : src/Game.cpp.s
 
+src/GameConsole.o: src/GameConsole.cpp.o
+
+.PHONY : src/GameConsole.o
+
+# target to build an object file
+src/GameConsole.cpp.o:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/GameConsole.cpp.o
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/GameConsole.cpp.o
+.PHONY : src/GameConsole.cpp.o
+
+src/GameConsole.i: src/GameConsole.cpp.i
+
+.PHONY : src/GameConsole.i
+
+# target to preprocess a source file
+src/GameConsole.cpp.i:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/GameConsole.cpp.i
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/GameConsole.cpp.i
+.PHONY : src/GameConsole.cpp.i
+
+src/GameConsole.s: src/GameConsole.cpp.s
+
+.PHONY : src/GameConsole.s
+
+# target to generate assembly for a file
+src/GameConsole.cpp.s:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/GameConsole.cpp.s
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/GameConsole.cpp.s
+.PHONY : src/GameConsole.cpp.s
+
 src/GameSettings.o: src/GameSettings.cpp.o
 
 .PHONY : src/GameSettings.o
@@ -1547,6 +1577,9 @@ help:
 	@echo "... src/Game.o"
 	@echo "... src/Game.i"
 	@echo "... src/Game.s"
+	@echo "... src/GameConsole.o"
+	@echo "... src/GameConsole.i"
+	@echo "... src/GameConsole.s"
 	@echo "... src/GameSettings.o"
 	@echo "... src/GameSettings.i"
 	@echo "... src/GameSettings.s"

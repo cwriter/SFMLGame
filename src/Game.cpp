@@ -5,6 +5,9 @@
 #include <sstream>
 
 SFG::Window Game::window;
+SFG::CommandTranslator Game::cmdTranslator;
+
+
 Game::Game()
 {
     //Default event queue size is 64.
@@ -13,6 +16,9 @@ Game::Game()
     this->current_gamestate = 0;
 
 	setShowTimings(false);
+	
+	Game::cmdTranslator.setVar<bool>("show_timings", &this->m_timing_show);
+	
 	
     //Test the stack call lister
     std::string out;
@@ -47,6 +53,11 @@ SFG::Pointer<GameState> Game::getCurrentGameState() const
 
 int Game::load(sf::String path, SFG::SplashScreen* ss)
 {
+	if(m_game_console.init() != 0)
+		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
+			"Failed to init console"
+		);
+	
 	if(!m_timing_font.loadFromFile("Fonts/arial.ttf"))
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
 			"Failed to load font"
@@ -271,9 +282,22 @@ void Game::processEvents()
     {
         if (e.type == sf::Event::KeyPressed || e.type == sf::Event::KeyReleased)
         {
+			//Send stuff directly to console if it is enabled
+			if(e.key.code == sf::Keyboard::Tilde || e.key.code == sf::Keyboard::F1)
+			{
+				if(e.type == sf::Event::KeyReleased)
+				{
+					m_game_console.setActive(!m_game_console.isActive());
+				}
+			}
             //We shall remap everything - however, make sure to actually process these as otherwise, they could loop forever
             e.key.code = this->keyMapper(e.key.code, false);
         }
+        else if(e.type == sf::Event::TextEntered)
+		{
+			if(m_game_console.isActive())
+				m_game_console.addChar(e.text.unicode);
+		}
     }
     //Let the UI pick what it wants and set picked values to sf::event::count to make it unusable for further use
     if (current_gamestate >= g_gamestates.size())
@@ -296,8 +320,18 @@ void Game::draw(sf::RenderTarget* t)
         g_gamestates[current_gamestate]->draw(t);
     }
     
-    //Draw timing information
+    //Draw console
+    if(t == nullptr)
+	{
+		m_game_console.draw(window.getSFMLWindow());
+	}
+	else
+	{
+		m_game_console.draw(*t);
+	}
     
+    
+    //Draw timing information
     if(m_timing_show) 
 	{
 		m_timing_display.setPosition(0,0);
@@ -326,7 +360,6 @@ int Game::parseArgs(int argc, char* argv[])
 		if (strcmp(argv[c_i],"-help") == 0)
 		{
 			//Print the help information
-
 			printf(
 				"SFMLGameEngine CLI options:\n"
 				"\t-help:\t\tPrint this information\n"
@@ -340,7 +373,7 @@ int Game::parseArgs(int argc, char* argv[])
 		else if (strcmp(argv[c_i],"-stream") == 0)
 		{
 			c_i++;
-			if(c_i >= argc) break;
+			if(c_i >= size_t(argc)) break;
 			if (strcmp(argv[c_i],"-help") == 0)
 			{
 				printf(
@@ -429,10 +462,21 @@ int Game::gameLoop()
 
 int Game::update()
 {
-    if (g_gamestates.size() <= current_gamestate) {
+	float dt = elapsedTime.restart().asMicroseconds() / 1000.f;
+    //update console
+	m_game_console.update(dt);
+	auto tr = Game::cmdTranslator.translate(m_game_console.getCommand());
+	if(tr.getSize() > 0)
+	{
+		m_game_console.print(tr);
+		//printf("Translator returned %s\n", tr.toAnsiString().c_str());
+	}
+	m_game_console.clearCommand();
+	
+	if (g_gamestates.size() <= current_gamestate) {
         return -1;	//Don't attemt to update a gamestate if it isn't present
     }
-    auto ret = g_gamestates[current_gamestate]->update(elapsedTime.restart().asMicroseconds() / 1000.f);
+    auto ret = g_gamestates[current_gamestate]->update(dt);
     if (g_gamestates[current_gamestate]->switch_to != "")
     {
         //We need to switch gamestates
