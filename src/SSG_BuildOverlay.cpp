@@ -5,6 +5,7 @@
 SSG_BuildOverlay::SSG_BuildOverlay()
 {
 	m_enabled = false;
+	Game::cmdTranslator.setVar<bool>("enable_buildoverlay", &this->m_enabled);
 }
 
 SSG_BuildOverlay::~SSG_BuildOverlay()
@@ -14,6 +15,7 @@ SSG_BuildOverlay::~SSG_BuildOverlay()
 
 int SSG_BuildOverlay::processEvents(std::vector< sf::Event >& events)
 {
+	if(!isEnabled()) return -1;
 	//Process UI first
 	m_ui.processEvents(events);
 	for(size_t i = 0; i < events.size(); i++)
@@ -39,7 +41,7 @@ int SSG_BuildOverlay::processEvents(std::vector< sf::Event >& events)
 
 void SSG_BuildOverlay::draw(sf::RenderTarget& target)
 {
-	//#TODO: Draw everything on the texture
+	if(!isEnabled()) return;
 	
 	
 	//Draw to intermediate texture

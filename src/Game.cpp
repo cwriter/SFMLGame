@@ -290,6 +290,24 @@ void Game::processEvents()
 					m_game_console.setActive(!m_game_console.isActive());
 				}
 			}
+			else if(e.key.code == sf::Keyboard::Space && e.key.control && e.type == sf::Event::KeyReleased)
+			{
+				size_t startpoint = 0;
+				auto ptr = Game::cmdTranslator.autocomplete(m_game_console.getCurrentInput(), &startpoint);
+				
+				if(ptr->size() == 1)
+				{
+					m_game_console.setInput(m_game_console.getCurrentInput() + (*ptr.getElement())[0].substring(startpoint));
+					//m_game_console.fire();
+				}
+				else if(ptr->size() > 1)	
+				{
+					for(const auto& str : *ptr.getElement())
+					{
+						m_game_console.print(str);
+					}
+				}
+			}
             //We shall remap everything - however, make sure to actually process these as otherwise, they could loop forever
             e.key.code = this->keyMapper(e.key.code, false);
         }

@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "UI.h"
-
+#include "GameConsole.h"
 
 ///<summary>
 ///Provides the menu to build a new ship design or modify an old one
@@ -29,6 +29,7 @@ public:
 	
 	int update(float dt)
 	{
+		if(!isEnabled()) return -1;
 		m_ui.update(dt);
 		return 0;
 	}
@@ -64,7 +65,7 @@ public:
 	}
 	
 protected:
-	bool m_enabled;
+	SFG::Var<bool> m_enabled;
 	
 	sf::RenderTexture m_tex;	//Provides a texture with transparent filling to then draw OVER the current game
 	

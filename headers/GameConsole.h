@@ -117,6 +117,40 @@ namespace SFG
 				return sf::String();
 			};
 		}
+		
+		SFG::Pointer<std::vector<sf::String>> autocomplete(const sf::String& current, size_t* startpoint = nullptr) const
+		{
+			sf::String searchstr = current;
+			
+			size_t begin = 0;
+			if(searchstr.getSize() > 1)
+			{
+				begin = searchstr.getSize() -1;
+				while(!isspace(searchstr[begin]))
+				{
+					begin--;
+					if(begin == 0) break;
+				}
+				searchstr = searchstr.substring(begin + 1, current.getSize() - (begin+1));
+			}
+			
+			
+			SFG::Pointer<std::vector<sf::String>> ptr(new std::vector<sf::String>());
+			
+			for(const auto& it : m_vars)
+			{
+				if(it.first.find(searchstr) != sf::String::InvalidPos || 
+					searchstr.getSize() == 0)
+				{
+					if(startpoint != nullptr)
+						*startpoint = searchstr.getSize();
+					ptr->push_back(it.first);
+				}
+			}
+			
+			return ptr;
+		}
+		
 	private:
 		std::map<sf::String, std::function<void(const std::vector<sf::String>&)>> m_funcs;
 		std::map<sf::String, std::function<sf::String(int, const sf::String&)>> m_vars;
@@ -202,13 +236,27 @@ namespace SFG
 		{
 			return m_command;
 		}
-		void print(sf::String tr);
+		void print(const sf::String& tr);
 		
 		void clearCommand()
 		{
 			m_command.clear();
 		}
 		
+		const sf::String& getCurrentInput() const
+		{
+			return m_input;
+		}
+		void setInput(const sf::String& str)
+		{
+			m_input = str;
+		}
+		
+		void fire()
+		{
+			sendCommand();
+		}
+
 	protected:
 		void sendCommand()
 		{

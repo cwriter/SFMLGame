@@ -1,11 +1,13 @@
 #include "stdafx.h"
+#include "AI.h"
 
 ///<summary>
 ///The class to represent figurines
 ///</summary>
 class SSG_Character
 	:	public GObjectBase,
-		public PE::PhysicObject
+		public PE::PhysicObject,
+		public SFG::AI
 {
 public:
 	SSG_Character()

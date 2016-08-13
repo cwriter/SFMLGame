@@ -34,7 +34,7 @@ namespace SFG
 		}
 	}
 	
-	void GameConsole::print(sf::String tr)
+	void GameConsole::print(const sf::String& tr)
 	{
 		m_output += tr + "\n";
 		changed();
