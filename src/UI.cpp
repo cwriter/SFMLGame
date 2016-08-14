@@ -1,13 +1,28 @@
 #include "stdafx.h"
 #include "UI.h"
+#include <SFGUI/Widgets.hpp>
 
 namespace SFG
 {
 
 //UIManager
 #ifndef SFG_USE_CUSTOM_UI
-	sfg::SFGUI UIManager::sfgui;
+sfg::SFGUI UIManager::sfgui;
+
+int UIManager::load(const sf::String& path, const StringManager& strman)
+{
+	auto button = sfg::Button::Create( "Hello" );
+	auto checkbox = sfg::CheckButton::Create("Test checkbox");
+	auto window = sfg::Window::Create();
+	window->SetTitle( "Hello World example" );
+	window->Add(checkbox);
+	window->Add( button );
+	m_sfg_desktop.Add(window);
+	m_windows.push_back(window);
 	
+	return -1;
+}
+
 void UIManager::draw(sf::RenderTexture& tex)
 {
 	auto tmp = tex.getView();

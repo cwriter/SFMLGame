@@ -99,7 +99,15 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         }
         else if (events[i].type == sf::Event::EventType::MouseButtonPressed)
 		{
-			//We _could_ handle that shit, but naaaaah
+			//We _could_ handle that shit for MouseMode::Select, but naaaaah
+			if(this->m_mouse_mode == MouseMode::BuildOverlayPassThrough)
+			{
+				if(events[i].mouseButton.button == sf::Mouse::Button::Left)
+				{
+					//Start construction of beam (mouse button release = stop construction of beam)
+					//TODO
+				}
+			}
 		}
 		else if (events[i].type == sf::Event::EventType::MouseButtonReleased)
 		{

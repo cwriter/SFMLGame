@@ -45,17 +45,7 @@ public:
 	int processEvents(std::vector<sf::Event>& events);
 
 	
-	int load(const sf::String& path, const StringManager& strman)
-	{
-		auto button = sfg::Button::Create( "Hello" );
-		auto window = sfg::Window::Create();
-		window->SetTitle( "Hello World example" );
-		window->Add( button );
-		m_sfg_desktop.Add(window);
-		m_windows.push_back(window);
-		
-		return -1;
-	}
+	int load(const sf::String& path, const StringManager& strman);
 	
 	void setTarget(sf::RenderWindow* t){
 		this->m_target = t;

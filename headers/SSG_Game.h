@@ -65,7 +65,8 @@ private:
 	
 	enum MouseMode
 	{
-		Select = 0
+		Select = 0,
+		BuildOverlayPassThrough
 	};
 	
 	MouseMode m_mouse_mode;
