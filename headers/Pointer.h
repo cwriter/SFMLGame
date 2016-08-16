@@ -30,7 +30,7 @@ public:
     ///</summary>
     Pointer(T* from) {
         this->m_ptr = from;
-        this->m_ref_count = new size_t(1);
+        this->m_ref_count = new(std::nothrow) size_t(1);
         if (m_ref_count == nullptr) {
             //Big issue
             printf("[Critical] Failed to allocate memory in SFG::Pointer constructor in %s:%d\n", __FILE__, __LINE__);
@@ -46,7 +46,7 @@ public:
     Pointer(T& from) {
         //Pointer(&from);
         this->m_ptr = &from;
-        this->m_ref_count = new size_t(1);
+        this->m_ref_count = new(std::nothrow) size_t(1);
         if (m_ref_count == nullptr) {
             //Big issue
             printf("[Critical] Failed to allocate memory in SFG::Pointer constructor in %s:%d\n", __FILE__, __LINE__);
@@ -103,7 +103,7 @@ public:
         //Release the old references
         release();
         //Set a new ref counter
-        m_ref_count = new size_t(1);
+        m_ref_count = new(std::nothrow) size_t(1);
         if (m_ref_count == nullptr)
         {
             printf("[Critical] Failed to allocate memory for reference counter in %s:%d\n", __FILE__, __LINE__);

@@ -136,6 +136,36 @@ Game/fast:
 	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/build
 .PHONY : Game/fast
 
+src/AI.o: src/AI.cpp.o
+
+.PHONY : src/AI.o
+
+# target to build an object file
+src/AI.cpp.o:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/AI.cpp.o
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/AI.cpp.o
+.PHONY : src/AI.cpp.o
+
+src/AI.i: src/AI.cpp.i
+
+.PHONY : src/AI.i
+
+# target to preprocess a source file
+src/AI.cpp.i:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/AI.cpp.i
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/AI.cpp.i
+.PHONY : src/AI.cpp.i
+
+src/AI.s: src/AI.cpp.s
+
+.PHONY : src/AI.s
+
+# target to generate assembly for a file
+src/AI.cpp.s:
+	$(MAKE) -f CMakeFiles/GameST.dir/build.make CMakeFiles/GameST.dir/src/AI.cpp.s
+	$(MAKE) -f CMakeFiles/Game.dir/build.make CMakeFiles/Game.dir/src/AI.cpp.s
+.PHONY : src/AI.cpp.s
+
 src/Camera.o: src/Camera.cpp.o
 
 .PHONY : src/Camera.o
@@ -1556,6 +1586,9 @@ help:
 	@echo "... GameST"
 	@echo "... edit_cache"
 	@echo "... Game"
+	@echo "... src/AI.o"
+	@echo "... src/AI.i"
+	@echo "... src/AI.s"
 	@echo "... src/Camera.o"
 	@echo "... src/Camera.i"
 	@echo "... src/Camera.s"

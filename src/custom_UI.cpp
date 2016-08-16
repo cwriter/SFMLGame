@@ -309,7 +309,7 @@ void UIComboBox::draw(sf::RenderTarget& target, float scale)
     this->setBounds(changeRect(this->bounds(), scale));
     if (!m_expanded) {
         //Only draw the selected element and the drop-down arrow
-        if (m_scroll_index >= m_scroll_index) {
+        if (m_scroll_index >= m_elements.size()) {
             //Error: Index out of range
             return;
         }

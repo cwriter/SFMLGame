@@ -3,6 +3,7 @@
 #include "SSG_Planet.h"
 #include "SSG_Ship.h"
 #include "XML.h"
+#include "SSG_CelestialObjectContainer.h"
 
 class SSG_Planet;
 ///<summary>

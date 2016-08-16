@@ -106,6 +106,7 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 				{
 					//Start construction of beam (mouse button release = stop construction of beam)
 					//TODO
+					
 				}
 			}
 		}

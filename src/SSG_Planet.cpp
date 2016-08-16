@@ -29,6 +29,8 @@ SSG_Planet::~SSG_Planet()
 {
 }
 
+
+
 int SSG_Planet::load(const XMLReader& reader)
 {
 	//SFG::Util::printLog(SFG::Util::Development, __FILE__, __LINE__, "Still to do");
@@ -51,17 +53,18 @@ int SSG_Planet::load(const XMLReader& reader)
 	this->setPosition(mpf_class(r.left), mpf_class(r.top));
 	this->setVelocity(PE::Velocity(r.width, r.height));
 	
-	this->getShape().setRadius(reader.asDouble("radius/", real));
-	//#TODO: REMOVE TO HAVE CORRECT SIZES!!!! #important!
-	//this->getShape().setRadius(2.5559e9 + reader.asDouble("radius/", real));
+	auto radius = reader.asDouble("radius/", real);
 	if(!real)
 	{
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__,
 							"Failed to get radius for planet %s", this->m_name.toAnsiString().c_str());
 	}
+	this->getShape().setRadius(radius);
 	
 	SFG::FloatRect rect(this->getShape().getLocalBounds());
 	this->getShape().setOrigin(rect.center());
+	
+	m_planet_surface.reset(new SSG_PlanetSurface(radius));
 	
 	//Get Moons
 	reader.for_all("Moon", [=](const XMLGroup* g){

@@ -6,176 +6,14 @@
 #include "Interactable.h"
 #include <SFGUI/Label.hpp>
 #include <SFGUI/Window.hpp>
+#include "SSG_PlanetSurface.h"
 
 #define SSG_PLANET_DEFAULT_RADIUS 1000.f
 #define SSG_PLANET_DEFAULT_MASS 4.f/3.f*PI*10e10
 
 class SSG_SolarSystem;
 
-///<summary>
-///Class that contains elements
-///</summary>
-template <class T>
-class SSG_CelestialObjectContainer
-	: public PE::PhysicObject, public GObjectBase, public SFG::Interactable
-{
-    static_assert(std::is_base_of<PE::PhysicObject, T>::value, "T must derive from PE::PhysicObject");
 
-public:
-    SSG_CelestialObjectContainer()
-    {
-        m_x = 0.;
-        m_y = 0.;
-		this->setClick([&](const sf::Vector2f& mpos, const sf::Mouse::Button& but){
-			return -1;
-		});
-		this->setRightClick([&](const sf::Vector2f& mpos, const sf::Mouse::Button& but){
-			return -1;
-		});
-		this->setHover([&](const sf::Vector2f& mpos){
-			return -1;
-		});
-    }
-    
-    void draw(sf::RenderTarget& t)
-	{
-		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
-			m_CelestialObjects[i]->draw(t);
-	}
-
-    int update(float dt)
-	{
-		this->m_physicsEngine.applyMutualForces();
- 		this->finishPhysicsCycle(dt);
-		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-			"Updating \"%s\" with %d objects", m_name.toAnsiString().c_str(),
-							m_CelestialObjects.size()
-		);*/
-		#pragma omp parallel for
-		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
-		{
-			auto& g = m_CelestialObjects[i];
-			//Check for mouse actions
-			//for(auto& action : this->m_requests)
-			for(size_t ii = 0; ii < m_requests.size(); ii++)
-			{
-				auto& action = m_requests[ii];
-				if(action->isActive())
-				{
-					if(action->m_task_type == delayedActionTask::TaskType::mouseRequest)
-					{
-						auto req = static_cast<mouseRequest*>(action->m_request);
-						//if(!this->getLogicBoundingRect().contains(req->pos)) continue;
-						/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-							"%s: (%f|%f) %f:%f", g.first->m_name.toAnsiString().c_str(), g.first->getLogicBoundingRect().left, g.first->getLogicBoundingRect().top,
-											g.first->getLogicBoundingRect().width, g.first->getLogicBoundingRect().height
-						);*/
-						if(g->getLogicBoundingRect().contains(req->pos))
-						{
-							if(g->onClick(req->pos, req->button) == 0)
-							{
-								//We're done
-								/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-									"Event has been consumed"
-								);*/
-								#pragma omp critical
-								{
-									action->deactivate();
-								}
-							}
-							else
-							{
-								//Handle more...
-								/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-									"Relaying event to \"%s\"", g.first->m_name.toAnsiString().c_str()
-								);*/
-								//g.first->addDelayedActionTask(action);
-							}
-						}
-						#pragma omp critical
-						{
-							g->addDelayedActionTask(action);
-						}
-					}
-				}
-			}
-			g->update(dt);
-		}
-		return 0;
-	}
-	
-	sf::FloatRect getLogicBoundingRect() const override
-	{
-		float l, r, t, b;
-		l = std::numeric_limits<float>::max();
-		r = std::numeric_limits<float>::min();
-		t = std::numeric_limits<float>::max();
-		b = std::numeric_limits<float>::min();
-		
-		//for(const auto& o : m_CelestialObjects)
-		for(size_t i = 0; i < m_CelestialObjects.size(); i++)
-		{
-			auto& o = m_CelestialObjects[i];
-			sf::FloatRect rect = o->getLogicBoundingRect();
-			l = std::min(l, rect.left);
-			r = std::max(r, rect.left + rect.width);
-			t = std::min(t, rect.top);
-			b = std::max(b, rect.top + rect.height);
-		}
-		
-		return sf::FloatRect(l, r-l, t, b-t);
-	}
-
-    inline void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-    {
-        m_physicsEngine.removeObject(ptr);
-        //Remove from the mass center
-        m_x -= ptr->getMass().getScalar() * ptr->x();
-        m_y -= ptr->getMass().getScalar() * ptr->y();
-
-        this->setMass(getMass() - ptr->getMass());
-    }
-
-    inline void addSpecificToSystem(const SFG::Pointer<T>& ptr)
-    {
-        //m_CelestialObjects[ptr.getElement()] = ptr;
-		m_CelestialObjects.push_back(ptr);
-        addObjectToSystem(ptr);
-    }
-
-    mpf_class x() const override {
-        return m_x / getMass().getScalar(); //Return the actual position
-    }
-
-    mpf_class y() const override {
-        return m_y / getMass().getScalar(); //Return the actual position
-    }
-    
-	virtual void clearDelayedActionTasks() override {
-		m_requests.clear();
-		for(auto& o : m_CelestialObjects)
-			o->clearDelayedActionTasks();
-	}
-
-protected:
-    inline void addObjectToSystem(const SFG::Pointer<PE::PhysicObject>& ptr)
-    {
-        this->setMass(getMass() + ptr->getMass());
-        m_physicsEngine.addObject(ptr);
-        //We now need to add the object's mass to totalmass and
-        //add the specific weights to the balanced position
-        m_x += ptr->getMass().getScalar() * ptr->x();
-        m_y += ptr->getMass().getScalar() * ptr->y();
-    }
-
-    
-    PE::PhysicsEngine m_physicsEngine;
-	std::vector<SFG::Pointer<T>> m_CelestialObjects;
-    
-	mpf_class m_x;
-    mpf_class m_y;
-
-};
 
 ///<summary>
 ///Represents a planet in a solar system (But suns, too. We aren't that strict)
@@ -270,7 +108,7 @@ public:
     
     SSG_SolarSystem* m_parentSys;	//The parent system
     
-    
+    SFG::Pointer<SSG_PlanetSurface> m_planet_surface;
 	
 	SFG::Pointer<SSG_Planet> m_parentPlanet;	//Only if available; The planet this moon is orbiting
 protected:

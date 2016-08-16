@@ -9,6 +9,8 @@ namespace SFG
 		polar
 	};
 	
+	class AIPathVertex;
+	
 	///<summary>
 	///Simple class representing edges. WARNING: This class does not make a copy of the
 	///Vertex it connects to and only contains fundamental types. The lifetime of this object
@@ -78,7 +80,7 @@ namespace SFG
 		
 	private:
 		
-		void recursive_gsp(const std::vector<float>& T, AIPathVertex* vtx);
+		void recursive_gsp(std::vector< float >& T, SFG::AIPathVertex* vtx) const;
 		
 		std::vector<Pointer<AIPathVertex>> m_vertices;
 	};
@@ -92,7 +94,7 @@ namespace SFG
 		
 		
 	private:
-		std::vector<> m_pending_orders;
+		//std::vector<> m_pending_orders;
 	};
 	
 };

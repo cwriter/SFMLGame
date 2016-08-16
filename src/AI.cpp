@@ -21,7 +21,7 @@ namespace SFG
 		size_t i = start->getPosInArray();
 		while(i != finish_node)
 		{
-			ptr>addNode(m_vertices[i]);
+			ptr->addNode(m_vertices[i]);
 			i = T[T.size() + i];
 		}
 			
@@ -29,7 +29,7 @@ namespace SFG
 		return ptr;
 	}
 	
-	void AIPathGraph::recursive_gsp(const std::vector< float >& T, AIPathVertex* vtx)
+	void AIPathGraph::recursive_gsp(std::vector< float >& T, AIPathVertex* vtx) const
 	{
 		if(vtx == nullptr) return;
 		
@@ -37,12 +37,12 @@ namespace SFG
 		for(size_t i = 0; i < current->edges().size() / 2; i++)
 		{
 			size_t pos = current->getPosInArray();
-			size_t nextpos = current->edges()[i].target->getPosInArray();
+			size_t nextpos = current->edges()[i]->target->getPosInArray();
 			
-			if(T[pos] == std::numeric_limits<float>::max) T[pos] = 0;
+			if(T[pos] == std::numeric_limits<float>::max()) T[pos] = 0;
 
 			//Set which node is taken next
-			if(T[nextpos] < T[pos] + current->edges()[i].cost)
+			if(T[nextpos] < T[pos] + current->edges()[i]->cost)
 			{
 				//Do nothing; the next node is already correctly set
 			}
@@ -50,12 +50,12 @@ namespace SFG
 			{
 				T[T.size() / 2 + pos] = nextpos;
 			}
-			T[nextpos] = std::min(T[nextpos], T[pos] + current->edges()[i].cost);
+			T[nextpos] = std::min(T[nextpos], T[pos] + current->edges()[i]->cost);
 			
 		
 			
 			//Go recurse!
-			recursive_gsp(T, current->edges()[i].target);
+			recursive_gsp(T, current->edges()[i]->target);
 		}
 	}
 	

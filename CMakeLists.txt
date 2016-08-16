@@ -5,6 +5,7 @@ project(Game)
 
 #Set include dirs
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/headers)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/tpl)
 
 #Set files
 file(GLOB Game_sources
