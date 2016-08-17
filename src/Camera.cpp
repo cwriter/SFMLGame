@@ -6,6 +6,7 @@ namespace SFG
 
 Camera::Camera()
 {
+	scale = 1.f;
 }
 
 

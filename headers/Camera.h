@@ -10,8 +10,8 @@ public:
     Camera();
     ~Camera();
 
-    operator sf::View() const {
-        return this->view;
+    operator sf::View&() {
+        return getView();
     }
 
     void move(float x, float y) {
@@ -27,7 +27,22 @@ public:
     }
 
     void setSize(float x, float y) {
-        this->view.setSize(x, y);
+        this->view.setSize(x, y < 0.f ? y : -y);
+		
+		auto m = std::min(std::abs(x), std::abs(y)) / scale;
+		
+		if(m < 10000.f && rdl != Medium) {
+			rdl = Medium;
+			rdl_changed = true;
+		}
+		else if(m < 100.f && rdl != Detailed) {
+			rdl = Detailed;
+			rdl_changed = true;
+		}
+		else if(rdl != Low){
+			rdl = Low;
+			rdl_changed = true;
+		}
     }
 
     sf::View& getView() {
@@ -38,8 +53,20 @@ public:
     
     void animatedPanTo(float x, float y);
     
+	enum requiredDetailLevel
+	{
+		Low,
+		Medium,
+		Detailed
+	} rdl;
+	
+	float scale;
+	bool rdl_changed;
+	
 private:
     sf::View view;
+	
+	
 	
 	bool m_animated;
 	

@@ -5,6 +5,8 @@
 #include "SSG_Universe.h"
 #include "SSG_BuildOverlay.h"
 #include "UI.h"
+#include "GameConsole.h"
+
 
 class SSG_Game :
     public GameState
@@ -70,6 +72,8 @@ private:
 	};
 	
 	MouseMode m_mouse_mode;
+	
+	SFG::Var<float> m_game_speed;
 	
 	SSG_BuildOverlay m_build_overlay;
 	

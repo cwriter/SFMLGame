@@ -13,6 +13,10 @@ SSG_Game::SSG_Game()
 	
 	if(!sfg::Context::Get().GetEngine().SetProperty<std::string>("*", "FontName", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"))
 		SFG::Util::printLog(SFG::Util::Error, __FILE__, __LINE__, "Failed to set font");
+	
+	this->m_game_speed = 1.f;
+	
+	Game::cmdTranslator.setVar<float>("game_speed", &m_game_speed);
 }
 
 SSG_Game::~SSG_Game()
@@ -45,9 +49,7 @@ int SSG_Game::update(double dt)
 
     this->m_physicsEngine.applyMutualForces();
 	
-	//#TODO: REMOVE THE LINE BELOW THE COMMENT AND UN-COMMENT THE COMMENT FOR REAL VALUES
-	this->m_universe.update(dt);
-	//this->m_universe.update(dt*100000.f);
+	this->m_universe.update(dt*float(m_game_speed));
 
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.update(dt);
@@ -306,16 +308,61 @@ void SSG_Game::draw(sf::RenderTarget* t)
 {
     assert(t != nullptr);
 	
-	//TESTING
-	this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
-	/*printf("Dist is %f|%f\n", 
-		   m_lock_on->x() - m_cam.getView().getCenter().x,
-		   m_lock_on->y() - m_cam.getView().getCenter().y);*/
-	//printf("Cam locking at %f|%f\n", m_lock_on->x().get_d(), m_lock_on->y().get_d());
-	//m_cam.animatedPanTo((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
+	//this->m_cam.setCenter((float)m_lock_on->x().get_d(), (float)m_lock_on->y().get_d());
+	if(m_cam_index < m_next_planets.size() && m_next_planets[m_cam_index].isValid() && m_next_planets[m_cam_index]->m_planet_surface.isValid())
+	{
+		const auto& pl = m_next_planets[m_cam_index];
+		this->m_cam.setCenter(
+			pl->x().get_d() + cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
+			pl->y().get_d() + sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+		);
+	}
+	
+	if(m_cam.rdl == SFG::Camera::Low)
+	{
+		//Universe view (cartesian)
+		if(m_cam.rdl_changed)
+		{
+			//We'll have to reset the correct positioning...
+		}
+		this->m_universe.draw(*t);
+	}
+	else if(m_cam.rdl == SFG::Camera::Medium)
+	{
+		//Planet view (polar)
+		//We'll have to convert from cartesian in any case
+		//Also, we'll have to know which planet is being focussed
+		//(e.g. get the planet that's closest to the cam's center)
+		//And we'll also have to keep a lock-on for the camera.
+		if(m_cam.rdl_changed)
+		{
+			//We'll have to reset the correct positioning...
+			printf("Planet view engaged\n");
+			//Get the closest planet (this is a pretty expensive
+			//operation, but we're fine with it for now)
+			auto plptr = m_universe.findClosestPlanet(
+				PE::Vector2f({m_cam.getView().getCenter().x,
+					m_cam.getView().getCenter().y}));
+			
+		}
+	}
+	else if(m_cam.rdl == SFG::Camera::Detailed)
+	{
+		//Planet or even higher details (cartesian)
+		
+		
+		if(m_cam.rdl_changed)
+		{
+			//We'll have to reset the correct positioning...
+			printf("Planet view (ultra detail) engaged\n");
+		}
+	}
+	if(m_cam.rdl_changed)
+		m_cam.rdl_changed = false;
+	
+	
 	t->setView(m_cam);
-	//!TESTING
-	this->m_universe.draw(*t);
+	
 
 	if(this->m_build_overlay.isEnabled()) {
 		this->m_build_overlay.draw(*t);

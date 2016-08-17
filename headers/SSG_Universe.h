@@ -36,6 +36,15 @@ public:
     void addShip(SFG::Pointer<SSG_Ship>& ptr);
 
 
+	SFG::Pointer<SSG_Planet> findClosestPlanet(const PE::Vector2f& pos)
+	{
+		auto p1 = this->findClosestTo(pos);
+		auto p2 = p1->findClosestTo(pos);
+		auto p3 = p2->findClosestTo(pos);
+		
+		return p3;
+	}
+	
     mpf_class x() const override
     {
         return m_x / getMass().getScalar();

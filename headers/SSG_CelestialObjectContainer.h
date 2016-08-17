@@ -25,6 +25,24 @@ public:
 	sf::FloatRect getLogicBoundingRect() const override;
 
     void removeObjectFromSystem(const SFG::Pointer<PE::PhysicObject>& ptr);
+	
+	SFG::Pointer<T> findClosestTo(const PE::Vector2f& pos) const
+	{
+		SFG::Pointer<T> min;
+		float dist(std::numeric_limits<float>::max());
+		
+		for(const auto& g : m_CelestialObjects)
+		{
+			float d = pos.distanceTo(PE::Vector2f({
+				(float)g->x().get_d(),
+				(float)g->y().get_d()}));
+			
+			dist = std::min(d, dist);
+			if(d == dist)
+				min.reset(g);
+		}
+		return min;
+	}
 
     inline void addSpecificToSystem(const SFG::Pointer<T>& ptr)
     {

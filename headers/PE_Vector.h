@@ -6,6 +6,16 @@ namespace PE
 	template <size_t, typename> class Vector;
 	
 
+	inline double pow(mpf_class a, double b)
+	{
+		return std::pow(a.get_d(), b);
+	}
+	
+	inline double atan2(mpf_class a, mpf_class b)
+	{
+		return std::atan2(a.get_d(), b.get_d());
+	}
+	
 template <size_t dim, typename T>
 class Vector
 {
@@ -45,8 +55,8 @@ public:
 		T sum(0);
 		if(max == -1) max = dim;
 		for(size_t i = 0; i < size_t(max); i++)
-			sum += std::pow(m_vec[i].get_d(), 2.0);
-		return std::sqrt(sum.get_d());
+			sum += pow(m_vec[i], 2.0);
+		return sqrt(sum);
     }
     
     T distanceTo(const PE::Vector<dim, T>& point) const
@@ -163,7 +173,7 @@ public:
 		for(size_t i = 1; i < dim; i++)
 		{
 			T tmp = m_vec[i] / other[i];
-			if(	std::abs(mpf_class(lastFactor - tmp) > 0.001))
+			if(abs(mpf_class(lastFactor - tmp)) > 0.001)
 				return T(0);
 		}
 		return lastFactor;
@@ -184,7 +194,7 @@ public:
 	double getAngle2D() const
 	{
 		assert(dim >= 2);
-		return std::atan2(this->y.get_d(), this->x.get_d());
+		return atan2(this->y, this->x);
 	}
 	
 
