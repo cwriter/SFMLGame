@@ -73,9 +73,27 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         //#TODO: Consider remapping with this->keyMapper()
         if (events[i].type == sf::Event::EventType::MouseWheelMoved)
         {
-            this->m_cam.setSize(
-                m_cam.getView().getSize().x * (10.f - 1.f*events[i].mouseWheel.delta) / 10.f,
-                m_cam.getView().getSize().y * (10.f - 1.f*events[i].mouseWheel.delta) / 10.f);
+			float scale = (10.f - 1.f*events[i].mouseWheel.delta) / 10.f;
+			
+			if(scale < 0.f) printf("ERROR: NEGATIVE SCALE!");
+			
+			if(m_cam.rdl == SFG::Camera::Low)
+				this->m_cam.setSize(
+					m_cam.getView().getSize().x * scale,
+					m_cam.getView().getSize().y * scale);
+			else if(m_cam.rdl == SFG::Camera::Medium)
+			{
+				this->m_cam.setSize(
+					m_cam.getView().getSize().x * scale,
+					m_cam.getView().getSize().y * scale);
+			}
+			else if(m_cam.rdl == SFG::Camera::Detailed)
+			{
+				this->m_cam.setSize(
+					m_cam.getView().getSize().x * scale,
+					m_cam.getView().getSize().y * scale);
+			}
+			
             //printf("Scrolled %d\n", events[i].mouseWheel.delta);
             window.getSFMLWindow().setView(m_cam);
 			
@@ -312,10 +330,18 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	if(m_cam_index < m_next_planets.size() && m_next_planets[m_cam_index].isValid() && m_next_planets[m_cam_index]->m_planet_surface.isValid())
 	{
 		const auto& pl = m_next_planets[m_cam_index];
-		this->m_cam.setCenter(
-			pl->x().get_d() + cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
-			pl->y().get_d() + sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
-		);
+		if(m_cam.rdl == SFG::Camera::Low)
+			this->m_cam.setCenter(
+				pl->x().get_d() + cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
+				pl->y().get_d() + sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+			);
+		else if(m_cam.rdl == SFG::Camera::Medium)
+		{
+			this->m_cam.setCenter(
+				cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
+				sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+			);
+		}
 	}
 	
 	if(m_cam.rdl == SFG::Camera::Low)
@@ -325,6 +351,7 @@ void SSG_Game::draw(sf::RenderTarget* t)
 		{
 			//We'll have to reset the correct positioning...
 		}
+		t->setView(m_cam);
 		this->m_universe.draw(*t);
 	}
 	else if(m_cam.rdl == SFG::Camera::Medium)
@@ -341,10 +368,21 @@ void SSG_Game::draw(sf::RenderTarget* t)
 			//Get the closest planet (this is a pretty expensive
 			//operation, but we're fine with it for now)
 			auto plptr = m_universe.findClosestPlanet(
-				PE::Vector2f({m_cam.getView().getCenter().x,
-					m_cam.getView().getCenter().y}));
+			PE::Vector2f({m_cam.getView().getCenter().x,
+				m_cam.getView().getCenter().y}));
 			
 		}
+		
+		const auto& pl = m_next_planets[m_cam_index];
+		this->m_cam.setCenter(
+			cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
+			sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+		);
+			
+		t->setView(m_cam);
+		//Now, get the appropriate surface
+		//plptr->m_planet_surface->draw(*t);
+		pl->m_planet_surface->draw(*t);
 	}
 	else if(m_cam.rdl == SFG::Camera::Detailed)
 	{

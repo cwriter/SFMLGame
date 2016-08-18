@@ -65,6 +65,7 @@ int SSG_Planet::load(const XMLReader& reader)
 	this->getShape().setOrigin(rect.center());
 	
 	m_planet_surface.reset(new SSG_PlanetSurface(radius));
+	m_planet_surface->load();
 	
 	//Get Moons
 	reader.for_all("Moon", [=](const XMLGroup* g){

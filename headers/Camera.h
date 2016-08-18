@@ -31,16 +31,23 @@ public:
 		
 		auto m = std::min(std::abs(x), std::abs(y)) / scale;
 		
-		if(m < 10000.f && rdl != Medium) {
-			rdl = Medium;
-			rdl_changed = true;
-		}
-		else if(m < 100.f && rdl != Detailed) {
+		const float t_med = 10000.f;
+		const float t_det = 100.f;
+		
+		//printf("Viewsize is %f|%f\n", x, y);
+		if(m < t_det && rdl != Detailed) {
 			rdl = Detailed;
+			printf("Setting view to DETAILED\n");
 			rdl_changed = true;
 		}
-		else if(rdl != Low){
+		else if(m < t_med && m > t_det && rdl != Medium) {
+			rdl = Medium;
+			printf("Setting view to MEDIUM\n");
+			rdl_changed = true;
+		}
+		else if(m >= t_med && rdl != Low){
 			rdl = Low;
+			printf("Setting view to LOW\n");
 			rdl_changed = true;
 		}
     }
