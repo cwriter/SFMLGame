@@ -14,7 +14,7 @@ file(GLOB Game_sources
 )
 
 #Set compiler flags
-SET(CCFLAGS -g -Wall -O3 -rdynamic -std=c++11 -march=native)
+SET(CCFLAGS -g -Wall -rdynamic -std=c++11 -march=native)
 
 #Set libraries
 SET(LIBLIST sfml-system sfml-window sfml-graphics sfml-audio sfml-network sfgui pthread dl X11 gmpxx gmp gomp)
@@ -24,7 +24,14 @@ add_executable(Game ${Game_sources})
 target_link_libraries(Game "${LIBLIST}")
 
 #add_definitions(${CCFLAGS})
-target_compile_options(Game PRIVATE "${CCFLAGS}" -fopenmp)
+target_compile_options(Game PRIVATE "${CCFLAGS}" -fopenmp -O3)
+
+#Debug version (= no -O3)
+add_executable(GameDbg  ${Game_sources})
+target_link_libraries(GameDbg "${LIBLIST}")
+target_compile_options(GameDbg PRIVATE "${CCFLAGS}" -fopenmp)
+set_target_properties(GameDbg PROPERTIES EXCLUDE_FROM_ALL 1 EXCLUDE_FROM_DEFAULT_BUILD 1)
+
 
 #Add a singlethreaded version (=no openmp)
 add_executable(GameST  ${Game_sources})

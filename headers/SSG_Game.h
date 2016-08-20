@@ -17,10 +17,10 @@ public:
 
     ///<summary>
     ///Updates the game logic
+	///</summary>
     ///<param name="dt>
     ///Time that has elapsed since the last update in milliseconds with microsecond resolution (expected values are between 1 and 100)
     ///</param>
-    ///</summary>
     int update(double dt) override;
 
     ///<summary>
@@ -71,7 +71,7 @@ private:
 		BuildOverlayPassThrough
 	};
 	
-	MouseMode m_mouse_mode;
+	SFG::Var<MouseMode> m_mouse_mode;
 	
 	SFG::Var<float> m_game_speed;
 	

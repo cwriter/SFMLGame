@@ -30,7 +30,7 @@ namespace SFG
 		}
 		
 		template<typename U = T>
-		typename std::enable_if<!std::is_fundamental<U>::value, U&>::type
+		typename std::enable_if<!std::is_fundamental<U>::value, const U&>::type
 		get() const
 		{
 			return var;
@@ -40,6 +40,7 @@ namespace SFG
 		typename std::enable_if<std::is_fundamental<U>::value, void>::type
 		set(U v)
 		{
+			if(onValueChange) onValueChange(v);
 			var = v;
 		}
 		
@@ -47,6 +48,7 @@ namespace SFG
 		typename std::enable_if<!std::is_fundamental<U>::value, void>::type
 		set(const U& v)
 		{
+			if(onValueChange) onValueChange(v);
 			var = v;
 		}
 		
@@ -59,12 +61,22 @@ namespace SFG
 		}
 		
 		template<typename U = T>
-		typename std::enable_if<!std::is_fundamental<U>::value, U&>::type
+		typename std::enable_if<!std::is_fundamental<U>::value, const U&>::type
 		operator=(const U& v)
 		{
 			set(v);
 			return get();
 		}
+		
+		bool operator==(const T& cmp) const
+		{
+			return var == cmp;
+		}
+		
+		/*bool operator==(T cmp) const
+		{
+			return var == cmp;
+		}*/
 		
 		sf::String toString() const
 		{
@@ -72,6 +84,8 @@ namespace SFG
 			str << get();
 			return str.str();
 		}
+		
+		std::function<void(const T&)> onValueChange;
 		
 	private:
 		T var;

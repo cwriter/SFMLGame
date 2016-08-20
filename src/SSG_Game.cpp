@@ -9,6 +9,12 @@ SSG_Game::SSG_Game()
     this->name = "main_gamestate";
     this->m_cam.setSize(1000.f, 1000.f);
 	this->m_mouse_mode = MouseMode::Select;
+	
+	this->m_build_overlay.m_enabled.onValueChange = [&](const bool& b){
+		if(b) this->m_mouse_mode = MouseMode::BuildOverlayPassThrough;
+		else this->m_mouse_mode = MouseMode::Select;
+	};
+	
 	this->m_cam_index = 0;
 	
 	if(!sfg::Context::Get().GetEngine().SetProperty<std::string>("*", "FontName", "/usr/share/fonts/truetype/dejavu/DejaVuSansMono.ttf"))
@@ -52,7 +58,8 @@ int SSG_Game::update(double dt)
 	this->m_universe.update(dt*float(m_game_speed));
 
 	if(this->m_build_overlay.isEnabled()) {
-		this->m_build_overlay.update(dt);
+		if(m_cam.rdl != SFG::Camera::Low)
+			this->m_build_overlay.update(dt);
 	}
 	//Update gui
     m_uiman.update(dt);
@@ -151,7 +158,9 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 					SFG::Pointer<delayedActionTask> ptr(new delayedActionTask);
 					ptr->m_request = mreq;
 					ptr->m_task_type = delayedActionTask::TaskType::mouseRequest;
-					m_universe.addDelayedActionTask(ptr);
+					
+					if(m_cam.rdl == SFG::Camera::Low)
+						m_universe.addDelayedActionTask(ptr);
 				}
 			}
 		}
@@ -403,7 +412,8 @@ void SSG_Game::draw(sf::RenderTarget* t)
 	
 
 	if(this->m_build_overlay.isEnabled()) {
-		this->m_build_overlay.draw(*t);
+		if(m_cam.rdl != SFG::Camera::Low)
+			this->m_build_overlay.draw(*t);
 	}
 	this->UI()->draw(Game::window);
 }

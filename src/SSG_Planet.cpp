@@ -193,7 +193,6 @@ int SSG_Planet::internal_onclick(const sf::Vector2f& mpos, const sf::Mouse::Butt
 	
 	auto table = sfg::Table::Create();
 	
-	
 	auto masslabel = sfg::Label::Create("Mass:");
 	
 	std::ostringstream strm;
@@ -249,47 +248,42 @@ void SSG_Planet::draw_info(sf::RenderTarget& t)
 	
 	sf::VertexArray va(sf::Lines);
 	
-	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left, getLogicBoundingRect().top), sf::Color::White));
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left,
+									  getLogicBoundingRect().top), sf::Color::White));
 	
 	va.append(sf::Vertex(t.mapPixelToCoords(
-		sf::Vector2i(m_info_window->GetAllocation().left, m_info_window->GetAllocation().top), t.getView()
-	), sf::Color::White));
+		sf::Vector2i(m_info_window->GetAllocation().left,
+					 m_info_window->GetAllocation().top + m_info_window->GetAllocation().height),
+				t.getView()), sf::Color::White));
 	
-	t.draw(va);
-	
-	va.clear();
-	
-	
-	
-	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left + getLogicBoundingRect().width, getLogicBoundingRect().top), sf::Color::White));
+	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left + getLogicBoundingRect().width,
+									  getLogicBoundingRect().top), sf::Color::White));
 	
 	va.append(sf::Vertex(t.mapPixelToCoords(
-		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width, m_info_window->GetAllocation().top), t.getView()
-	), sf::Color::White));
+		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width,
+					 m_info_window->GetAllocation().top + m_info_window->GetAllocation().height),
+				t.getView()),
+		sf::Color::White));
 	
-	t.draw(va);
-	
-	va.clear();
-	
-	
-	
-	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left, getLogicBoundingRect().top + getLogicBoundingRect().height), sf::Color::White));
-	
-	va.append(sf::Vertex(t.mapPixelToCoords(
-		sf::Vector2i(m_info_window->GetAllocation().left, m_info_window->GetAllocation().top + m_info_window->GetAllocation().height), t.getView()
-	), sf::Color::White));
-	
-	t.draw(va);
-	
-	va.clear();
-	
-	
-	
-	va.append(sf::Vertex(sf::Vector2f(getLogicBoundingRect().left + getLogicBoundingRect().width, getLogicBoundingRect().top + getLogicBoundingRect().height), sf::Color::White));
+	va.append(sf::Vertex(sf::Vector2f(
+		getLogicBoundingRect().left,
+		getLogicBoundingRect().top + getLogicBoundingRect().height), 
+		sf::Color::White));
 	
 	va.append(sf::Vertex(t.mapPixelToCoords(
-		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width, m_info_window->GetAllocation().top+ m_info_window->GetAllocation().height), t.getView()
+		sf::Vector2i(m_info_window->GetAllocation().left,
+					 m_info_window->GetAllocation().top), t.getView()
 	), sf::Color::White));
+	
+	va.append(sf::Vertex(sf::Vector2f(
+		getLogicBoundingRect().left + getLogicBoundingRect().width, 
+		getLogicBoundingRect().top + getLogicBoundingRect().height),
+		sf::Color::White));
+	
+	va.append(sf::Vertex(t.mapPixelToCoords(
+		sf::Vector2i(m_info_window->GetAllocation().left + m_info_window->GetAllocation().width,
+					 m_info_window->GetAllocation().top), t.getView()),
+		sf::Color::White));
 	
 	t.draw(va);
 	

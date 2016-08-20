@@ -13,10 +13,16 @@ int UIManager::load(const sf::String& path, const StringManager& strman)
 {
 	auto button = sfg::Button::Create( "Hello" );
 	auto checkbox = sfg::CheckButton::Create("Test checkbox");
+	auto checkbox2 = sfg::CheckButton::Create("Test checkbox 2");
 	auto window = sfg::Window::Create();
+	auto grid = sfg::Box::Create(sfg::Box::Orientation::VERTICAL);
+	grid->Pack(button);
+	grid->Pack(checkbox, false, false);
+	grid->Pack(checkbox2, false, false);
 	window->SetTitle( "Hello World example" );
-	window->Add(checkbox);
-	window->Add( button );
+	
+	window->Add(grid);
+	
 	m_sfg_desktop.Add(window);
 	m_windows.push_back(window);
 	

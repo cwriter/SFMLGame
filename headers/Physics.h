@@ -219,7 +219,16 @@ private:
     Vector2df m_vec;
 };
 
-
+///<summary>
+///Provides 
+///</summary>
+class Temperature
+{
+public:
+	
+private:
+	mpf_class m_scalar;
+};
 
 class PhysicObject
     : public virtual MsgObject
