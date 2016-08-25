@@ -7,7 +7,9 @@
 
 
 class SSG_Biome_Mountains;
-
+class SSG_Biome_Desert;
+class SSG_Biome_Hills;
+class SSG_Biome_Sea;
 
 
 class SSG_Biome
@@ -22,7 +24,7 @@ public:
 	
 	
 	///<summary>
-	///
+	///Creates a biome
 	///</summary>
 	///<param name="vcount">
 	///Count per 1000m
@@ -65,52 +67,43 @@ protected:
 	
 };
 
+class SSG_Biome_Hills : public SSG_Biome
+{
+public:
+	SSG_Biome_Hills(float radius);
+	
+	virtual SFG::Pointer<SSG_Biome> next() const override;
+	
+private:
+	
+};
+
+class SSG_Biome_Desert 
+	: public SSG_Biome
+{
+public:
+	SSG_Biome_Desert(float radius);
+	
+	virtual SFG::Pointer<SSG_Biome> next() const override;
+private:
+};
+
 class SSG_Biome_Mountains 
 	: public SSG_Biome
 {
 public:
-	SSG_Biome_Mountains(float radius)
-	{
-		temp_min = 213.15f;
-		temp_max = 293.15f;
-		
-		height_min = 1500.f;
-		height_max = 15000.f;
-		
-		height_diff_min = 0.5f;
-		height_diff_max = 4.f;
-		
-		width_min = 10000;
-		width_max = 100000;
-		
-		base_clr = sf::Color(130, 130, 130);
-		
-		m_radius = radius;
-	}
+	SSG_Biome_Mountains(float radius);
 	
-	virtual SFG::Pointer<SSG_Biome> next() const override
-	{
-		SFG::Pointer<SSG_Biome> ptr;
-		std::default_random_engine gen;
-		std::uniform_real_distribution<float> rndf(0.0f, 1.0f);
-		
-		float f = rndf(gen);
-		
-		if(f < 0.2f)
-		{
-			//Sea
-		}
-		else if(f < 0.8f)
-		{
-			//Hills
-		}
-		else if(f < 1.f)
-		{
-			//Desert
-		}
-		
-		return ptr;
-	}
+	virtual SFG::Pointer<SSG_Biome> next() const override;
+private:
+};
+
+class SSG_Biome_Sea : public SSG_Biome
+{
+public:
+	SSG_Biome_Sea(float radius);
+	
+	virtual SFG::Pointer<SSG_Biome> next() const override;
 private:
 };
 
