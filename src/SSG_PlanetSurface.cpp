@@ -14,8 +14,8 @@ SSG_Biome_Hills::SSG_Biome_Hills(float radius)
 	height_diff_min = 0.f;
 	height_diff_max = 0.5f;
 	
-	width_min = 1000.f;
-	width_max = 50000.f;
+	width_min = 10000.f;
+	width_max = 500000.f;
 	
 	base_clr = sf::Color::Green;
 }
@@ -28,15 +28,15 @@ SFG::Pointer< SSG_Biome > SSG_Biome_Hills::next() const
 	
 	float f = rndf(gen);
 	
-	if(f < 0.2f)
+	if(f < 0.4f)
+	{
+		//Mountains
+		ptr.reset(new SSG_Biome_Mountains(m_radius));
+	}
+	else if(f < 0.7f)
 	{
 		//Sea
 		ptr.reset(new SSG_Biome_Sea(m_radius));
-	}
-	else if(f < 0.8f)
-	{
-		//Hills
-		ptr.reset(new SSG_Biome_Hills(m_radius));
 	}
 	else if(f < 1.f)
 	{
@@ -58,8 +58,8 @@ SSG_Biome_Desert::SSG_Biome_Desert(float radius)
 	height_diff_min = 0.0f;
 	height_diff_max = 0.1f;
 	
-	width_min = 10000.f;
-	width_max = 100000.f;
+	width_min = 100000.f;
+	width_max = 1000000.f;
 	
 	base_clr = sf::Color::Yellow;
 	
@@ -104,8 +104,8 @@ SSG_Biome_Mountains::SSG_Biome_Mountains(float radius)
 	height_diff_min = 0.0f;
 	height_diff_max = 4.f;
 	
-	width_min = 10000;
-	width_max = 100000;
+	width_min = 100000;
+	width_max = 1000000;
 		
 	base_clr = sf::Color(130, 130, 130);
 	
@@ -147,8 +147,8 @@ SSG_Biome_Sea::SSG_Biome_Sea(float radius)
 	height_diff_min = 0.f;
 	height_diff_max = 4.f;
 	
-	width_min = 10000;
-	width_max = 1000000;
+	width_min = 100000;
+	width_max = 10000000;
 	
 	base_clr = sf::Color::Blue;
 }
@@ -182,16 +182,30 @@ SFG::Pointer< SSG_Biome > SSG_Biome_Sea::next() const
 
 int SSG_PlanetSurface::load()
 {
+	surf.setPrimitiveType(sf::LineStrip);
+	if(true){
 	//TESTING
-	SSG_Biome_Hills hills(m_radius);
-	hills.create(surf, 0., 100, 25, getRadius());
+	SFG::Pointer<SSG_Biome_Hills> p(new SSG_Biome_Hills(m_radius));
+	double endphi = 0.0;
+	
+	endphi = p->create(surf, 0., .25, 25, getRadius());
+	
+	auto ptr = p->next();
+	
+	while(endphi < 2.*PI)
+	{
+		auto n = ptr->next();
+		//SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__, "Generation: At phi %f", endphi);
+		endphi = n->create(surf, endphi, .25, 25., getRadius());
+		ptr = n;
+	}
+	
 	return 0;
 	//!TESTING
-	
+	}
 	//TODO: Add code for loading stuff
 		
 		
-	surf.setPrimitiveType(sf::LineStrip);
 	//TESTING: We'll just add random vertices for now.
 		
 	std::default_random_engine gen;
@@ -240,7 +254,7 @@ int SSG_PlanetSurface::load()
 	return 0;
 }
 
-void SSG_Biome::create(sf::VertexArray& va, double startphi, size_t vcount_per_km, size_t vsmooth, double startheight) const
+double SSG_Biome::create(sf::VertexArray& va, double startphi, double vcount_per_km, size_t vsmooth, double startheight) const
 {
 	std::default_random_engine gen;
 	std::uniform_real_distribution<float> rndf(height_diff_min, height_diff_max);
@@ -257,12 +271,11 @@ void SSG_Biome::create(sf::VertexArray& va, double startphi, size_t vcount_per_k
 	
 	float phidiff = width / m_radius;
 	
-	double endphi = startphi + phidiff;
+	double endphi = std::min(startphi + phidiff, 2.*PI);
 	
-	size_t vcount = vcount_per_km * float(width / 1000.f);
+	size_t vcount = size_t(vcount_per_km * float(width / 1000.f));
 		
-	float currdiff = 0.f;
-	float nextdiff = rndf(gen) * rndi(gen);
+	float currdiff = 0.0;
 	float grad = 0.f;
 		
 	for(size_t i = 0; i < vcount * vsmooth; i++)
@@ -270,26 +283,27 @@ void SSG_Biome::create(sf::VertexArray& va, double startphi, size_t vcount_per_k
 		float ang = startphi + phidiff*double(i)/double(vsmooth*vcount);
 		if(i % vsmooth == 0)
 		{
-			radius += currdiff;
-			if(radius + currdiff < height_min) {
-				radius = height_min;
+			/*if(radius + currdiff < height_min + m_radius) {
+				radius = m_radius + height_min;
+				std::cout << "Step " << i << ": Limiting height_min" << std::endl;
 			}
-			else if(radius + currdiff > height_max) {
-				radius = height_max;
+			else if(radius + currdiff > height_max + m_radius) {
+				radius = m_radius + height_max;
+				std::cout << "Step " << i << ": Limiting height_max" << std::endl;
 			}
-			else
+			else*/
 				radius += currdiff;
 				
-			//Get defining vecs
-			currdiff = nextdiff;
-			nextdiff = rndf(gen) * rndi(gen);
+			currdiff = rndf(gen) * width / 1000. * vcount_per_km * ((rndi(gen) == -1) ? -1.f : 1.f);
 				
 			va.append(sf::Vertex(sf::Vector2f(
 					cos(ang)*radius,
 					sin(ang)*radius), 
 				base_clr));
-				
-			grad = nextdiff - currdiff;
+			
+			grad = currdiff;
+			//std::cout << "Grad is " << grad << std::endl;
+			//std::this_thread::yield();
 		}
 		else
 		{
@@ -304,7 +318,6 @@ void SSG_Biome::create(sf::VertexArray& va, double startphi, size_t vcount_per_k
 		}
 	}
 	
-	auto n = next();
-	n->create(va, endphi, vcount_per_km, vsmooth, radius);
-	
+	//SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__, "Section of planet generated, at phi %f\n", endphi);
+	return endphi;
 }

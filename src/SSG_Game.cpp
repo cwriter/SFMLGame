@@ -23,6 +23,9 @@ SSG_Game::SSG_Game()
 	this->m_game_speed = 1.f;
 	
 	Game::cmdTranslator.setVar<float>("game_speed", &m_game_speed);
+	
+	m_rot_offset = 0.f;
+	go_right = false;
 }
 
 SSG_Game::~SSG_Game()
@@ -33,6 +36,12 @@ SSG_Game::~SSG_Game()
 int SSG_Game::update(double dt)
 {
 	//TESTING
+	if(this->go_right)
+	{
+		m_rot_offset += dt/100.f*PI/180.;
+		std::cout << "rot offset: " << m_rot_offset << std::endl;
+	}
+	
 	m_cam_counter++;
 	/*if(m_cam_counter % 20 == 0)
 			printf("%zu\n", m_cam_counter);*/
@@ -107,6 +116,21 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
 			//Invalidate
 			events[i].type = sf::Event::EventType::Count;
         }
+        else if(events[i].type == sf::Event::EventType::KeyPressed)
+		{
+			if(events[i].key.code == sf::Keyboard::Key::D)
+			{
+				std::cout << "D pressed" << std::endl;
+				go_right = true;
+			}
+		}
+		else if(events[i].type == sf::Event::EventType::KeyReleased)
+		{
+			if(events[i].key.code == sf::Keyboard::Key::D)
+			{
+				go_right = false;
+			}
+		}
         else if (events[i].type == sf::Event::EventType::Resized)
         {
             float oldw = window.getSFMLWindow().getSize().x;
@@ -347,8 +371,8 @@ void SSG_Game::draw(sf::RenderTarget* t)
 		else if(m_cam.rdl == SFG::Camera::Medium)
 		{
 			this->m_cam.setCenter(
-				cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
-				sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+				cos(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d(),
+				sin(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d()
 			);
 		}
 	}
@@ -384,8 +408,8 @@ void SSG_Game::draw(sf::RenderTarget* t)
 		
 		const auto& pl = m_next_planets[m_cam_index];
 		this->m_cam.setCenter(
-			cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
-			sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+			cos(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d(),
+			sin(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d()
 		);
 			
 		t->setView(m_cam);

@@ -29,7 +29,7 @@ public:
 	///<param name="vcount">
 	///Count per 1000m
 	///</param>
-	void create(sf::VertexArray& va, double startphi, size_t vcount_per_km, size_t vsmooth, double startheight) const;
+	double create(sf::VertexArray& va, double startphi, double vcount_per_km, size_t vsmooth, double startheight) const;
 	
 	bool matchesTemp(float temp)
 	{
@@ -41,7 +41,7 @@ public:
 		return (temp_min <= height && height <= temp_max);
 	}
 	
-protected:
+//protected:
 	
 	enum humidity {
 		arid,
@@ -130,7 +130,7 @@ public:
 	// - Height differences between points [-0.1;+0.1]dy/dx
 	//========= HILLS ========
 	// - Rich, wet, hills
-	// - Possible neighbors: Mountains 0.2, Sea 0.2, Hills 0.6
+	// - Possible neighbors: Mountains 0.4, Sea 0.3, Desert 0.3
 	// - Temperature: [-20;30]°
 	// - Height over sea: [-500;500]m
 	// - Height differences between points [-0.5;+0.5]dy/dx

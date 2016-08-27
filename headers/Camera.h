@@ -31,7 +31,7 @@ public:
 		
 		auto m = std::min(std::abs(x), std::abs(y)) / scale;
 		
-		const float t_med = 10000.f;
+		const float t_med = 100000.f;
 		const float t_det = 100.f;
 		
 		//printf("Viewsize is %f|%f\n", x, y);

@@ -86,6 +86,10 @@ private:
 
     //The universe the game shall handle
     SSG_Universe m_universe;
+	
+	//Testing
+    bool go_right;
+	float m_rot_offset;
 
 };
 
