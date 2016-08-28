@@ -25,7 +25,21 @@ SSG_Game::SSG_Game()
 	Game::cmdTranslator.setVar<float>("game_speed", &m_game_speed);
 	
 	m_rot_offset = 0.f;
-	go_right = false;
+	
+	SFG::Pointer<SFG::StateInputAction> ptrKeyD(new SFG::StateInputAction());
+	ptrKeyD->setKey(sf::Keyboard::Key::D);
+	ptrKeyD->setFunc([this](double dt){
+		this->m_rot_offset -= dt/100.f*PI/180.;
+	});
+	this->m_input_action_handler.add(ptrKeyD.cast<SFG::InputAction>());
+	
+	SFG::Pointer<SFG::StateInputAction> ptrKeyA(new SFG::StateInputAction());
+	ptrKeyA->setKey(sf::Keyboard::Key::A);
+	ptrKeyA->setFunc([this](double dt){
+		this->m_rot_offset += dt/100.f*PI/180.;
+	});
+	this->m_input_action_handler.add(ptrKeyA.cast<SFG::InputAction>());
+	
 }
 
 SSG_Game::~SSG_Game()
@@ -35,13 +49,7 @@ SSG_Game::~SSG_Game()
 
 int SSG_Game::update(double dt)
 {
-	//TESTING
-	if(this->go_right)
-	{
-		m_rot_offset += dt/100.f*PI/180.;
-		std::cout << "rot offset: " << m_rot_offset << std::endl;
-	}
-	
+	m_input_action_handler.update(dt);
 	m_cam_counter++;
 	/*if(m_cam_counter % 20 == 0)
 			printf("%zu\n", m_cam_counter);*/
@@ -53,12 +61,6 @@ int SSG_Game::update(double dt)
 		m_cam_index = (m_cam_index + 1) % m_next_planets.size();
 		//printf("%zu)================================.\n", m_cam_index);
 		this->m_lock_on.reset(m_next_planets[m_cam_index].cast<PE::PhysicObject>());
-		//m_cam.setSize(m_next_planets[m_cam_index]->getShape().getGlobalBounds().width*10.f,
-		//			  m_next_planets[m_cam_index]->getShape().getGlobalBounds().height*10.f);
-		/*SFG::Util::printLog(SFG::Util::Information, __FILE__, __LINE__,
-			"Lock_on is @ (%f|%f) %f:%f", m_next_planets[m_cam_index]->getLogicBoundingRect().left, m_next_planets[m_cam_index]->getLogicBoundingRect().top,
-							m_next_planets[m_cam_index]->getLogicBoundingRect().width, m_next_planets[m_cam_index]->getLogicBoundingRect().height
-		);*/
 	}
 	//!TESTING
 
@@ -118,18 +120,17 @@ int SSG_Game::processEvents(SFG::Window& window, std::vector<sf::Event>& events)
         }
         else if(events[i].type == sf::Event::EventType::KeyPressed)
 		{
-			if(events[i].key.code == sf::Keyboard::Key::D)
-			{
-				std::cout << "D pressed" << std::endl;
-				go_right = true;
-			}
+			m_input_action_handler.handle(events[i].key.code, true);
+
+			//Invalidate
+			events[i].type = sf::Event::EventType::Count;
 		}
 		else if(events[i].type == sf::Event::EventType::KeyReleased)
 		{
-			if(events[i].key.code == sf::Keyboard::Key::D)
-			{
-				go_right = false;
-			}
+			m_input_action_handler.handle(events[i].key.code, false);
+
+			//Invalidate
+			events[i].type = sf::Event::EventType::Count;
 		}
         else if (events[i].type == sf::Event::EventType::Resized)
         {
@@ -365,8 +366,8 @@ void SSG_Game::draw(sf::RenderTarget* t)
 		const auto& pl = m_next_planets[m_cam_index];
 		if(m_cam.rdl == SFG::Camera::Low)
 			this->m_cam.setCenter(
-				pl->x().get_d() + cos(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d(),
-				pl->y().get_d() + sin(pl->m_planet_surface->getMainPosition().x.get_d()) * pl->m_planet_surface->getMainPosition().y.get_d()
+				pl->x().get_d() + cos(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d(),
+				pl->y().get_d() + sin(pl->m_planet_surface->getMainPosition().x.get_d() + m_rot_offset) * pl->m_planet_surface->getMainPosition().y.get_d()
 			);
 		else if(m_cam.rdl == SFG::Camera::Medium)
 		{

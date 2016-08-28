@@ -3,6 +3,84 @@
 
 namespace SFG
 {
+	
+class InputAction
+{
+public:
+	
+	virtual ~InputAction(){}
+	
+	inline void setKey(const sf::Keyboard::Key& k) { m_key = k; }
+	
+	inline const sf::Keyboard::Key& getKey() const { return m_key; }
+	
+	inline void setFunc(const std::function<void(double)>& func) { this->m_func = func; }
+	
+	inline virtual void update(double dt) { if(m_pressed) m_func(dt); }
+	
+	inline virtual void handle(bool pressed) { m_pressed = pressed; }
+	
+protected:
+	bool m_pressed;
+	std::function<void(double)> m_func;
+	
+private:
+	sf::Keyboard::Key m_key;
+	
+};
+
+class StateInputAction
+	: public InputAction
+{
+public:
+	
+private:
+	
+};
+
+class EdgeInputAction
+	: public InputAction
+{
+public:
+	inline void setType(bool posedge) { m_posedge = posedge; }
+	
+	inline virtual void update(double dt) override { if(m_pressed) { m_func(dt); m_pressed = false; } }
+	
+	inline virtual void handle(bool pressed) override { if(m_posedge == pressed) m_pressed = true; }
+	
+private:
+	bool m_posedge;
+};
+	
+class InputActionHandler
+{
+public:
+	void update(double dt)
+	{
+		for(size_t i = 0; i < m_actions.size(); i++)
+		{
+			m_actions[i]->update(dt);
+		}
+	}
+	
+	void handle(const sf::Keyboard::Key& key, bool pressed)
+	{
+		for(size_t i = 0; i < m_actions.size(); i++)
+		{
+			if(m_actions[i]->getKey() == key)
+				m_actions[i]->handle(pressed);
+		}
+	}
+	
+	void add(const SFG::Pointer<InputAction>& ia)
+	{
+		m_actions.push_back(ia);
+	}
+private:
+	std::vector<SFG::Pointer<InputAction>> m_actions;
+};
+	
+	
 class KeyMapper
 {
 public:

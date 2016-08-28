@@ -6,6 +6,7 @@
 #include "SSG_BuildOverlay.h"
 #include "UI.h"
 #include "GameConsole.h"
+#include "KeyMapper.h"
 
 
 class SSG_Game :
@@ -87,8 +88,9 @@ private:
     //The universe the game shall handle
     SSG_Universe m_universe;
 	
+	SFG::InputActionHandler m_input_action_handler;
+	
 	//Testing
-    bool go_right;
 	float m_rot_offset;
 
 };

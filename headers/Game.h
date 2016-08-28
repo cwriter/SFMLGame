@@ -21,6 +21,7 @@
 namespace SFG
 {
 
+
 ///<summary>
 ///Contains the time in ms spent in the game loop
 ///</summary>

@@ -4,7 +4,7 @@
 #include "PE_Vector.h"
 #include "Physics.h"
 #include <random>
-
+#include <chrono>
 
 class SSG_Biome_Mountains;
 class SSG_Biome_Desert;
@@ -15,6 +15,11 @@ class SSG_Biome_Sea;
 class SSG_Biome
 {
 public:
+	
+	SSG_Biome()
+	{
+		gen.seed(std::chrono::system_clock::now().time_since_epoch().count());
+	}
 	
 	virtual ~SSG_Biome()
 	{
@@ -29,7 +34,7 @@ public:
 	///<param name="vcount">
 	///Count per 1000m
 	///</param>
-	double create(sf::VertexArray& va, double startphi, double vcount_per_km, size_t vsmooth, double startheight) const;
+	double create(sf::VertexArray& va, double startphi, double vcount_per_km, size_t vsmooth, double startheight);
 	
 	bool matchesTemp(float temp)
 	{
@@ -49,6 +54,8 @@ public:
 		wet
 	};
 	
+	mutable std::default_random_engine gen;
+	
 	sf::Color base_clr;
 	
 	float temp_max;
@@ -64,7 +71,7 @@ public:
 	float width_max;
 	
 	float m_radius;
-	
+	float m_planet_radius;
 };
 
 class SSG_Biome_Hills : public SSG_Biome
