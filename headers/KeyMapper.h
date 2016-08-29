@@ -33,7 +33,11 @@ class StateInputAction
 	: public InputAction
 {
 public:
-	
+	StateInputAction(const sf::Keyboard::Key& k, const std::function<void(double)>& func)
+	{
+		setKey(k);
+		setFunc(func);
+	}
 private:
 	
 };
@@ -42,6 +46,13 @@ class EdgeInputAction
 	: public InputAction
 {
 public:
+	EdgeInputAction(const sf::Keyboard::Key& k, bool posedge, const std::function<void(double)>& func)
+	{
+		setKey(k);
+		setFunc(func);
+		setType(posedge);
+	}
+	
 	inline void setType(bool posedge) { m_posedge = posedge; }
 	
 	inline virtual void update(double dt) override { if(m_pressed) { m_func(dt); m_pressed = false; } }

@@ -150,7 +150,7 @@ SSG_Biome_Sea::SSG_Biome_Sea(float radius)
 	height_diff_max = 4.f;
 	
 	width_min = 50000;
-	width_max = 100000;
+	width_max = 1000000;
 	
 	base_clr = sf::Color::Blue;
 }

@@ -26,19 +26,18 @@ SSG_Game::SSG_Game()
 	
 	m_rot_offset = 0.f;
 	
-	SFG::Pointer<SFG::StateInputAction> ptrKeyD(new SFG::StateInputAction());
-	ptrKeyD->setKey(sf::Keyboard::Key::D);
-	ptrKeyD->setFunc([this](double dt){
+	{using namespace SFG;
+
+	this->m_input_action_handler.add(
+		Pointer<StateInputAction>(new StateInputAction(sf::Keyboard::D, [this](double dt){
 		this->m_rot_offset -= dt/100.f*PI/180.;
-	});
-	this->m_input_action_handler.add(ptrKeyD.cast<SFG::InputAction>());
+	})));
 	
-	SFG::Pointer<SFG::StateInputAction> ptrKeyA(new SFG::StateInputAction());
-	ptrKeyA->setKey(sf::Keyboard::Key::A);
-	ptrKeyA->setFunc([this](double dt){
+	this->m_input_action_handler.add(
+		Pointer<StateInputAction>(new StateInputAction(sf::Keyboard::A, [this](double dt){
 		this->m_rot_offset += dt/100.f*PI/180.;
-	});
-	this->m_input_action_handler.add(ptrKeyA.cast<SFG::InputAction>());
+	})));
+	}
 	
 }
 
