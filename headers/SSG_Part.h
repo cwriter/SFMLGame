@@ -50,7 +50,7 @@ public:
     virtual int load(const XMLReader& data) override
     {
 		//First, clear any previous data
-		m_points.clear();
+		m_polygon.clear();
 		
 		//Get the type
 		auto type = data.getValue("type.");
@@ -95,7 +95,7 @@ public:
 				
 				
 				//We now have our 2d vertex coordinates, now add them to the polygon
-				m_points.push_back(SFG::Vector2f(x, y));
+				m_polygon.addPoint(PE::Vector2df({x, y}));
 				
 				 
 			} while (lastpos != sf::String::InvalidPos);
@@ -132,7 +132,7 @@ private:
 
 	int m_material;		//This holds the type of material the part consists of (if it is a simple type)
 	
-	std::list<SFG::Vector2f> m_points;	//The polygon points of the element (should not be many;
+	SFG::Polygon m_polygon;	//The polygon points of the element (should not be many;
 										//the count shall not exceed 100)
 	
 	
